@@ -45,14 +45,23 @@ export default async function DashboardPage() {
       </header>
       <main className="mx-auto max-w-4xl px-4 py-8">
         <h2 className="mb-6 text-2xl font-serif text-[#1A1A1A]">Dashboard</h2>
-        <div className="rounded-lg border border-[#3C3F43]/20 bg-white p-6">
-          <p className="text-[#3C3F43]">
-            Welcome back. Your venue{userVenues.length > 1 ? "s" : ""}:{" "}
-            {userVenues.map((v) => v.name).join(", ")}
-          </p>
-          <p className="mt-4 text-sm text-[#3C3F43]/70">
-            Venue Pulse and Deep Diagnostic features will appear here in later sprints.
-          </p>
+        <div className="space-y-4">
+          <div className="rounded-lg border border-[#3C3F43]/20 bg-white p-6">
+            <p className="text-[#3C3F43]">
+              Welcome back. Your venue{userVenues.length > 1 ? "s" : ""}:{" "}
+              {userVenues.map((v) => v.name).join(", ")}
+            </p>
+            <div className="mt-4">
+              <Link href="/checkin">
+                <Button className="bg-[#B9704B] hover:bg-[#A3603B] text-white">
+                  Weekly check-in
+                </Button>
+              </Link>
+            </div>
+            <p className="mt-4 text-sm text-[#3C3F43]/70">
+              Venue Pulse and Deep Diagnostic features will appear here in later sprints.
+            </p>
+          </div>
         </div>
       </main>
     </div>

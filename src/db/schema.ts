@@ -7,6 +7,7 @@ import {
   pgEnum,
   jsonb,
   integer,
+  real,
 } from "drizzle-orm/pg-core";
 
 // ── Enums ──────────────────────────────────────────────────────────────────────
@@ -42,6 +43,16 @@ export const venueTypeEnum = pgEnum("venue_type", [
   "pub",
   "hotel_fb",
   "large_format",
+]);
+
+export const domainEnum = pgEnum("domain", [
+  "throughput",
+  "defaults",
+  "signals",
+  "pacing",
+  "endings",
+  "people_load",
+  "operational_memory",
 ]);
 
 // ── Users ──────────────────────────────────────────────────────────────────────
@@ -96,6 +107,34 @@ export const venues = pgTable("venues", {
   status: venueStatusEnum("status").default("draft").notNull(),
   metadata: jsonb("metadata"),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+// ── Check-ins ──────────────────────────────────────────────────────────────────
+
+export const checkins = pgTable("checkins", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  venueId: uuid("venue_id")
+    .references(() => venues.id, { onDelete: "cascade" })
+    .notNull(),
+  userId: uuid("user_id")
+    .references(() => users.id, { onDelete: "cascade" })
+    .notNull(),
+  responses: jsonb("responses").notNull(), // { throughput: 2, defaults: 1, ... }
+  calmIndex: real("calm_index").notNull(), // (total/21)*10
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+// ── Domain Scores (rolling per venue) ──────────────────────────────────────────
+
+export const domainScores = pgTable("domain_scores", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  venueId: uuid("venue_id")
+    .references(() => venues.id, { onDelete: "cascade" })
+    .notNull(),
+  domain: domainEnum("domain").notNull(),
+  score: real("score").notNull(), // rolling average 0-3
+  checkinCount: integer("checkin_count").default(1).notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
