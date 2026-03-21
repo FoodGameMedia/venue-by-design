@@ -8,6 +8,13 @@
       "when": 1774091018110,
       "tag": "0000_melodic_scalphunter",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1774127512399,
+      "tag": "0001_amazing_tarantula",
+      "breakpoints": true
     }
   ]
 }

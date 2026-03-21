@@ -35,6 +35,15 @@ export const venueStatusEnum = pgEnum("venue_status", [
   "archived",
 ]);
 
+export const venueTypeEnum = pgEnum("venue_type", [
+  "restaurant",
+  "cafe",
+  "bar",
+  "pub",
+  "hotel_fb",
+  "large_format",
+]);
+
 // ── Users ──────────────────────────────────────────────────────────────────────
 
 export const users = pgTable("users", {
@@ -76,6 +85,8 @@ export const venues = pgTable("venues", {
     .references(() => users.id, { onDelete: "cascade" })
     .notNull(),
   name: text("name").notNull(),
+  venueType: venueTypeEnum("venue_type"),
+  staffCount: integer("staff_count"),
   description: text("description"),
   address: text("address"),
   city: text("city"),
