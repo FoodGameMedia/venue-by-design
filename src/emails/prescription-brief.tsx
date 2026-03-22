@@ -46,7 +46,7 @@ export function PrescriptionBriefEmail({
     <Html>
       <Head />
       <Preview>
-        Your Calm Index is {calmIndex}/10 — this week focus on{" "}
+        Your Calm Index is {String(calmIndex)}/10 — this week focus on{" "}
         {DOMAIN_LABELS[primaryDomain] ?? primaryDomain}
       </Preview>
       <Body style={main}>
