@@ -138,6 +138,30 @@ export const domainScores = pgTable("domain_scores", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
+// ── Prescriptions ─────────────────────────────────────────────────────────────
+
+export const prescriptions = pgTable("prescriptions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  checkinId: uuid("checkin_id")
+    .references(() => checkins.id, { onDelete: "cascade" })
+    .notNull(),
+  venueId: uuid("venue_id")
+    .references(() => venues.id, { onDelete: "cascade" })
+    .notNull(),
+  userId: uuid("user_id")
+    .references(() => users.id, { onDelete: "cascade" })
+    .notNull(),
+  calmIndex: real("calm_index").notNull(),
+  primaryDomain: domainEnum("primary_domain").notNull(),
+  primaryProblem: text("primary_problem").notNull(),
+  interventions: jsonb("interventions").notNull(), // string[]
+  weekFocus: text("week_focus").notNull(),
+  watchSignal: text("watch_signal").notNull(),
+  rawResponse: jsonb("raw_response"), // full AI response for debugging
+  emailSentAt: timestamp("email_sent_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
 // ── Design Projects ────────────────────────────────────────────────────────────
 
 export const designProjects = pgTable("design_projects", {

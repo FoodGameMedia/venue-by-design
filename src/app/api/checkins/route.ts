@@ -1,9 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { NextResponse } from "next/server";
-import { db } from "@/db";
-import { users, venues, checkins, domainScores } from "@/db/schema";
-import { eq, and } from "drizzle-orm";
 import { CHECKIN_QUESTIONS, calcCalmIndex, type Domain } from "@/lib/checkin-questions";
+import { generatePrescription } from "@/lib/prescription";
+import { captureException } from "@/lib/sentry";
 
 const DOMAINS = CHECKIN_QUESTIONS.map((q) => q.domain);
 
@@ -16,9 +16,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const dbUser = await db.query.users.findFirst({
-    where: eq(users.authId, authUser.id),
-  });
+  const admin = createAdminClient();
+  const { data: dbUsers } = await admin
+    .from("users")
+    .select("id")
+    .eq("auth_id", authUser.id)
+    .limit(1);
+  const dbUser = dbUsers?.[0];
   if (!dbUser) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
@@ -34,10 +38,12 @@ export async function POST(request: Request) {
     );
   }
 
-  const venue = await db.query.venues.findFirst({
-    where: eq(venues.id, venueId),
-  });
-  if (!venue || venue.userId !== dbUser.id) {
+  const { data: venue } = await admin
+    .from("venues")
+    .select("user_id")
+    .eq("id", venueId)
+    .single();
+  if (!venue || venue.user_id !== dbUser.id) {
     return NextResponse.json({ error: "Venue not found" }, { status: 404 });
   }
 
@@ -56,50 +62,119 @@ export async function POST(request: Request) {
   const total = Object.values(responses).reduce((a, b) => a + b, 0);
   const calmIndex = calcCalmIndex(total);
 
-  const [inserted] = await db
-    .insert(checkins)
-    .values({
-      venueId,
-      userId: dbUser.id,
+  const { data: inserted, error: insertErr } = await admin
+    .from("checkins")
+    .insert({
+      venue_id: venueId,
+      user_id: dbUser.id,
       responses: responses as unknown as Record<string, unknown>,
-      calmIndex,
+      calm_index: calmIndex,
     })
-    .returning();
+    .select("id")
+    .single();
 
-  if (!inserted) {
+  if (insertErr || !inserted) {
     return NextResponse.json({ error: "Failed to save check-in" }, { status: 500 });
   }
 
   for (const d of DOMAINS) {
     const newScore = responses[d];
-    const existing = await db.query.domainScores.findFirst({
-      where: and(eq(domainScores.venueId, venueId), eq(domainScores.domain, d)),
-    });
+    const { data: existing } = await admin
+      .from("domain_scores")
+      .select("id, score, checkin_count")
+      .eq("venue_id", venueId)
+      .eq("domain", d)
+      .maybeSingle();
 
     if (existing) {
-      const n = existing.checkinCount + 1;
-      const prevTotal = existing.score * existing.checkinCount;
-      const rollingScore = (prevTotal + newScore) / n;
-      await db
-        .update(domainScores)
-        .set({
-          score: Math.round(rollingScore * 100) / 100,
-          checkinCount: n,
-          updatedAt: new Date(),
-        })
-        .where(eq(domainScores.id, existing.id));
+      const n = existing.checkin_count + 1;
+      const prevTotal = existing.score * existing.checkin_count;
+      const rollingScore = Math.round(((prevTotal + newScore) / n) * 100) / 100;
+      await admin
+        .from("domain_scores")
+        .update({ score: rollingScore, checkin_count: n, updated_at: new Date().toISOString() })
+        .eq("id", existing.id);
     } else {
-      await db.insert(domainScores).values({
-        venueId,
+      await admin.from("domain_scores").insert({
+        venue_id: venueId,
         domain: d,
         score: newScore,
-        checkinCount: 1,
+        checkin_count: 1,
       });
     }
   }
+
+  // Fire-and-forget: generate AI prescription without blocking the response
+  generatePrescriptionSafe(inserted.id, venueId, dbUser.id, responses, calmIndex, admin);
 
   return NextResponse.json({
     id: inserted.id,
     calmIndex,
   });
+}
+
+async function generatePrescriptionSafe(
+  checkinId: string,
+  venueId: string,
+  userId: string,
+  responses: Record<Domain, number>,
+  calmIndex: number,
+  admin: ReturnType<typeof createAdminClient>
+) {
+  try {
+    // Fetch venue context for the prompt
+    const { data: venue } = await admin
+      .from("venues")
+      .select("name, venue_type, staff_count")
+      .eq("id", venueId)
+      .single();
+
+    const prescription = await generatePrescription({
+      responses,
+      calmIndex,
+      venueName: venue?.name ?? "Unknown Venue",
+      venueType: venue?.venue_type ?? "restaurant",
+      staffCount: venue?.staff_count ?? null,
+    });
+
+    await admin.from("prescriptions").insert({
+      checkin_id: checkinId,
+      venue_id: venueId,
+      user_id: userId,
+      calm_index: calmIndex,
+      primary_domain: prescription.primaryDomain,
+      primary_problem: prescription.primaryProblem,
+      interventions: prescription.interventions,
+      week_focus: prescription.weekFocus,
+      watch_signal: prescription.watchSignal,
+      raw_response: prescription as unknown as Record<string, unknown>,
+    });
+  } catch (error) {
+    captureException(error, {
+      context: "prescription_generation",
+      checkinId,
+      venueId,
+    });
+
+    // Queue retry by inserting a failed record that can be retried
+    try {
+      await admin.from("prescriptions").insert({
+        checkin_id: checkinId,
+        venue_id: venueId,
+        user_id: userId,
+        calm_index: calmIndex,
+        primary_domain: "throughput", // placeholder
+        primary_problem: `RETRY_NEEDED: ${error instanceof Error ? error.message : "Unknown error"}`,
+        interventions: [],
+        week_focus: "Prescription generation failed — will retry",
+        watch_signal: "pending",
+        raw_response: { error: String(error), retry: true } as unknown as Record<string, unknown>,
+      });
+    } catch (retryError) {
+      captureException(retryError, {
+        context: "prescription_retry_queue",
+        checkinId,
+      });
+    }
+  }
 }
