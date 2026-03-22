@@ -10,7 +10,14 @@ import {
 } from "@/components/ui/card";
 import { PricingCards } from "./pricing-cards";
 
-export default function PricingPage() {
+export default async function PricingPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ diagnostic?: string }>;
+}) {
+  const params = await searchParams;
+  const showDiagnosticBanner = params.diagnostic === "required";
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-card">
@@ -29,6 +36,11 @@ export default function PricingPage() {
       </header>
 
       <main className="mx-auto max-w-6xl px-4 py-16">
+        {showDiagnosticBanner && (
+          <div className="mx-auto mb-8 max-w-2xl rounded-lg border border-primary/30 bg-primary/5 p-4 text-center text-sm text-foreground">
+            Deep Diagnostic requires a one-time purchase. Choose Solo or Staff Pulse below.
+          </div>
+        )}
         <div className="mb-12 text-center">
           <h1 className="text-3xl font-serif text-foreground md:text-4xl">
             Simple pricing for busy operators

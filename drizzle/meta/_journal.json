@@ -29,6 +29,13 @@
       "when": 1774157988398,
       "tag": "0003_free_justice",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1774173543270,
+      "tag": "0004_gigantic_weapon_omega",
+      "breakpoints": true
     }
   ]
 }

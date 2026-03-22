@@ -9,6 +9,8 @@ vi.stubEnv("STRIPE_WEBHOOK_SECRET", "whsec_test");
 vi.stubEnv("STRIPE_PRICE_ESSENTIALS", "price_essentials");
 vi.stubEnv("STRIPE_PRICE_PRO", "price_pro");
 vi.stubEnv("STRIPE_PRICE_GROUP", "price_group");
+vi.stubEnv("STRIPE_PRICE_DIAGNOSTIC_SOLO", "price_solo");
+vi.stubEnv("STRIPE_PRICE_DIAGNOSTIC_STAFF", "price_staff");
 vi.stubEnv("DATABASE_URL", "postgresql://fake:fake@localhost:5432/fake");
 
 const mockInsert = vi.fn().mockReturnValue({ values: vi.fn().mockResolvedValue(undefined) });
@@ -44,6 +46,13 @@ vi.mock("@/lib/stripe", () => ({
     };
     return map[priceId] ?? "free";
   },
+  priceToDiagnosticPlan: (priceId: string) => {
+    const map: Record<string, string> = {
+      price_solo: "solo",
+      price_staff: "staff_pulse",
+    };
+    return map[priceId] ?? null;
+  },
 }));
 
 // ── Imports (after mocks) ──────────────────────────────────────────────────────
@@ -55,7 +64,7 @@ import {
   handleCheckoutSessionCompleted,
 } from "@/app/api/webhooks/stripe/route";
 import { stripe } from "@/lib/stripe";
-import { subscriptions, users } from "@/db/schema";
+import { subscriptions, users, diagnosticPurchases } from "@/db/schema";
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -243,13 +252,37 @@ describe("handleCheckoutSessionCompleted", () => {
     expect(mockInsert).toHaveBeenCalledWith(subscriptions);
   });
 
-  it("skips non-subscription checkout sessions", async () => {
+  it("inserts diagnostic purchase for payment mode with solo plan", async () => {
+    const mockValues = vi.fn().mockResolvedValue(undefined);
+    mockInsert.mockReturnValue({ values: mockValues });
+
     await handleCheckoutSessionCompleted(
-      makeCheckoutSession({ mode: "payment" } as Partial<Stripe.Checkout.Session>)
+      makeCheckoutSession({
+        mode: "payment",
+        subscription: null,
+        metadata: { planId: "solo", userId: "user_uuid_1" },
+      } as unknown as Partial<Stripe.Checkout.Session>)
     );
 
-    expect(mockUpdate).not.toHaveBeenCalled();
-    expect(mockInsert).not.toHaveBeenCalled();
+    expect(mockInsert).toHaveBeenCalledWith(diagnosticPurchases);
+    expect(mockValues).toHaveBeenCalledWith(
+      expect.objectContaining({
+        userId: "user_uuid_1",
+        plan: "solo",
+      })
+    );
+  });
+
+  it("skips payment mode if metadata is missing", async () => {
+    await handleCheckoutSessionCompleted(
+      makeCheckoutSession({
+        mode: "payment",
+        subscription: null,
+        metadata: {},
+      } as unknown as Partial<Stripe.Checkout.Session>)
+    );
+
+    expect(mockInsert).not.toHaveBeenCalledWith(diagnosticPurchases);
   });
 
   it("does not create subscription if it already exists", async () => {

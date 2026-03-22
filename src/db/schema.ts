@@ -162,6 +162,37 @@ export const prescriptions = pgTable("prescriptions", {
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
+// ── Diagnostic Purchases (one-time Stripe payment) ─────────────────────────────
+
+export const diagnosticPurchases = pgTable("diagnostic_purchases", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id")
+    .references(() => users.id, { onDelete: "cascade" })
+    .notNull(),
+  stripePaymentIntentId: text("stripe_payment_intent_id"),
+  stripeSessionId: text("stripe_session_id"),
+  plan: text("plan").notNull(), // "solo" | "staff_pulse"
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+// ── Diagnostics (Deep Diagnostic submissions & reports) ────────────────────────
+
+export const diagnostics = pgTable("diagnostics", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  venueId: uuid("venue_id")
+    .references(() => venues.id, { onDelete: "cascade" })
+    .notNull(),
+  userId: uuid("user_id")
+    .references(() => users.id, { onDelete: "cascade" })
+    .notNull(),
+  responses: jsonb("responses").notNull(), // { q1: 0, q2: 1, ... } 40 questions
+  calmIndex: real("calm_index"),
+  reportRaw: jsonb("report_raw"), // Full AI report JSON
+  reportPdfPath: text("report_pdf_path"), // Supabase Storage path
+  emailSentAt: timestamp("email_sent_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
 // ── Design Projects ────────────────────────────────────────────────────────────
 
 export const designProjects = pgTable("design_projects", {

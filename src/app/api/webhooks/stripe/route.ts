@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
-import { stripe, priceToPlan } from "@/lib/stripe";
+import { stripe, priceToPlan, priceToDiagnosticPlan } from "@/lib/stripe";
 import { db } from "@/db";
-import { subscriptions, users } from "@/db/schema";
+import { subscriptions, users, diagnosticPurchases } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
 export async function POST(req: NextRequest) {
@@ -114,38 +114,57 @@ export async function handleSubscriptionDeleted(subscription: Stripe.Subscriptio
 }
 
 export async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) {
-  if (session.mode !== "subscription") return;
-
   const customerId = typeof session.customer === "string"
     ? session.customer
     : session.customer?.id;
 
-  const subscriptionId = typeof session.subscription === "string"
-    ? session.subscription
-    : session.subscription?.id;
+  if (session.mode === "subscription") {
+    const subscriptionId = typeof session.subscription === "string"
+      ? session.subscription
+      : session.subscription?.id;
 
-  if (!customerId || !subscriptionId) return;
+    if (!customerId || !subscriptionId) return;
 
-  // Link the Stripe customer to the user if not already linked
-  if (session.client_reference_id) {
-    await db
-      .update(users)
-      .set({
-        stripeCustomerId: customerId,
-        updatedAt: new Date(),
-      })
-      .where(eq(users.authId, session.client_reference_id));
+    if (session.client_reference_id) {
+      await db
+        .update(users)
+        .set({
+          stripeCustomerId: customerId,
+          updatedAt: new Date(),
+        })
+        .where(eq(users.authId, session.client_reference_id));
+    }
+
+    const existing = await db.query.subscriptions.findFirst({
+      where: eq(subscriptions.stripeSubscriptionId, subscriptionId),
+    });
+
+    if (!existing) {
+      const stripeSubscription = await stripe.subscriptions.retrieve(subscriptionId);
+      await handleSubscriptionCreated(stripeSubscription);
+    }
+    return;
   }
 
-  // The subscription.created event handles the actual subscription record.
-  // But if it hasn't fired yet, we fetch and upsert.
-  const existing = await db.query.subscriptions.findFirst({
-    where: eq(subscriptions.stripeSubscriptionId, subscriptionId),
-  });
+  if (session.mode === "payment") {
+    const planId = session.metadata?.planId as string | undefined;
+    const userId = session.metadata?.userId as string | undefined;
+    if (!userId || !planId) return;
 
-  if (!existing) {
-    // Fetch full subscription from Stripe to get pricing details
-    const stripeSubscription = await stripe.subscriptions.retrieve(subscriptionId);
-    await handleSubscriptionCreated(stripeSubscription);
+    const diagnosticPlan = ["solo", "staff_pulse"].includes(planId)
+      ? (planId as "solo" | "staff_pulse")
+      : null;
+    if (!diagnosticPlan) return;
+
+    const paymentIntentId = typeof session.payment_intent === "string"
+      ? session.payment_intent
+      : session.payment_intent?.id;
+
+    await db.insert(diagnosticPurchases).values({
+      userId,
+      stripePaymentIntentId: paymentIntentId ?? null,
+      stripeSessionId: session.id,
+      plan: diagnosticPlan,
+    });
   }
 }

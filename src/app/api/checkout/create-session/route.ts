@@ -50,7 +50,10 @@ export async function POST(request: Request) {
   }
 
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-  const successUrl = `${baseUrl}/dashboard?checkout=success`;
+  const isDiagnostic = ["solo", "staff_pulse"].includes(planId);
+  const successUrl = isDiagnostic
+    ? `${baseUrl}/diagnostic?checkout=success&session_id={CHECKOUT_SESSION_ID}`
+    : `${baseUrl}/dashboard?checkout=success`;
   const cancelUrl = `${baseUrl}/pricing?checkout=cancelled`;
 
   let customerId = dbUser.stripeCustomerId;

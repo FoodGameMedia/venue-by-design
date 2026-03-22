@@ -3,6 +3,7 @@ import * as path from "path";
 import * as fs from "fs";
 
 export default async function globalSetup() {
+  console.log("[Playwright] Global setup starting...");
   const envPath = path.join(process.cwd(), ".env.local");
   if (fs.existsSync(envPath)) {
     const env = fs.readFileSync(envPath, "utf-8");
@@ -24,4 +25,5 @@ export default async function globalSetup() {
   } catch {
     console.warn("Seed script failed - e2e test may fail if user/venue not set up");
   }
+  console.log("[Playwright] Global setup done. Starting web server & tests...");
 }

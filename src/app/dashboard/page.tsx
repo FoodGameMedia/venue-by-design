@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { hasDiagnosticAccess } from "@/lib/diagnostic-access";
 import { CalmIndexTrend } from "./calm-index-trend";
 import { DomainRadar } from "./domain-radar";
 import { PrescriptionCard } from "./prescription-card";
@@ -47,6 +48,7 @@ export default async function DashboardPage() {
   if (!userVenues?.length) redirect("/onboarding");
 
   const venue = userVenues[0];
+  const diagnosticAccess = await hasDiagnosticAccess(dbUser.id);
 
   const eightWeeksAgo = new Date();
   eightWeeksAgo.setDate(eightWeeksAgo.getDate() - 56);
@@ -148,12 +150,22 @@ export default async function DashboardPage() {
                 Complete your first weekly check-in to see your Calm Index, domain scores, and
                 prescription brief.
               </p>
-              <Link
-                href="/checkin"
-                className="mt-4 inline-flex h-11 cursor-pointer items-center justify-center rounded-lg bg-primary px-5 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:opacity-90"
-              >
-                Start your first check-in
-              </Link>
+              <div className="mt-4 flex flex-wrap gap-3 justify-center">
+                <Link
+                  href="/checkin"
+                  className="inline-flex h-11 cursor-pointer items-center justify-center rounded-lg bg-primary px-5 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:opacity-90"
+                >
+                  Start your first check-in
+                </Link>
+                {diagnosticAccess && (
+                  <Link
+                    href="/diagnostic"
+                    className="inline-flex h-11 cursor-pointer items-center justify-center rounded-lg border border-border bg-card px-5 text-sm font-medium text-foreground transition-colors duration-200 hover:bg-muted"
+                  >
+                    Deep Diagnostic
+                  </Link>
+                )}
+              </div>
             </div>
           </div>
         ) : (
@@ -209,13 +221,21 @@ export default async function DashboardPage() {
         )}
 
         {!isEmpty && (
-          <div className="mt-6">
+          <div className="mt-6 flex flex-wrap gap-3">
             <Link
               href="/checkin"
               className="inline-flex h-11 cursor-pointer items-center justify-center rounded-lg bg-primary px-5 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:opacity-90"
             >
               Weekly check-in
             </Link>
+            {diagnosticAccess && (
+              <Link
+                href="/diagnostic"
+                className="inline-flex h-11 cursor-pointer items-center justify-center rounded-lg border border-border bg-card px-5 text-sm font-medium text-foreground transition-colors duration-200 hover:bg-muted"
+              >
+                Deep Diagnostic
+              </Link>
+            )}
           </div>
         )}
       </main>
