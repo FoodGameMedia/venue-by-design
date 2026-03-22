@@ -1,8 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { db } from "@/db";
-import { users, venues } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { CheckinForm } from "./checkin-form";
 
 export default async function CheckinPage() {
@@ -12,20 +10,25 @@ export default async function CheckinPage() {
   } = await supabase.auth.getUser();
   if (!authUser) redirect("/login?redirectTo=/checkin");
 
-  const dbUser = await db.query.users.findFirst({
-    where: eq(users.authId, authUser.id),
-  });
+  const admin = createAdminClient();
+  const { data: dbUsers } = await admin
+    .from("users")
+    .select("id")
+    .eq("auth_id", authUser.id)
+    .limit(1);
+  const dbUser = dbUsers?.[0];
   if (!dbUser) redirect("/onboarding");
 
-  const userVenues = await db.query.venues.findMany({
-    where: eq(venues.userId, dbUser.id),
-  });
-  if (userVenues.length === 0) redirect("/onboarding");
+  const { data: userVenues } = await admin
+    .from("venues")
+    .select("id, name")
+    .eq("user_id", dbUser.id);
+  if (!userVenues?.length) redirect("/onboarding");
 
   const venue = userVenues[0];
 
   return (
-    <div className="min-h-screen bg-[#F2EBE2]">
+    <div className="min-h-screen bg-background">
       <CheckinForm venueId={venue.id} userId={dbUser.id} venueName={venue.name} />
     </div>
   );

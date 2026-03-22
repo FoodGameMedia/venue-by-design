@@ -81,17 +81,17 @@ export default function OnboardingPage() {
 
   if (checking) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F2EBE2]">
-        <p className="text-[#3C3F43]">Loading…</p>
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <p className="text-muted-foreground">Loading…</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#F2EBE2] px-4">
-      <Card className="w-full max-w-md border-[#3C3F43]/20 bg-white">
+    <div className="min-h-screen flex items-center justify-center bg-background px-4">
+      <Card className="w-full max-w-md border-border bg-card">
         <CardHeader>
-          <CardTitle className="text-2xl text-[#1A1A1A] font-serif">
+          <CardTitle className="text-2xl font-serif text-card-foreground">
             Welcome to Venue by Design
           </CardTitle>
           <CardDescription>Tell us about your venue</CardDescription>
@@ -106,7 +106,7 @@ export default function OnboardingPage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
-                className="border-[#3C3F43]/30"
+                className="border-input"
               />
             </div>
             <div className="space-y-2">
@@ -115,7 +115,7 @@ export default function OnboardingPage() {
                 id="venueType"
                 value={venueType}
                 onChange={(e) => setVenueType(e.target.value)}
-                className="w-full rounded-lg border border-[#3C3F43]/30 bg-white px-3 py-2 text-sm"
+                className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm"
               >
                 <option value="">Select type</option>
                 {VENUE_TYPES.map((t) => (
@@ -134,7 +134,7 @@ export default function OnboardingPage() {
                 placeholder="e.g. 12"
                 value={staffCount}
                 onChange={(e) => setStaffCount(e.target.value)}
-                className="border-[#3C3F43]/30"
+                className="border-input"
               />
             </div>
           </CardContent>
@@ -142,7 +142,7 @@ export default function OnboardingPage() {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#B9704B] hover:bg-[#A3603B] text-white"
+              className="w-full"
             >
               {loading ? "Saving…" : "Continue"}
             </Button>

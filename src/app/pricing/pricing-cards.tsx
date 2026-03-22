@@ -54,22 +54,22 @@ export function PricingCards() {
       {VENUE_PULSE.map((plan) => (
         <Card
           key={plan.id}
-          className="flex flex-col border-[#3C3F43]/20 bg-white"
+          className="flex flex-col border-border bg-card"
         >
           <CardHeader>
-            <CardTitle className="text-[#1A1A1A]">{plan.name}</CardTitle>
+            <CardTitle className="text-card-foreground">{plan.name}</CardTitle>
             <CardDescription>Venue Pulse · Monthly</CardDescription>
           </CardHeader>
           <CardContent className="flex-1">
-            <p className="text-3xl font-serif text-[#B9704B]">
+            <p className="text-3xl font-serif text-primary">
               ${plan.price}
-              <span className="text-base font-normal text-[#3C3F43]">/mo</span>
+              <span className="text-base font-normal text-muted-foreground">/mo</span>
             </p>
-            <p className="mt-2 text-sm text-[#3C3F43]">{plan.desc}</p>
+            <p className="mt-2 text-sm text-muted-foreground">{plan.desc}</p>
           </CardContent>
           <CardFooter>
             <Button
-              className="w-full bg-[#B9704B] hover:bg-[#A3603B] text-white"
+              className="w-full"
               disabled={!!loading}
               onClick={() => handleCheckout(plan.id)}
             >
@@ -81,19 +81,19 @@ export function PricingCards() {
       {DEEP_DIAGNOSTIC.map((plan) => (
         <Card
           key={plan.id}
-          className="flex flex-col border-[#3C3F43]/20 bg-white"
+          className="flex flex-col border-border bg-card"
         >
           <CardHeader>
-            <CardTitle className="text-[#1A1A1A]">{plan.name}</CardTitle>
+            <CardTitle className="text-card-foreground">{plan.name}</CardTitle>
             <CardDescription>Deep Diagnostic · One-time</CardDescription>
           </CardHeader>
           <CardContent className="flex-1">
-            <p className="text-3xl font-serif text-[#B9704B]">${plan.price}</p>
-            <p className="mt-2 text-sm text-[#3C3F43]">{plan.desc}</p>
+            <p className="text-3xl font-serif text-primary">${plan.price}</p>
+            <p className="mt-2 text-sm text-muted-foreground">{plan.desc}</p>
           </CardContent>
           <CardFooter>
             <Button
-              className="w-full bg-[#B9704B] hover:bg-[#A3603B] text-white"
+              className="w-full"
               disabled={!!loading}
               onClick={() => handleCheckout(plan.id)}
             >

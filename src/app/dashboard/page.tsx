@@ -111,12 +111,12 @@ export default async function DashboardPage() {
   const isEmpty = historyList.length === 0;
 
   return (
-    <div className="min-h-screen bg-[#F2EBE2]">
-      <header className="border-b border-[#3C3F43]/20 bg-white sticky top-0 z-10">
+    <div className="min-h-screen bg-background">
+      <header className="sticky top-0 z-10 border-b border-border bg-card">
         <div className="mx-auto flex h-14 min-h-[56px] max-w-4xl items-center justify-between px-4">
-          <h1 className="text-lg font-semibold text-[#1A1A1A]">Venue by Design</h1>
+          <h1 className="text-lg font-semibold text-foreground">Venue by Design</h1>
           <div className="flex items-center gap-2 sm:gap-4">
-            <Link href="/pricing">
+            <Link href="/pricing" className="cursor-pointer">
               <Button variant="outline" size="sm" className="text-xs sm:text-sm">
                 Pricing
               </Button>
@@ -136,21 +136,21 @@ export default async function DashboardPage() {
       </header>
       <main className="mx-auto max-w-4xl px-4 py-6 pb-12">
         <div className="mb-6">
-          <h2 className="text-xl font-serif text-[#1A1A1A]">Dashboard</h2>
-          <p className="mt-1 text-sm text-[#3C3F43]/80">{venue.name}</p>
+          <h2 className="text-xl font-serif text-foreground">Dashboard</h2>
+          <p className="mt-1 text-sm text-muted-foreground/80">{venue.name}</p>
         </div>
 
         {isEmpty ? (
           <div className="space-y-6">
-            <div className="rounded-xl border border-[#3C3F43]/20 bg-white p-6 text-center">
-              <p className="text-[#1A1A1A] font-medium">No check-ins yet</p>
-              <p className="mt-2 text-sm text-[#3C3F43]">
+            <div className="rounded-xl border border-border bg-card p-6 text-center">
+              <p className="font-medium text-foreground">No check-ins yet</p>
+              <p className="mt-2 text-sm text-muted-foreground">
                 Complete your first weekly check-in to see your Calm Index, domain scores, and
                 prescription brief.
               </p>
               <Link
                 href="/checkin"
-                className="mt-4 inline-flex h-11 items-center justify-center rounded-lg bg-[#B9704B] px-5 text-sm font-medium text-white hover:bg-[#A3603B] transition-colors"
+                className="mt-4 inline-flex h-11 cursor-pointer items-center justify-center rounded-lg bg-primary px-5 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:opacity-90"
               >
                 Start your first check-in
               </Link>
@@ -159,13 +159,13 @@ export default async function DashboardPage() {
         ) : (
           <div className="space-y-6">
             {/* Calm Index score + trend */}
-            <section className="rounded-xl border border-[#3C3F43]/20 bg-white p-4 sm:p-6">
+            <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
               <div className="flex items-baseline justify-between">
-                <h3 className="text-sm font-medium uppercase tracking-wider text-[#3C3F43]">
+                <h3 className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
                   Calm Index
                 </h3>
                 <span
-                  className="text-2xl font-serif font-semibold text-[#B9704B]"
+                  className="text-2xl font-serif font-semibold text-primary"
                   data-testid="dashboard-calm-index"
                 >
                   {historyList[0]?.calm_index ?? 0}/10
@@ -179,8 +179,8 @@ export default async function DashboardPage() {
             </section>
 
             {/* Domain radar */}
-            <section className="rounded-xl border border-[#3C3F43]/20 bg-white p-4 sm:p-6">
-              <h3 className="text-sm font-medium uppercase tracking-wider text-[#3C3F43]">
+            <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
+              <h3 className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
                 Domain health
               </h3>
               <div className="mt-4">
@@ -191,7 +191,7 @@ export default async function DashboardPage() {
             {/* Latest Prescription Brief */}
             {latestPrescription && (
               <section>
-                <h3 className="mb-3 text-sm font-medium uppercase tracking-wider text-[#3C3F43]">
+                <h3 className="mb-3 text-sm font-medium uppercase tracking-wider text-muted-foreground">
                   Latest prescription
                 </h3>
                 <PrescriptionCard rx={latestPrescription} />
@@ -200,7 +200,7 @@ export default async function DashboardPage() {
 
             {/* Check-in history */}
             <section>
-              <h3 className="mb-3 text-sm font-medium uppercase tracking-wider text-[#3C3F43]">
+              <h3 className="mb-3 text-sm font-medium uppercase tracking-wider text-muted-foreground">
                 Check-in history
               </h3>
               <CheckinHistory checkins={historyList} />
@@ -212,7 +212,7 @@ export default async function DashboardPage() {
           <div className="mt-6">
             <Link
               href="/checkin"
-              className="inline-flex h-11 items-center justify-center rounded-lg bg-[#B9704B] px-5 text-sm font-medium text-white hover:bg-[#A3603B] transition-colors"
+              className="inline-flex h-11 cursor-pointer items-center justify-center rounded-lg bg-primary px-5 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:opacity-90"
             >
               Weekly check-in
             </Link>

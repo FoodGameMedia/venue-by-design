@@ -14,9 +14,9 @@ export function CheckinHistory({ checkins }: { checkins: Checkin[] }) {
       {checkins.map((c) => (
         <div
           key={c.id}
-          className="flex items-center justify-between rounded-lg border border-[#3C3F43]/20 bg-white px-4 py-3"
+          className="flex items-center justify-between rounded-lg border border-border bg-card px-4 py-3"
         >
-          <span className="text-sm text-[#3C3F43]">
+          <span className="text-sm text-muted-foreground">
             {new Date(c.created_at).toLocaleDateString("en-AU", {
               day: "numeric",
               month: "short",
@@ -24,7 +24,7 @@ export function CheckinHistory({ checkins }: { checkins: Checkin[] }) {
             })}
           </span>
           <span
-            className="text-lg font-serif font-medium text-[#B9704B]"
+            className="text-lg font-serif font-medium text-primary"
             data-testid="checkin-history-score"
           >
             {c.calm_index}/10

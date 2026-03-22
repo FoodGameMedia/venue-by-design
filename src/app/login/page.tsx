@@ -2,7 +2,7 @@
 
 import { useState, Suspense } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +15,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { signIn } from "./actions";
 
 function LoginForm() {
   const [email, setEmail] = useState("");
@@ -22,19 +23,18 @@ function LoginForm() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: "error" | "success"; text: string } | null>(null);
-  const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirectTo") ?? "/dashboard";
 
   const supabase = createClient();
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
     setMessage(null);
 
-    try {
-      if (isSignUp) {
+    if (isSignUp) {
+      try {
         const { error } = await supabase.auth.signUp({
           email,
           password,
@@ -42,19 +42,23 @@ function LoginForm() {
         });
         if (error) throw error;
         setMessage({ type: "success", text: "Check your email to confirm your account." });
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-        router.push(redirectTo);
-        router.refresh();
+      } catch (err) {
+        setMessage({
+          type: "error",
+          text: err instanceof Error ? err.message : "Something went wrong.",
+        });
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      setMessage({
-        type: "error",
-        text: err instanceof Error ? err.message : "Something went wrong.",
-      });
-    } finally {
-      setLoading(false);
+      return;
+    }
+
+    const formData = new FormData(e.currentTarget);
+    formData.set("redirectTo", redirectTo);
+    const result = await signIn(formData);
+    setLoading(false);
+    if (result?.error) {
+      setMessage({ type: "error", text: result.error });
     }
   }
 
@@ -62,10 +66,10 @@ function LoginForm() {
   const displayError = authError === "auth" ? "Authentication failed. Please try again." : null;
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#F2EBE2] px-4">
-      <Card className="w-full max-w-md border-[#3C3F43]/20 bg-white">
+    <div className="min-h-screen flex items-center justify-center bg-background px-4">
+      <Card className="w-full max-w-md border-border bg-card">
         <CardHeader>
-          <CardTitle className="text-2xl text-[#1A1A1A] font-serif">Venue by Design</CardTitle>
+          <CardTitle className="text-2xl font-serif text-card-foreground">Venue by Design</CardTitle>
           <CardDescription>
             {isSignUp ? "Create your account" : "Sign in to your account"}
           </CardDescription>
@@ -74,6 +78,8 @@ function LoginForm() {
           <CardContent className="space-y-4">
             {(message || displayError) && (
               <div
+                data-testid="login-message"
+                role="alert"
                 className={`rounded-lg p-3 text-sm ${
                   (message?.type === "error" || displayError)
                     ? "bg-red-50 text-red-700"
@@ -87,24 +93,26 @@ function LoginForm() {
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
+                name="email"
                 type="email"
                 placeholder="you@venue.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="border-[#3C3F43]/30"
+                className="border-input"
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
+                name="password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
-                className="border-[#3C3F43]/30"
+                className="border-input"
               />
             </div>
           </CardContent>
@@ -112,7 +120,7 @@ function LoginForm() {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#B9704B] hover:bg-[#A3603B] text-white"
+              className="w-full"
             >
               {loading ? "Please wait…" : isSignUp ? "Sign up" : "Sign in"}
             </Button>
@@ -122,19 +130,19 @@ function LoginForm() {
                 setIsSignUp(!isSignUp);
                 setMessage(null);
               }}
-              className="text-sm text-[#3C3F43] hover:text-[#1A1A1A]"
+              className="text-sm text-muted-foreground hover:text-foreground"
             >
               {isSignUp ? "Already have an account? Sign in" : "Need an account? Sign up"}
             </button>
           </CardFooter>
         </form>
       </Card>
-      <p className="absolute bottom-4 text-sm text-[#3C3F43]/70">
-        <Link href="/pricing" className="hover:text-[#B9704B]">
+      <p className="absolute bottom-4 text-sm text-muted-foreground/80">
+        <Link href="/pricing" className="cursor-pointer hover:text-primary">
           View pricing
         </Link>
         {" · "}
-        <Link href="/" className="hover:text-[#B9704B]">
+        <Link href="/" className="cursor-pointer hover:text-primary">
           Home
         </Link>
       </p>
@@ -145,8 +153,8 @@ function LoginForm() {
 export default function LoginPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-[#F2EBE2]">
-        <p className="text-[#3C3F43]">Loading…</p>
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <p className="text-muted-foreground">Loading…</p>
       </div>
     }>
       <LoginForm />

@@ -73,25 +73,25 @@ export function CheckinForm({
   if (result) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center px-4 py-8 sm:px-6">
-        <div className="w-full max-w-[375px] rounded-xl border border-[#3C3F43]/20 bg-white p-6 shadow-sm">
-          <h1 className="text-2xl font-serif text-[#1A1A1A]">Your Calm Index</h1>
-          <p className="mt-1 text-[#3C3F43]">{venueName}</p>
+        <div className="w-full max-w-[375px] rounded-xl border border-border bg-card p-6 shadow-sm">
+          <h1 className="text-2xl font-serif text-foreground">Your Calm Index</h1>
+          <p className="mt-1 text-muted-foreground">{venueName}</p>
           <div className="mt-8 flex flex-col items-center">
             <span
-              className="text-5xl font-serif text-[#B9704B]"
+              className="text-5xl font-serif text-primary"
               data-testid="calm-index-result"
             >
               {result.calmIndex}
             </span>
-            <p className="mt-2 text-sm text-[#3C3F43]">out of 10</p>
+            <p className="mt-2 text-sm text-muted-foreground">out of 10</p>
           </div>
-          <p className="mt-6 text-sm text-[#3C3F43]">
+          <p className="mt-6 text-sm text-muted-foreground">
             A higher score means your venue is running with less friction and more
             predictable flow.
           </p>
           <div className="mt-8 flex flex-col gap-3">
-            <Link href="/dashboard">
-              <Button className="w-full bg-[#B9704B] hover:bg-[#A3603B] text-white">
+            <Link href="/dashboard" className="cursor-pointer">
+              <Button className="w-full">
                 Back to dashboard
               </Button>
             </Link>
@@ -104,23 +104,23 @@ export function CheckinForm({
   return (
     <div className="flex min-h-screen flex-col px-4 py-8 sm:px-6">
       <header className="mb-6 flex items-center justify-between">
-        <Link href="/dashboard" className="text-sm text-[#3C3F43] hover:text-[#1A1A1A]">
+        <Link href="/dashboard" className="cursor-pointer text-sm text-muted-foreground hover:text-foreground">
           ← Back
         </Link>
-        <span className="text-sm text-[#3C3F43]">
+        <span className="text-sm text-muted-foreground">
           {step + 1} of {CHECKIN_QUESTIONS.length}
         </span>
       </header>
 
       <main className="mx-auto w-full max-w-[375px] flex-1">
-        <div className="rounded-xl border border-[#3C3F43]/20 bg-white p-6 shadow-sm">
-          <p className="text-xs uppercase tracking-wider text-[#B9704B]">
+        <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+          <p className="text-xs uppercase tracking-wider text-primary">
             {question.domain.replace(/_/g, " ")}
           </p>
-          <h2 className="mt-2 text-xl font-serif text-[#1A1A1A] leading-snug">
+          <h2 className="mt-2 text-xl font-serif text-foreground leading-snug">
             {question.question}
           </h2>
-          <p className="mt-1 text-sm text-[#3C3F43]/80">{question.description}</p>
+          <p className="mt-1 text-sm text-muted-foreground/80">{question.description}</p>
 
           <div className="mt-8 space-y-3">
             {SCORE_LABELS.map((label, i) => (
@@ -128,10 +128,10 @@ export function CheckinForm({
                 key={i}
                 type="button"
                 onClick={() => handleScore(i)}
-                className={`block w-full rounded-lg border px-4 py-3 text-left text-sm transition-colors ${
+                className={`block w-full cursor-pointer rounded-lg border px-4 py-3 text-left text-sm transition-colors duration-200 ${
                   value === i
-                    ? "border-[#B9704B] bg-[#B9704B]/10 text-[#1A1A1A]"
-                    : "border-[#3C3F43]/20 bg-white text-[#3C3F43] hover:border-[#3C3F43]/40"
+                    ? "border-primary bg-primary/10 text-foreground"
+                    : "border-border bg-card text-muted-foreground hover:border-muted-foreground/40"
                 }`}
                 data-testid={`score-${i}`}
               >
@@ -146,7 +146,7 @@ export function CheckinForm({
                 type="button"
                 variant="outline"
                 onClick={handleBack}
-                className="flex-1 border-[#3C3F43]/30"
+                className="flex-1 border-input"
               >
                 Back
               </Button>
@@ -155,7 +155,7 @@ export function CheckinForm({
               type="button"
               onClick={handleNext}
               disabled={value === null || loading}
-              className="flex-1 bg-[#B9704B] hover:bg-[#A3603B] text-white disabled:opacity-50"
+              className="flex-1 disabled:opacity-50"
               data-testid="next-btn"
             >
               {loading ? "Saving…" : isLast ? "See result" : "Next"}
