@@ -24,9 +24,11 @@ const DEEP_DIAGNOSTIC = [
 
 export function PricingCards() {
   const [loading, setLoading] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   async function handleCheckout(planId: string) {
     setLoading(planId);
+    setError(null);
     try {
       const res = await fetch("/api/checkout/create-session", {
         method: "POST",
@@ -42,15 +44,23 @@ export function PricingCards() {
         window.location.href = `/login?redirectTo=${encodeURIComponent("/pricing")}`;
         return;
       }
-      throw new Error(data.error ?? "Failed to create checkout");
+      const msg = data.error ?? "Failed to create checkout";
+      throw new Error(msg);
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Something went wrong");
+      setError(err instanceof Error ? err.message : "Something went wrong");
+    } finally {
       setLoading(null);
     }
   }
 
   return (
-    <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-5">
+    <div className="space-y-6">
+      {error && (
+        <div className="rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+          {error}
+        </div>
+      )}
+      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-5">
       {VENUE_PULSE.map((plan) => (
         <Card
           key={plan.id}
@@ -102,6 +112,7 @@ export function PricingCards() {
           </CardFooter>
         </Card>
       ))}
+      </div>
     </div>
   );
 }

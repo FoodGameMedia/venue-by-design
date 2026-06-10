@@ -5,11 +5,15 @@ import { stripe } from "@/lib/stripe";
 import { priceToDiagnosticPlan } from "@/lib/stripe";
 
 export async function hasDiagnosticAccess(userId: string): Promise<boolean> {
-  const purchases = await db.query.diagnosticPurchases.findMany({
-    where: eq(diagnosticPurchases.userId, userId),
-    limit: 1,
-  });
-  return purchases.length > 0;
+  try {
+    const purchases = await db.query.diagnosticPurchases.findMany({
+      where: eq(diagnosticPurchases.userId, userId),
+      limit: 1,
+    });
+    return purchases.length > 0;
+  } catch {
+    return false;
+  }
 }
 
 /**

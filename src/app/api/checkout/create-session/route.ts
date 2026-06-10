@@ -33,10 +33,11 @@ export async function POST(request: Request) {
   const priceId = PLAN_TO_PRICE[planId];
 
   if (!priceId) {
-    return NextResponse.json(
-      { error: "Invalid plan" },
-      { status: 400 }
-    );
+    const msg =
+      ["solo", "staff_pulse"].includes(planId)
+        ? `Deep Diagnostic (${planId}) is not configured. Add STRIPE_PRICE_DIAGNOSTIC_SOLO and STRIPE_PRICE_DIAGNOSTIC_STAFF to .env.local.`
+        : "Invalid plan";
+    return NextResponse.json({ error: msg }, { status: 400 });
   }
 
   const dbUser = await db.query.users.findFirst({

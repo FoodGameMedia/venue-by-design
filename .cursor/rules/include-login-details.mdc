@@ -1,0 +1,14 @@
+---
+description: Always include login details when explaining test or manual flows
+alwaysApply: true
+---
+
+# Include Login Details
+
+When explaining how to run, test, or manually verify a flow (check-in, diagnostic, checkout, etc.), **always provide the test login credentials**:
+
+**Test login:**
+- **Email:** `e2e@venuebydesign.test`
+- **Password:** `e2etestpass123`
+
+These come from `scripts/seed-e2e-user.ts`. Run `npx tsx scripts/seed-e2e-user.ts` if the user does not exist yet.
