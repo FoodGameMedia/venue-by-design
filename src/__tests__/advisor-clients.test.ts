@@ -8,10 +8,14 @@ const mockDomainScoresFindMany = vi.fn();
 const mockPrescriptionsFindFirst = vi.fn();
 const mockAdvisorClientsFindMany = vi.fn();
 const mockAdvisorClientsFindFirst = vi.fn();
+const mockUsersFindFirst = vi.fn();
+const mockInsertValues = vi.fn().mockResolvedValue(undefined);
+const mockInsert = vi.fn(() => ({ values: mockInsertValues }));
 
 vi.mock("@/db", () => ({
   db: {
     query: {
+      users: { findFirst: (...args: unknown[]) => mockUsersFindFirst(...args) },
       venues: { findFirst: (...args: unknown[]) => mockVenuesFindFirst(...args) },
       checkins: { findFirst: (...args: unknown[]) => mockCheckinsFindFirst(...args) },
       domainScores: { findMany: (...args: unknown[]) => mockDomainScoresFindMany(...args) },
@@ -21,13 +25,22 @@ vi.mock("@/db", () => ({
         findFirst: (...args: unknown[]) => mockAdvisorClientsFindFirst(...args),
       },
     },
+    insert: (...args: unknown[]) => mockInsert(...args),
   },
 }));
 
-import { getClientSummary, getAdvisorClients, advisorOwnsClient } from "@/lib/advisor";
+import {
+  getClientSummary,
+  getAdvisorClients,
+  advisorOwnsClient,
+  linkAdvisorClientByOperatorEmail,
+} from "@/lib/advisor";
+import { advisorClients } from "@/db/schema";
 
 beforeEach(() => {
   vi.clearAllMocks();
+  mockInsert.mockReturnValue({ values: mockInsertValues });
+  mockInsertValues.mockResolvedValue(undefined);
 });
 
 describe("getClientSummary", () => {
@@ -134,5 +147,60 @@ describe("advisorOwnsClient", () => {
   it("returns false when no link exists", async () => {
     mockAdvisorClientsFindFirst.mockResolvedValueOnce(undefined);
     await expect(advisorOwnsClient("adv_1", "venue_x")).resolves.toBe(false);
+  });
+});
+
+describe("linkAdvisorClientByOperatorEmail", () => {
+  it("links the advisor to the operator's first venue and returns a summary", async () => {
+    mockUsersFindFirst.mockResolvedValueOnce({ id: "user_1", email: "operator@example.com" });
+    mockVenuesFindFirst
+      .mockResolvedValueOnce({ id: "venue_1", name: "Client Venue", venueType: "restaurant" })
+      .mockResolvedValueOnce({ id: "venue_1", name: "Client Venue", venueType: "restaurant" });
+    mockAdvisorClientsFindFirst.mockResolvedValueOnce(undefined);
+    mockCheckinsFindFirst.mockResolvedValueOnce({ calmIndex: 7.2 });
+    mockDomainScoresFindMany.mockResolvedValueOnce([{ domain: "signals", score: 2.4 }]);
+    mockPrescriptionsFindFirst.mockResolvedValueOnce(undefined);
+
+    const summary = await linkAdvisorClientByOperatorEmail({
+      advisorId: "adv_1",
+      operatorEmail: " Operator@Example.com ",
+    });
+
+    expect(mockInsert).toHaveBeenCalledWith(advisorClients);
+    expect(mockInsertValues).toHaveBeenCalledWith({
+      advisorId: "adv_1",
+      venueId: "venue_1",
+    });
+    expect(summary.venueName).toBe("Client Venue");
+    expect(summary.calmIndex).toBe(7.2);
+  });
+
+  it("does not insert a duplicate link", async () => {
+    mockUsersFindFirst.mockResolvedValueOnce({ id: "user_1", email: "operator@example.com" });
+    mockVenuesFindFirst
+      .mockResolvedValueOnce({ id: "venue_1", name: "Client Venue", venueType: "restaurant" })
+      .mockResolvedValueOnce({ id: "venue_1", name: "Client Venue", venueType: "restaurant" });
+    mockAdvisorClientsFindFirst.mockResolvedValueOnce({ id: "existing_link" });
+    mockCheckinsFindFirst.mockResolvedValueOnce(undefined);
+    mockDomainScoresFindMany.mockResolvedValueOnce([]);
+    mockPrescriptionsFindFirst.mockResolvedValueOnce(undefined);
+
+    await linkAdvisorClientByOperatorEmail({
+      advisorId: "adv_1",
+      operatorEmail: "operator@example.com",
+    });
+
+    expect(mockInsert).not.toHaveBeenCalled();
+  });
+
+  it("throws when no operator exists for that email", async () => {
+    mockUsersFindFirst.mockResolvedValueOnce(undefined);
+
+    await expect(
+      linkAdvisorClientByOperatorEmail({
+        advisorId: "adv_1",
+        operatorEmail: "missing@example.com",
+      })
+    ).rejects.toThrow("No operator found for that email");
   });
 });

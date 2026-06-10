@@ -2,6 +2,7 @@ import { db } from "@/db";
 import {
   advisorAccounts,
   advisorClients,
+  users,
   venues,
   checkins,
   domainScores,
@@ -138,6 +139,55 @@ export async function getAdvisorClients(
     if (summary) summaries.push(summary);
   }
   return summaries;
+}
+
+/**
+ * Link the advisor to the first venue owned by an operator email.
+ * This is intentionally simple for the Sprint 6 advisor polish pass:
+ * the advisor must know the operator email, and duplicate links are ignored.
+ */
+export async function linkAdvisorClientByOperatorEmail(input: {
+  advisorId: string;
+  operatorEmail: string;
+}): Promise<AdvisorClientSummary> {
+  const email = input.operatorEmail.trim().toLowerCase();
+  if (!email) {
+    throw new Error("Operator email is required");
+  }
+
+  const operator = await db.query.users.findFirst({
+    where: eq(users.email, email),
+  });
+  if (!operator) {
+    throw new Error("No operator found for that email");
+  }
+
+  const venue = await db.query.venues.findFirst({
+    where: eq(venues.userId, operator.id),
+  });
+  if (!venue) {
+    throw new Error("That operator has no venue yet");
+  }
+
+  const existing = await db.query.advisorClients.findFirst({
+    where: and(
+      eq(advisorClients.advisorId, input.advisorId),
+      eq(advisorClients.venueId, venue.id)
+    ),
+  });
+
+  if (!existing) {
+    await db.insert(advisorClients).values({
+      advisorId: input.advisorId,
+      venueId: venue.id,
+    });
+  }
+
+  const summary = await getClientSummary(venue.id);
+  if (!summary) {
+    throw new Error("Linked venue could not be loaded");
+  }
+  return summary;
 }
 
 /**
