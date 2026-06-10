@@ -37,7 +37,7 @@ export default async function PricingPage({
 
       <main className="mx-auto max-w-6xl px-4 py-16">
         {showDiagnosticBanner && (
-          <div className="mx-auto mb-8 max-w-2xl rounded-lg border border-primary/30 bg-primary/5 p-4 text-center text-sm text-foreground">
+          <div className="mx-auto mb-8 max-w-2xl border-l-[3px] border-primary bg-primary/10 p-4 text-sm text-foreground">
             Deep Diagnostic requires a one-time purchase. Choose Solo or Staff Pulse below.
           </div>
         )}

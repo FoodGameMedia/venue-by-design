@@ -23,26 +23,27 @@ export function CalmIndexTrend({ data }: { data: DataPoint[] }) {
     <div className="h-[180px] w-full min-w-0">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#3C3F43" strokeOpacity={0.15} />
+          <CartesianGrid strokeDasharray="3 3" stroke="#C4A0AC" strokeOpacity={0.12} />
           <XAxis
             dataKey="week"
-            tick={{ fill: "#3C3F43", fontSize: 11 }}
-            stroke="#3C3F43"
+            tick={{ fill: "#C4A0AC", fontSize: 11 }}
+            stroke="#C4A0AC"
             strokeOpacity={0.3}
           />
           <YAxis
             domain={[0, 10]}
-            tick={{ fill: "#3C3F43", fontSize: 11 }}
-            stroke="#3C3F43"
+            tick={{ fill: "#C4A0AC", fontSize: 11 }}
+            stroke="#C4A0AC"
             strokeOpacity={0.3}
             width={24}
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: "#F2EBE2",
-              border: "1px solid #3C3F43",
+              backgroundColor: "#1F1F1D",
+              border: "1px solid rgba(245, 237, 232, 0.18)",
               borderRadius: 8,
               fontSize: 12,
+              color: "#F5EDE8",
             }}
             formatter={(value: unknown) => [`${value != null ? value : 0}/10`, "Calm Index"]}
             labelFormatter={(_, payload) =>
@@ -58,10 +59,10 @@ export function CalmIndexTrend({ data }: { data: DataPoint[] }) {
           <Line
             type="monotone"
             dataKey="score"
-            stroke="#B9704B"
+            stroke="#D696A9"
             strokeWidth={2}
-            dot={{ fill: "#B9704B", r: 3 }}
-            activeDot={{ r: 5, fill: "#A3603B" }}
+            dot={{ fill: "#D696A9", r: 3 }}
+            activeDot={{ r: 5, fill: "#C97E95" }}
           />
         </LineChart>
       </ResponsiveContainer>

@@ -118,7 +118,7 @@ export default function AdvisorOnboardingPage() {
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
             {error && (
-              <div role="alert" className="rounded-lg bg-red-50 p-3 text-sm text-red-700">
+              <div role="alert" className="border-l-[3px] border-destructive bg-destructive/10 p-3 text-sm text-destructive">
                 {error}
               </div>
             )}

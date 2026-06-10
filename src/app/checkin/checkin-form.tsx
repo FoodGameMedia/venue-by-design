@@ -72,13 +72,13 @@ export function CheckinForm({
 
   if (result) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center px-4 py-8 sm:px-6">
-        <div className="w-full max-w-[375px] rounded-xl border border-border bg-card p-6 shadow-sm">
-          <h1 className="text-2xl font-serif text-foreground">Your Calm Index</h1>
+      <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4 py-8 sm:px-6">
+        <div className="w-full max-w-[375px] border-l-4 border-primary bg-card p-6">
+          <h1 className="font-serif text-2xl text-foreground">Your Calm Index</h1>
           <p className="mt-1 text-muted-foreground">{venueName}</p>
           <div className="mt-8 flex flex-col items-center">
             <span
-              className="text-5xl font-serif text-primary"
+              className="font-serif text-[64px] leading-none text-primary"
               data-testid="calm-index-result"
             >
               {result.calmIndex}
@@ -101,26 +101,39 @@ export function CheckinForm({
     );
   }
 
+  const progress = ((step + 1) / CHECKIN_QUESTIONS.length) * 100;
+
   return (
-    <div className="flex min-h-screen flex-col px-4 py-8 sm:px-6">
-      <header className="mb-6 flex items-center justify-between">
-        <Link href="/dashboard" className="cursor-pointer text-sm text-muted-foreground hover:text-foreground">
-          ← Back
-        </Link>
-        <span className="text-sm text-muted-foreground">
-          {step + 1} of {CHECKIN_QUESTIONS.length}
-        </span>
+    <div className="flex min-h-screen flex-col bg-background px-4 py-8 sm:px-6">
+      <header className="mx-auto w-full max-w-[375px]">
+        <div className="flex items-center justify-between">
+          <Link
+            href="/dashboard"
+            className="cursor-pointer text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground"
+          >
+            ← Back
+          </Link>
+          <span className="text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
+            Step {step + 1} of {CHECKIN_QUESTIONS.length}
+          </span>
+        </div>
+        <div className="mt-3 h-1 w-full bg-muted">
+          <div
+            className="h-1 bg-primary transition-all duration-300"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
       </header>
 
-      <main className="mx-auto w-full max-w-[375px] flex-1">
-        <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-          <p className="text-xs uppercase tracking-wider text-primary">
+      <main className="mx-auto mt-6 w-full max-w-[375px] flex-1">
+        <div className="border-l-4 border-primary bg-card p-6">
+          <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
             {question.domain.replace(/_/g, " ")}
           </p>
-          <h2 className="mt-2 text-xl font-serif text-foreground leading-snug">
+          <h2 className="mt-2 font-serif text-xl leading-snug text-foreground">
             {question.question}
           </h2>
-          <p className="mt-1 text-sm text-muted-foreground/80">{question.description}</p>
+          <p className="mt-1 text-sm text-muted-foreground">{question.description}</p>
 
           <div className="mt-8 space-y-3">
             {SCORE_LABELS.map((label, i) => (
@@ -128,10 +141,10 @@ export function CheckinForm({
                 key={i}
                 type="button"
                 onClick={() => handleScore(i)}
-                className={`block w-full cursor-pointer rounded-lg border px-4 py-3 text-left text-sm transition-colors duration-200 ${
+                className={`block w-full cursor-pointer border px-4 py-3 text-left text-sm transition-colors duration-200 ${
                   value === i
-                    ? "border-primary bg-primary/10 text-foreground"
-                    : "border-border bg-card text-muted-foreground hover:border-muted-foreground/40"
+                    ? "border-primary bg-primary/15 text-foreground"
+                    : "border-border bg-card text-muted-foreground hover:border-primary/50 hover:text-foreground"
                 }`}
                 data-testid={`score-${i}`}
               >

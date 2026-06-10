@@ -80,10 +80,10 @@ function LoginForm() {
               <div
                 data-testid="login-message"
                 role="alert"
-                className={`rounded-lg p-3 text-sm ${
+                className={`border-l-[3px] p-3 text-sm ${
                   (message?.type === "error" || displayError)
-                    ? "bg-red-50 text-red-700"
-                    : "bg-green-50 text-green-700"
+                    ? "border-destructive bg-destructive/10 text-destructive"
+                    : "border-primary bg-primary/10 text-foreground"
                 }`}
               >
                 {displayError ?? message?.text}

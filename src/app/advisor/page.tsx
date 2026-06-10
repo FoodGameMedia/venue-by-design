@@ -18,8 +18,8 @@ export default async function AdvisorPage() {
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-10 border-b border-border bg-card">
-        <div className="mx-auto flex h-14 min-h-[56px] max-w-4xl items-center justify-between px-4">
-          <h1 className="text-lg font-semibold text-foreground">Advisor Portal</h1>
+        <div className="flex h-14 min-h-[56px] w-full items-center justify-between px-4 sm:px-6 lg:px-8">
+          <h1 className="font-serif text-lg text-foreground">Advisor Portal</h1>
           <form action="/api/auth/signout" method="post">
             <Button type="submit" variant="ghost" size="sm" className="text-xs sm:text-sm">
               Sign out
@@ -28,15 +28,15 @@ export default async function AdvisorPage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-4xl px-4 py-6 pb-12">
+      <main className="w-full px-4 py-6 pb-12 sm:px-6 lg:px-8">
         <div className="mb-6">
-          <h2 className="text-xl font-serif text-foreground">{account.businessName}</h2>
-          <p className="mt-1 text-sm text-muted-foreground/80">{account.email}</p>
+          <h2 className="font-serif text-2xl text-foreground">{account.businessName}</h2>
+          <p className="mt-1 text-sm text-muted-foreground">{account.email}</p>
         </div>
 
         {account.status !== "approved" ? (
-          <div className="rounded-xl border border-border bg-card p-6 text-center">
-            <p className="font-medium text-foreground">
+          <div className="border-l-[3px] border-primary bg-card p-6">
+            <p className="font-serif text-xl text-foreground">
               {account.status === "pending"
                 ? "Your advisor account is pending approval"
                 : "Your advisor account was not approved"}
@@ -62,18 +62,5 @@ export default async function AdvisorPage() {
 
 async function AdvisorClientsSection({ advisorId }: { advisorId: string }) {
   const clients = await getAdvisorClients(advisorId);
-
-  if (clients.length === 0) {
-    return (
-      <div className="rounded-xl border border-border bg-card p-6 text-center">
-        <p className="font-medium text-foreground">No linked clients yet</p>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Once client venues are linked to your account, they'll appear here with their latest Calm
-          Index, domain scores, and prescription.
-        </p>
-      </div>
-    );
-  }
-
   return <AdvisorClients clients={clients} />;
 }

@@ -10,11 +10,11 @@ export function CheckinHistory({ checkins }: { checkins: Checkin[] }) {
   if (checkins.length === 0) return null;
 
   return (
-    <div className="space-y-2">
+    <div className="divide-y divide-border border-t border-border">
       {checkins.map((c) => (
         <div
           key={c.id}
-          className="flex items-center justify-between rounded-lg border border-border bg-card px-4 py-3"
+          className="flex items-center justify-between px-1 py-3"
         >
           <span className="text-sm text-muted-foreground">
             {new Date(c.created_at).toLocaleDateString("en-AU", {

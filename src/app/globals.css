@@ -49,48 +49,53 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* CLAUDE.md palette: Terra #B9704B | Dark #1A1A1A | Cream #F2EBE2 | Slate #3C3F43 */
+/*
+ * Design overhaul palette — dark background mode only.
+ * Charcoal #2A2A28 | Surface #1F1F1D | Dusty Rose #D696A9 |
+ * Deep Plum #8B3A52 | Warm Blush #F5EDE8 | Muted #C4A0AC
+ */
 :root {
-  --terra: #b9704b;
-  --terra-hover: #a3603b;
-  --dark: #1a1a1a;
-  --cream: #f2ebe2;
-  --cream-muted: #e8dfd4;
-  --slate: #3c3f43;
-  --slate-muted: #5c5f63;
+  --charcoal: #2a2a28;
+  --surface: #1f1f1d;
+  --surface-raised: #2f2f2c;
+  --rose: #d696a9;
+  --rose-strong: #c97e95;
+  --plum: #8b3a52;
+  --blush: #f5ede8;
+  --muted-rose: #c4a0ac;
 
-  --background: var(--cream);
-  --foreground: var(--dark);
-  --card: #ffffff;
-  --card-foreground: var(--dark);
-  --popover: #ffffff;
-  --popover-foreground: var(--dark);
-  --primary: var(--terra);
-  --primary-foreground: #ffffff;
-  --secondary: var(--cream-muted);
-  --secondary-foreground: var(--dark);
-  --muted: var(--cream-muted);
-  --muted-foreground: var(--slate);
-  --accent: var(--cream-muted);
-  --accent-foreground: var(--dark);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: rgba(60, 63, 67, 0.2);
-  --input: rgba(60, 63, 67, 0.25);
-  --ring: var(--terra);
-  --chart-1: var(--terra);
-  --chart-2: var(--terra-hover);
-  --chart-3: var(--slate);
-  --chart-4: var(--slate-muted);
-  --chart-5: var(--dark);
+  --background: var(--charcoal);
+  --foreground: var(--blush);
+  --card: var(--surface);
+  --card-foreground: var(--blush);
+  --popover: var(--surface);
+  --popover-foreground: var(--blush);
+  --primary: var(--rose);
+  --primary-foreground: #211d1f;
+  --secondary: var(--surface-raised);
+  --secondary-foreground: var(--blush);
+  --muted: var(--surface-raised);
+  --muted-foreground: var(--muted-rose);
+  --accent: var(--plum);
+  --accent-foreground: var(--blush);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: rgba(245, 237, 232, 0.12);
+  --input: rgba(245, 237, 232, 0.18);
+  --ring: var(--rose);
+  --chart-1: var(--rose);
+  --chart-2: var(--plum);
+  --chart-3: var(--muted-rose);
+  --chart-4: var(--rose-strong);
+  --chart-5: var(--blush);
   --radius: 0.625rem;
-  --sidebar: var(--cream-muted);
-  --sidebar-foreground: var(--dark);
-  --sidebar-primary: var(--terra);
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: var(--cream);
-  --sidebar-accent-foreground: var(--dark);
-  --sidebar-border: rgba(60, 63, 67, 0.15);
-  --sidebar-ring: var(--terra);
+  --sidebar: var(--surface);
+  --sidebar-foreground: var(--blush);
+  --sidebar-primary: var(--rose);
+  --sidebar-primary-foreground: #211d1f;
+  --sidebar-accent: var(--surface-raised);
+  --sidebar-accent-foreground: var(--blush);
+  --sidebar-border: rgba(245, 237, 232, 0.12);
+  --sidebar-ring: var(--rose);
 }
 
 .dark {

@@ -12,9 +12,9 @@ import {
 } from "@/components/ui/card";
 
 const VENUE_PULSE = [
-  { id: "essentials", name: "Essentials", price: 79, desc: "Weekly check-in, Calm Index, domain tracking" },
-  { id: "pro", name: "Pro", price: 149, desc: "Everything in Essentials, plus AI Prescription Brief" },
-  { id: "group", name: "Group", price: 299, desc: "Multi-venue, team insights, priority support" },
+  { id: "essentials", name: "Essentials", price: 79, desc: "Weekly check-in, Calm Index, domain tracking", recommended: false },
+  { id: "pro", name: "Pro", price: 149, desc: "Everything in Essentials, plus AI Prescription Brief", recommended: true },
+  { id: "group", name: "Group", price: 299, desc: "Multi-venue, team insights, priority support", recommended: false },
 ] as const;
 
 const DEEP_DIAGNOSTIC = [
@@ -54,64 +54,87 @@ export function PricingCards() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-12">
       {error && (
-        <div className="rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+        <div className="border-l-[3px] border-destructive bg-destructive/10 px-4 py-3 text-sm text-destructive">
           {error}
         </div>
       )}
-      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-5">
-      {VENUE_PULSE.map((plan) => (
-        <Card
-          key={plan.id}
-          className="flex flex-col border-border bg-card"
-        >
-          <CardHeader>
-            <CardTitle className="text-card-foreground">{plan.name}</CardTitle>
-            <CardDescription>Venue Pulse · Monthly</CardDescription>
-          </CardHeader>
-          <CardContent className="flex-1">
-            <p className="text-3xl font-serif text-primary">
-              ${plan.price}
-              <span className="text-base font-normal text-muted-foreground">/mo</span>
-            </p>
-            <p className="mt-2 text-sm text-muted-foreground">{plan.desc}</p>
-          </CardContent>
-          <CardFooter>
-            <Button
-              className="w-full"
-              disabled={!!loading}
-              onClick={() => handleCheckout(plan.id)}
+
+      <div>
+        <h2 className="mb-1 text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
+          Venue Pulse · Monthly subscription
+        </h2>
+        <div className="grid gap-6 md:grid-cols-3">
+          {VENUE_PULSE.map((plan) => (
+            <Card
+              key={plan.id}
+              className={`flex flex-col bg-card ${
+                plan.recommended
+                  ? "border-primary ring-2 ring-primary"
+                  : "border-border"
+              }`}
             >
-              {loading === plan.id ? "Redirecting…" : "Subscribe"}
-            </Button>
-          </CardFooter>
-        </Card>
-      ))}
-      {DEEP_DIAGNOSTIC.map((plan) => (
-        <Card
-          key={plan.id}
-          className="flex flex-col border-border bg-card"
-        >
-          <CardHeader>
-            <CardTitle className="text-card-foreground">{plan.name}</CardTitle>
-            <CardDescription>Deep Diagnostic · One-time</CardDescription>
-          </CardHeader>
-          <CardContent className="flex-1">
-            <p className="text-3xl font-serif text-primary">${plan.price}</p>
-            <p className="mt-2 text-sm text-muted-foreground">{plan.desc}</p>
-          </CardContent>
-          <CardFooter>
-            <Button
-              className="w-full"
-              disabled={!!loading}
-              onClick={() => handleCheckout(plan.id)}
-            >
-              {loading === plan.id ? "Redirecting…" : "Book now"}
-            </Button>
-          </CardFooter>
-        </Card>
-      ))}
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-card-foreground">{plan.name}</CardTitle>
+                  {plan.recommended && (
+                    <span className="bg-primary px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.12em] text-primary-foreground">
+                      Recommended
+                    </span>
+                  )}
+                </div>
+                <CardDescription>Venue Pulse · Monthly</CardDescription>
+              </CardHeader>
+              <CardContent className="flex-1">
+                <p className="font-serif text-3xl text-primary">
+                  ${plan.price}
+                  <span className="text-base font-normal text-muted-foreground">/mo</span>
+                </p>
+                <p className="mt-2 text-sm text-muted-foreground">{plan.desc}</p>
+              </CardContent>
+              <CardFooter>
+                <Button
+                  className="w-full"
+                  variant={plan.recommended ? "default" : "outline"}
+                  disabled={!!loading}
+                  onClick={() => handleCheckout(plan.id)}
+                >
+                  {loading === plan.id ? "Redirecting…" : "Subscribe"}
+                </Button>
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <h2 className="mb-1 text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
+          Deep Diagnostic · One-time
+        </h2>
+        <div className="grid gap-6 md:grid-cols-2">
+          {DEEP_DIAGNOSTIC.map((plan) => (
+            <Card key={plan.id} className="flex flex-col border-border bg-card">
+              <CardHeader>
+                <CardTitle className="text-card-foreground">{plan.name}</CardTitle>
+                <CardDescription>Deep Diagnostic · One-time</CardDescription>
+              </CardHeader>
+              <CardContent className="flex-1">
+                <p className="font-serif text-3xl text-primary">${plan.price}</p>
+                <p className="mt-2 text-sm text-muted-foreground">{plan.desc}</p>
+              </CardContent>
+              <CardFooter>
+                <Button
+                  className="w-full"
+                  disabled={!!loading}
+                  onClick={() => handleCheckout(plan.id)}
+                >
+                  {loading === plan.id ? "Redirecting…" : "Book now"}
+                </Button>
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
       </div>
     </div>
   );

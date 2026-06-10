@@ -1,20 +1,21 @@
 import type { Metadata } from "next";
-import { Karla, Playfair_Display_SC } from "next/font/google";
+import { DM_Sans, DM_Serif_Display } from "next/font/google";
 import "./globals.css";
 import { PwaRegister } from "@/components/pwa-register";
 
-const karla = Karla({
+const dmSans = DM_Sans({
   variable: "--font-sans",
   subsets: ["latin"],
   display: "swap",
   weight: ["300", "400", "500", "600", "700"],
 });
 
-const playfair = Playfair_Display_SC({
+const dmSerif = DM_Serif_Display({
   variable: "--font-serif",
   subsets: ["latin"],
   display: "swap",
-  weight: ["400", "700"],
+  weight: ["400"],
+  style: ["normal", "italic"],
 });
 
 export const metadata: Metadata = {
@@ -28,7 +29,7 @@ export const viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
-  themeColor: "#B9704B",
+  themeColor: "#2A2A28",
 };
 
 export default function RootLayout({
@@ -39,7 +40,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${karla.variable} ${playfair.variable} h-full antialiased`}
+      className={`${dmSans.variable} ${dmSerif.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
         {children}

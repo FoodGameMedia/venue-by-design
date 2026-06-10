@@ -112,11 +112,13 @@ export default async function DashboardPage() {
 
   const isEmpty = historyList.length === 0;
 
+  const latestCalmIndex = historyList[0]?.calm_index ?? 0;
+
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-10 border-b border-border bg-card">
-        <div className="mx-auto flex h-14 min-h-[56px] max-w-4xl items-center justify-between px-4">
-          <h1 className="text-lg font-semibold text-foreground">Venue by Design</h1>
+        <div className="flex h-14 min-h-[56px] w-full items-center justify-between px-4 sm:px-6 lg:px-8">
+          <h1 className="font-serif text-lg text-foreground">Venue by Design</h1>
           <div className="flex items-center gap-2 sm:gap-4">
             <Link href="/pricing" className="cursor-pointer">
               <Button variant="outline" size="sm" className="text-xs sm:text-sm">
@@ -136,106 +138,101 @@ export default async function DashboardPage() {
           </div>
         </div>
       </header>
-      <main className="mx-auto max-w-4xl px-4 py-6 pb-12">
-        <div className="mb-6">
-          <h2 className="text-xl font-serif text-foreground">Dashboard</h2>
-          <p className="mt-1 text-sm text-muted-foreground/80">{venue.name}</p>
+      <main className="w-full px-4 py-6 pb-12 sm:px-6 lg:px-8">
+        <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <h2 className="font-serif text-2xl text-foreground">Dashboard</h2>
+            <p className="mt-1 text-sm text-muted-foreground">{venue.name}</p>
+          </div>
+          {!isEmpty && (
+            <div className="flex flex-wrap gap-3">
+              <Link
+                href="/checkin"
+                className="inline-flex h-11 cursor-pointer items-center justify-center bg-primary px-5 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:bg-primary/90"
+              >
+                Weekly check-in
+              </Link>
+              {diagnosticAccess && (
+                <Link
+                  href="/diagnostic"
+                  className="inline-flex h-11 cursor-pointer items-center justify-center border border-border bg-card px-5 text-sm font-medium text-foreground transition-colors duration-200 hover:bg-muted"
+                >
+                  Deep Diagnostic
+                </Link>
+              )}
+            </div>
+          )}
         </div>
 
         {isEmpty ? (
-          <div className="space-y-6">
-            <div className="rounded-xl border border-border bg-card p-6 text-center">
-              <p className="font-medium text-foreground">No check-ins yet</p>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Complete your first weekly check-in to see your Calm Index, domain scores, and
-                prescription brief.
-              </p>
-              <div className="mt-4 flex flex-wrap gap-3 justify-center">
+          <div className="border-l-[3px] border-primary bg-card p-6 sm:p-8">
+            <p className="font-serif text-xl text-foreground">No check-ins yet</p>
+            <p className="mt-2 max-w-prose text-sm text-muted-foreground">
+              Complete your first weekly check-in to see your Calm Index, domain scores, and
+              prescription brief.
+            </p>
+            <div className="mt-5 flex flex-wrap gap-3">
+              <Link
+                href="/checkin"
+                className="inline-flex h-11 cursor-pointer items-center justify-center bg-primary px-5 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:bg-primary/90"
+              >
+                Start your first check-in
+              </Link>
+              {diagnosticAccess && (
                 <Link
-                  href="/checkin"
-                  className="inline-flex h-11 cursor-pointer items-center justify-center rounded-lg bg-primary px-5 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:opacity-90"
+                  href="/diagnostic"
+                  className="inline-flex h-11 cursor-pointer items-center justify-center border border-border bg-card px-5 text-sm font-medium text-foreground transition-colors duration-200 hover:bg-muted"
                 >
-                  Start your first check-in
+                  Deep Diagnostic
                 </Link>
-                {diagnosticAccess && (
-                  <Link
-                    href="/diagnostic"
-                    className="inline-flex h-11 cursor-pointer items-center justify-center rounded-lg border border-border bg-card px-5 text-sm font-medium text-foreground transition-colors duration-200 hover:bg-muted"
-                  >
-                    Deep Diagnostic
-                  </Link>
-                )}
-              </div>
+              )}
             </div>
           </div>
         ) : (
           <div className="space-y-6">
-            {/* Calm Index score + trend */}
-            <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
-              <div className="flex items-baseline justify-between">
-                <h3 className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
-                  Calm Index
-                </h3>
-                <span
-                  className="text-2xl font-serif font-semibold text-primary"
-                  data-testid="dashboard-calm-index"
-                >
-                  {historyList[0]?.calm_index ?? 0}/10
-                </span>
-              </div>
-              {trendData.length > 0 && (
-                <div className="mt-4">
-                  <CalmIndexTrend data={trendData} />
-                </div>
-              )}
-            </section>
-
-            {/* Domain radar */}
-            <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
-              <h3 className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
-                Domain health
-              </h3>
-              <div className="mt-4">
-                <DomainRadar data={radarData} />
-              </div>
-            </section>
-
-            {/* Latest Prescription Brief */}
+            {/* Prescription Card — design anchor at top, full width */}
             {latestPrescription && (
-              <section>
-                <h3 className="mb-3 text-sm font-medium uppercase tracking-wider text-muted-foreground">
-                  Latest prescription
-                </h3>
-                <PrescriptionCard rx={latestPrescription} />
-              </section>
+              <PrescriptionCard rx={latestPrescription} calmIndex={latestCalmIndex} />
             )}
 
-            {/* Check-in history */}
-            <section>
-              <h3 className="mb-3 text-sm font-medium uppercase tracking-wider text-muted-foreground">
+            {/* Calm Index trend (left) + Domain radar (right) */}
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+              <section className="border-l-[3px] border-primary bg-card p-4 sm:p-6">
+                <div className="flex items-baseline justify-between">
+                  <h3 className="text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
+                    Calm Index
+                  </h3>
+                  <span
+                    className="font-serif text-2xl text-primary"
+                    data-testid="dashboard-calm-index"
+                  >
+                    {latestCalmIndex}/10
+                  </span>
+                </div>
+                {trendData.length > 0 && (
+                  <div className="mt-4">
+                    <CalmIndexTrend data={trendData} />
+                  </div>
+                )}
+              </section>
+
+              <section className="border-l-[3px] border-primary bg-card p-4 sm:p-6">
+                <h3 className="text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
+                  Domain health
+                </h3>
+                <div className="mt-4">
+                  <DomainRadar data={radarData} />
+                </div>
+              </section>
+            </div>
+
+            {/* Check-in history — full width at bottom */}
+            <section className="border-l-[3px] border-primary bg-card p-4 sm:p-6">
+              <h3 className="mb-3 text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
                 Check-in history
               </h3>
               <CheckinHistory checkins={historyList} />
             </section>
-          </div>
-        )}
-
-        {!isEmpty && (
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Link
-              href="/checkin"
-              className="inline-flex h-11 cursor-pointer items-center justify-center rounded-lg bg-primary px-5 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:opacity-90"
-            >
-              Weekly check-in
-            </Link>
-            {diagnosticAccess && (
-              <Link
-                href="/diagnostic"
-                className="inline-flex h-11 cursor-pointer items-center justify-center rounded-lg border border-border bg-card px-5 text-sm font-medium text-foreground transition-colors duration-200 hover:bg-muted"
-              >
-                Deep Diagnostic
-              </Link>
-            )}
           </div>
         )}
       </main>
