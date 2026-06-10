@@ -31,8 +31,11 @@ export async function POST(request: Request) {
   const body = await request.json();
   const planId = typeof body.planId === "string" ? body.planId : "";
   const priceId = PLAN_TO_PRICE[planId];
+  const isDiagnostic = ["solo", "staff_pulse"].includes(planId);
+  const isE2eMockCheckout =
+    process.env.E2E_MOCK_STRIPE_CHECKOUT === "1" && process.env.NODE_ENV !== "production";
 
-  if (!priceId) {
+  if (!priceId && !isE2eMockCheckout) {
     const msg =
       ["solo", "staff_pulse"].includes(planId)
         ? `Deep Diagnostic (${planId}) is not configured. Add STRIPE_PRICE_DIAGNOSTIC_SOLO and STRIPE_PRICE_DIAGNOSTIC_STAFF to .env.local.`
@@ -51,11 +54,16 @@ export async function POST(request: Request) {
   }
 
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-  const isDiagnostic = ["solo", "staff_pulse"].includes(planId);
   const successUrl = isDiagnostic
     ? `${baseUrl}/diagnostic?checkout=success&session_id={CHECKOUT_SESSION_ID}`
     : `${baseUrl}/dashboard?checkout=success`;
   const cancelUrl = `${baseUrl}/pricing?checkout=cancelled`;
+
+  if (isE2eMockCheckout && isDiagnostic) {
+    return NextResponse.json({
+      url: `${baseUrl}/api/test/diagnostic-purchase?planId=${planId}`,
+    });
+  }
 
   let customerId = dbUser.stripeCustomerId;
 

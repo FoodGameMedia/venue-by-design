@@ -10,7 +10,7 @@ export default defineConfig({
   workers: 1,
   reporter: [["list"], ["html"]],
   use: {
-    baseURL: "http://localhost:3000",
+    baseURL: "http://localhost:3001",
     trace: "retain-on-failure",
     viewport: { width: 375, height: 667 },
   },
@@ -20,6 +20,7 @@ export default defineConfig({
       name: "chromium",
       use: {
         ...devices["iPhone SE"],
+        browserName: "chromium",
         storageState: path.join(__dirname, ".auth/user.json"),
       },
       dependencies: ["setup"],
@@ -27,8 +28,9 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "npx next dev -p 3000",
-    url: "http://localhost:3000",
+    command:
+      "E2E_MOCK_STRIPE_CHECKOUT=1 NEXT_PUBLIC_SITE_URL=http://localhost:3001 npx next dev -p 3001",
+    url: "http://localhost:3001",
     reuseExistingServer: !process.env.CI,
     timeout: 60000,
   },

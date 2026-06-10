@@ -91,8 +91,9 @@ export async function POST(request: Request) {
   }
   const diagnosticId = inserted.id;
 
+  let report: Awaited<ReturnType<typeof generateDiagnosticReport>>;
   try {
-    const report = await generateDiagnosticReport({
+    report = await generateDiagnosticReport({
       responses,
       calmIndex,
       venueName: venue.name,
@@ -129,9 +130,12 @@ export async function POST(request: Request) {
       ? await admin.storage.from(BUCKET).createSignedUrl(path, 60 * 60 * 24 * 7)
       : { data: null };
 
+    const recipient = process.env.DIAGNOSTIC_REPORT_TO_OVERRIDE || dbUser.email;
+    const fromAddress =
+      process.env.RESEND_FROM_ADDRESS || "Venue by Design <onboarding@resend.dev>";
     await resend.emails.send({
-      from: "Venue by Design <hello@send.venuebydesign.com.au>",
-      to: dbUser.email,
+      from: fromAddress,
+      to: recipient,
       subject: `Your 90-Day Design Prescription — ${venue.name}`,
       html: `
         <h1>Your Deep Diagnostic Report</h1>
@@ -156,5 +160,5 @@ export async function POST(request: Request) {
     );
   }
 
-  return NextResponse.json({ id: diagnosticId, calmIndex });
+  return NextResponse.json({ id: diagnosticId, calmIndex, report });
 }
