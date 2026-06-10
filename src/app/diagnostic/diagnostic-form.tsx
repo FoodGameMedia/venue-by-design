@@ -3,23 +3,12 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import {
-  DIAGNOSTIC_QUESTIONS,
-  SCORE_LABELS,
-  getQuestionsByDomain,
-  type DiagnosticDomain,
-} from "@/lib/diagnostic-questions";
+import { getQuestionsByDomain } from "@/lib/diagnostic-questions";
+import { DOMAIN_LABELS, DOMAIN_DEFINITIONS, getGroupForDomain } from "@/lib/domains";
 import type { DiagnosticReport } from "@/lib/diagnostic-report";
 
-const DOMAIN_LABELS: Record<DiagnosticDomain, string> = {
-  throughput: "Throughput",
-  defaults: "Defaults",
-  signals: "Signals",
-  pacing: "Pacing",
-  endings: "Endings",
-  people_load: "People Load",
-  operational_memory: "Operational Memory",
-};
+/** Display order for the four options: designed first, failing last. */
+const OPTION_ORDER = [3, 2, 1, 0] as const;
 
 type Responses = Partial<Record<string, number>>;
 
@@ -240,32 +229,33 @@ export function DiagnosticForm({
             style={{ width: `${progress}%` }}
           />
         </div>
-        <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-          <p className="text-xs uppercase tracking-wider text-primary">
-            {DOMAIN_LABELS[domain]}
+        <div className="border-l-4 border-primary bg-card p-6">
+          <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
+            {getGroupForDomain(domain).label}
           </p>
-          <h2 className="mt-2 text-xl font-serif text-foreground leading-snug">
-            {questions.length} questions about {DOMAIN_LABELS[domain].toLowerCase()}
+          <h2 className="mt-2 font-serif text-xl leading-snug text-foreground">
+            {DOMAIN_LABELS[domain]}
           </h2>
+          <p className="mt-1 text-sm text-muted-foreground">{DOMAIN_DEFINITIONS[domain]}</p>
 
-          <div className="mt-6 space-y-4">
+          <div className="mt-6 space-y-6">
             {questions.map((q) => (
               <div key={q.id}>
                 <p className="text-sm font-medium text-foreground">{q.question}</p>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {SCORE_LABELS.map((label, i) => (
+                <div className="mt-3 space-y-2">
+                  {OPTION_ORDER.map((score) => (
                     <button
-                      key={i}
+                      key={score}
                       type="button"
-                      onClick={() => handleScore(q.id, i)}
-                      className={`cursor-pointer rounded-lg border px-3 py-2 text-xs transition-colors duration-200 ${
-                        responses[q.id] === i
-                          ? "border-primary bg-primary/10 text-foreground"
-                          : "border-border bg-background text-muted-foreground hover:border-muted-foreground/40"
+                      onClick={() => handleScore(q.id, score)}
+                      className={`block w-full cursor-pointer border px-3 py-2 text-left text-sm transition-colors duration-200 ${
+                        responses[q.id] === score
+                          ? "border-primary bg-primary/15 text-foreground"
+                          : "border-border bg-background text-muted-foreground hover:border-primary/50 hover:text-foreground"
                       }`}
-                      data-testid={`diagnostic-score-${q.id}-${i}`}
+                      data-testid={`diagnostic-score-${q.id}-${score}`}
                     >
-                      {i}: {label.split("—")[0].trim()}
+                      {q.options[score]}
                     </button>
                   ))}
                 </div>
