@@ -19,6 +19,12 @@ export default function Home() {
             <Button variant="outline">View pricing</Button>
           </Link>
         </div>
+        <Link
+          href="/advisor"
+          className="cursor-pointer text-sm text-muted-foreground/80 hover:text-primary"
+        >
+          Advisor Portal
+        </Link>
       </main>
     </div>
   );

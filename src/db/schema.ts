@@ -55,6 +55,12 @@ export const domainEnum = pgEnum("domain", [
   "operational_memory",
 ]);
 
+export const advisorStatusEnum = pgEnum("advisor_status", [
+  "pending",
+  "approved",
+  "rejected",
+]);
+
 // ── Users ──────────────────────────────────────────────────────────────────────
 
 export const users = pgTable("users", {
@@ -190,6 +196,31 @@ export const diagnostics = pgTable("diagnostics", {
   reportRaw: jsonb("report_raw"), // Full AI report JSON
   reportPdfPath: text("report_pdf_path"), // Supabase Storage path
   emailSentAt: timestamp("email_sent_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+// ── Advisor Accounts (Advisor Portal, separate account type) ───────────────────
+
+export const advisorAccounts = pgTable("advisor_accounts", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  authId: text("auth_id").unique().notNull(),
+  email: text("email").unique().notNull(),
+  businessName: text("business_name").notNull(),
+  status: advisorStatusEnum("status").default("pending").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+// ── Advisor Clients (advisor → client venue relationships) ─────────────────────
+
+export const advisorClients = pgTable("advisor_clients", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  advisorId: uuid("advisor_id")
+    .references(() => advisorAccounts.id, { onDelete: "cascade" })
+    .notNull(),
+  venueId: uuid("venue_id")
+    .references(() => venues.id, { onDelete: "cascade" })
+    .notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
 

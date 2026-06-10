@@ -1,10 +1,15 @@
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 import type { DiagnosticReport } from "./diagnostic-report";
 
+export interface DiagnosticPdfBranding {
+  businessName: string;
+}
+
 export async function generateDiagnosticPdf(
   report: DiagnosticReport,
   venueName: string,
-  calmIndex: number
+  calmIndex: number,
+  branding?: DiagnosticPdfBranding
 ): Promise<Uint8Array> {
   const doc = await PDFDocument.create();
   const font = await doc.embedFont(StandardFonts.Helvetica);
@@ -49,6 +54,11 @@ export async function generateDiagnosticPdf(
       color: rgb(0.2, 0.2, 0.2),
     });
     y -= fontSize + 8;
+  }
+
+  if (branding?.businessName) {
+    drawText(`Prepared by ${branding.businessName}`, { fontSize: 10, bold: true });
+    y -= 6;
   }
 
   drawTitle("90-Day Design Prescription", 18);
