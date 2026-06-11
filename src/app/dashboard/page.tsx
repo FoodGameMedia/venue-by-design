@@ -2,13 +2,14 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { hasDiagnosticAccess } from "@/lib/diagnostic-access";
 import { CalmIndexTrend } from "./calm-index-trend";
 import { DomainRadar } from "./domain-radar";
-import { PrescriptionCard } from "./prescription-card";
 import { CheckinHistory } from "./checkin-history";
 import { DOMAINS } from "@/lib/checkin-questions";
+import { AppNav } from "@/components/app-nav";
+import { CalmThermostat } from "@/components/calm-thermostat";
+import { NextChangeCard } from "@/components/next-change-card";
 
 function getWeekKey(date: Date): string {
   const d = new Date(date);
@@ -116,32 +117,11 @@ export default async function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-10 border-b border-border bg-card">
-        <div className="flex h-14 min-h-[56px] w-full items-center justify-between px-4 sm:px-6 lg:px-8">
-          <h1 className="font-serif text-lg text-foreground">Venue by Design</h1>
-          <div className="flex items-center gap-2 sm:gap-4">
-            <Link href="/pricing" className="cursor-pointer">
-              <Button variant="outline" size="sm" className="text-xs sm:text-sm">
-                Pricing
-              </Button>
-            </Link>
-            <form action="/api/billing/portal" method="post">
-              <Button type="submit" variant="outline" size="sm" className="text-xs sm:text-sm">
-                Billing
-              </Button>
-            </form>
-            <form action="/api/auth/signout" method="post">
-              <Button type="submit" variant="ghost" size="sm" className="text-xs sm:text-sm">
-                Sign out
-              </Button>
-            </form>
-          </div>
-        </div>
-      </header>
+      <AppNav />
       <main className="w-full px-4 py-6 pb-12 sm:px-6 lg:px-8">
         <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h2 className="font-serif text-2xl text-foreground">Dashboard</h2>
+            <h2 className="font-serif text-2xl text-foreground">This Week</h2>
             <p className="mt-1 text-sm text-muted-foreground">{venue.name}</p>
           </div>
           {!isEmpty && (
@@ -154,10 +134,10 @@ export default async function DashboardPage() {
               </Link>
               {diagnosticAccess && (
                 <Link
-                  href="/diagnostic"
+                  href="/my-plan"
                   className="inline-flex h-11 cursor-pointer items-center justify-center border border-border bg-card px-5 text-sm font-medium text-foreground transition-colors duration-200 hover:bg-muted"
                 >
-                  Deep Diagnostic
+                  My Plan
                 </Link>
               )}
             </div>
@@ -190,49 +170,60 @@ export default async function DashboardPage() {
           </div>
         ) : (
           <div className="space-y-6">
-            {/* Prescription Card — design anchor at top, full width */}
-            {latestPrescription && (
-              <PrescriptionCard rx={latestPrescription} calmIndex={latestCalmIndex} />
-            )}
+            <CalmThermostat value={latestCalmIndex} valueTestId="dashboard-calm-index" />
 
-            {/* Calm Index trend (left) + Domain radar (right) */}
+            <section className="border-l-[3px] border-primary bg-card p-4 sm:p-6">
+              <h3 className="text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
+                Calm Index trend
+              </h3>
+              <p className="mt-1 text-sm text-muted-foreground">
+                The weekly loop shows whether the system is holding, not whether the week was perfect.
+              </p>
+              {trendData.length > 0 && (
+                <div className="mt-4">
+                  <CalmIndexTrend data={trendData} />
+                </div>
+              )}
+            </section>
+
+            <NextChangeCard rx={latestPrescription} />
+
+            <section className="border-l-[3px] border-primary bg-card p-5 sm:p-6">
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <div>
+                  <h3 className="font-serif text-xl text-foreground">Weekly re-score</h3>
+                  <p className="mt-1 max-w-prose text-sm text-muted-foreground">
+                    Answer for a normal day. A low score is not an accusation, it is where the map starts.
+                  </p>
+                </div>
+                <Link
+                  href="/checkin"
+                  className="inline-flex h-11 cursor-pointer items-center justify-center bg-primary px-5 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:bg-primary/90"
+                >
+                  Weekly check-in
+                </Link>
+              </div>
+            </section>
+
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
               <section className="border-l-[3px] border-primary bg-card p-4 sm:p-6">
-                <div className="flex items-baseline justify-between">
-                  <h3 className="text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
-                    Calm Index
-                  </h3>
-                  <span
-                    className="font-serif text-2xl text-primary"
-                    data-testid="dashboard-calm-index"
-                  >
-                    {latestCalmIndex}/10
-                  </span>
-                </div>
+                <h3 className="text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
+                  Domains at a glance
+                </h3>
                 {trendData.length > 0 && (
                   <div className="mt-4">
-                    <CalmIndexTrend data={trendData} />
+                    <DomainRadar data={radarData} />
                   </div>
                 )}
               </section>
 
               <section className="border-l-[3px] border-primary bg-card p-4 sm:p-6">
-                <h3 className="text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
-                  Domain health
+                <h3 className="mb-3 text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
+                  Check-in history
                 </h3>
-                <div className="mt-4">
-                  <DomainRadar data={radarData} />
-                </div>
+                <CheckinHistory checkins={historyList.slice(0, 5)} />
               </section>
             </div>
-
-            {/* Check-in history — full width at bottom */}
-            <section className="border-l-[3px] border-primary bg-card p-4 sm:p-6">
-              <h3 className="mb-3 text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
-                Check-in history
-              </h3>
-              <CheckinHistory checkins={historyList} />
-            </section>
           </div>
         )}
       </main>

@@ -19,14 +19,13 @@ export async function POST() {
     where: eq(users.authId, authUser.id),
   });
 
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+
+  // No billing account yet: send them to plans to upgrade or add a new service.
   if (!dbUser?.stripeCustomerId) {
-    return NextResponse.json(
-      { error: "No billing account. Subscribe to a plan first." },
-      { status: 400 }
-    );
+    return NextResponse.redirect(`${baseUrl}/pricing`, { status: 303 });
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
   const session = await stripe.billingPortal.sessions.create({
     customer: dbUser.stripeCustomerId,
     return_url: `${baseUrl}/dashboard`,

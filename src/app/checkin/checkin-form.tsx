@@ -8,6 +8,7 @@ import {
   SCORE_LABELS,
   type Domain,
 } from "@/lib/checkin-questions";
+import { DOMAIN_DEFINITIONS, DOMAIN_GROUPS, DOMAIN_LABELS, getGroupForDomain } from "@/lib/domains";
 
 type Responses = Partial<Record<Domain, number>>;
 
@@ -28,6 +29,7 @@ export function CheckinForm({
   const question = CHECKIN_QUESTIONS[step];
   const value = responses[question.domain] ?? null;
   const isLast = step === CHECKIN_QUESTIONS.length - 1;
+  const activeGroup = getGroupForDomain(question.domain);
 
   function handleScore(s: number) {
     setResponses((r) => ({ ...r, [question.domain]: s }));
@@ -111,7 +113,7 @@ export function CheckinForm({
             href="/dashboard"
             className="cursor-pointer text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground"
           >
-            ← Back
+            Back to This Week
           </Link>
           <span className="text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
             Step {step + 1} of {CHECKIN_QUESTIONS.length}
@@ -126,14 +128,37 @@ export function CheckinForm({
       </header>
 
       <main className="mx-auto mt-6 w-full max-w-[375px] flex-1">
+        <div className="mb-4 space-y-2">
+          {DOMAIN_GROUPS.map((group) => (
+            <div
+              key={group.id}
+              className={`border-l-[3px] px-3 py-2 ${
+                group.id === activeGroup.id
+                  ? "border-primary bg-primary/10"
+                  : "border-border bg-card"
+              }`}
+            >
+              <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
+                {group.label}
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                {group.domains.map((d) => DOMAIN_LABELS[d]).join(" · ")}
+              </p>
+            </div>
+          ))}
+        </div>
         <div className="border-l-4 border-primary bg-card p-6">
           <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
-            {question.domain.replace(/_/g, " ")}
+            {activeGroup.label}
           </p>
           <h2 className="mt-2 font-serif text-xl leading-snug text-foreground">
             {question.question}
           </h2>
-          <p className="mt-1 text-sm text-muted-foreground">{question.description}</p>
+          <p className="mt-2 text-sm font-medium text-primary">{DOMAIN_LABELS[question.domain]}</p>
+          <p className="mt-1 text-sm text-muted-foreground">{DOMAIN_DEFINITIONS[question.domain]}</p>
+          <p className="mt-4 text-xs text-muted-foreground">
+            Answer for a normal day. This is not a grade, it is a map.
+          </p>
 
           <div className="mt-8 space-y-3">
             {SCORE_LABELS.map((label, i) => (

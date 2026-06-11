@@ -54,10 +54,10 @@ export const CHECKIN_QUESTIONS: { domain: Domain; question: string; description:
 ];
 
 export const SCORE_LABELS = [
-  "Not at all — we're struggling",
-  "Rarely — regular difficulty",
-  "Usually — mostly under control",
-  "Consistently — this is a strength",
+  "The system is failing here",
+  "Fragile and carried by people",
+  "Functional but still needs watching",
+  "Designed and holding on a normal day",
 ] as const;
 
 export const MAX_SCORE = 21; // 7 questions × 3 max
