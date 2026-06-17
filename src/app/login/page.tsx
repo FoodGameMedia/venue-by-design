@@ -15,6 +15,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  AdvisorPortalExplainer,
+  isAdvisorPortalLogin,
+} from "@/components/advisor/advisor-portal-explainer";
 import { signIn } from "./actions";
 
 function LoginForm() {
@@ -25,6 +29,7 @@ function LoginForm() {
   const [message, setMessage] = useState<{ type: "error" | "success"; text: string } | null>(null);
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirectTo") ?? "/dashboard";
+  const advisorLogin = isAdvisorPortalLogin(redirectTo);
 
   const supabase = createClient();
 
@@ -66,12 +71,19 @@ function LoginForm() {
   const displayError = authError === "auth" ? "Authentication failed. Please try again." : null;
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4">
+    <div className="flex min-h-screen flex-col items-center justify-center gap-6 bg-background px-4 py-8">
+      {advisorLogin && <AdvisorPortalExplainer />}
       <Card className="w-full max-w-md border-border bg-card">
         <CardHeader>
-          <CardTitle className="text-2xl font-serif text-card-foreground">Venue by Design</CardTitle>
+          <CardTitle className="font-serif text-2xl text-card-foreground">
+            {advisorLogin ? "Advisor Portal sign in" : "Venue by Design"}
+          </CardTitle>
           <CardDescription>
-            {isSignUp ? "Create your account" : "Sign in to your account"}
+            {advisorLogin
+              ? "Sign in to view linked venues or register as an advisor"
+              : isSignUp
+                ? "Create your account"
+                : "Sign in to your account"}
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
@@ -137,7 +149,7 @@ function LoginForm() {
           </CardFooter>
         </form>
       </Card>
-      <p className="absolute bottom-4 text-sm text-muted-foreground/80">
+      <p className="text-sm text-muted-foreground/80">
         <Link href="/pricing" className="cursor-pointer hover:text-primary">
           View pricing
         </Link>
@@ -145,6 +157,14 @@ function LoginForm() {
         <Link href="/" className="cursor-pointer hover:text-primary">
           Home
         </Link>
+        {advisorLogin && (
+          <>
+            {" · "}
+            <Link href="/login" className="cursor-pointer hover:text-primary">
+              Operator sign in
+            </Link>
+          </>
+        )}
       </p>
     </div>
   );

@@ -12,8 +12,8 @@ import {
 } from "@/components/ui/card";
 
 const VENUE_PULSE = [
-  { id: "essentials", name: "Essentials", price: 79, desc: "Weekly check-in, Calm Index, domain tracking", recommended: false },
-  { id: "pro", name: "Pro", price: 149, desc: "Everything in Essentials, plus AI Prescription Brief", recommended: true },
+  { id: "essentials", name: "Essentials", price: 39, desc: "Weekly check-in, Calm Index, domain tracking", recommended: false },
+  { id: "pro", name: "Pro", price: 99, desc: "Everything in Essentials, plus AI Prescription Brief", recommended: true },
   { id: "group", name: "Group", price: 299, desc: "Multi-venue, team insights, priority support", recommended: false },
 ] as const;
 
