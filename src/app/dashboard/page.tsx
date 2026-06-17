@@ -10,6 +10,7 @@ import { DOMAINS } from "@/lib/checkin-questions";
 import { AppNav } from "@/components/app-nav";
 import { CalmThermostat } from "@/components/calm-thermostat";
 import { NextChangeCard } from "@/components/next-change-card";
+import { getActiveChangeIndex } from "@/lib/venue-progress";
 
 function getWeekKey(date: Date): string {
   const d = new Date(date);
@@ -44,7 +45,7 @@ export default async function DashboardPage() {
 
   const { data: userVenues } = await admin
     .from("venues")
-    .select("id, name")
+    .select("id, name, metadata")
     .eq("user_id", dbUser.id);
   if (!userVenues?.length) redirect("/onboarding");
 
@@ -114,6 +115,10 @@ export default async function DashboardPage() {
   const isEmpty = historyList.length === 0;
 
   const latestCalmIndex = historyList[0]?.calm_index ?? 0;
+  const changeProgressIndex = getActiveChangeIndex(
+    venue.metadata,
+    latestPrescription?.created_at ?? null
+  );
 
   return (
     <div className="min-h-screen bg-background">
@@ -186,7 +191,11 @@ export default async function DashboardPage() {
               )}
             </section>
 
-            <NextChangeCard rx={latestPrescription} />
+            <NextChangeCard
+              rx={latestPrescription}
+              venueId={venue.id}
+              initialActiveIndex={changeProgressIndex}
+            />
 
             <section className="border-l-[3px] border-primary bg-card p-5 sm:p-6">
               <div className="flex flex-wrap items-center justify-between gap-4">

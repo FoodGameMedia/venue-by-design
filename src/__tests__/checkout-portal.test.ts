@@ -205,7 +205,7 @@ describe("POST /api/billing/portal", () => {
     expect(res.status).toBe(401);
   });
 
-  it("returns 400 when user has no Stripe customer", async () => {
+  it("redirects to pricing when user has no Stripe customer", async () => {
     mockFindFirst.mockResolvedValueOnce({
       id: "user_1",
       stripeCustomerId: null,
@@ -213,7 +213,8 @@ describe("POST /api/billing/portal", () => {
     const POST = await getPortalPost();
     const req = new Request("http://localhost/api/billing/portal", { method: "POST" });
     const res = await POST(req);
-    expect(res.status).toBe(400);
+    expect(res.status).toBe(303);
+    expect(res.headers.get("location")).toBe("http://localhost:3000/pricing");
   });
 
   it("redirects to Stripe portal url when user has customer", async () => {

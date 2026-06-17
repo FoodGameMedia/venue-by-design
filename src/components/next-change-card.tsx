@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { DOMAIN_LABELS } from "@/lib/domains";
 import type { Domain } from "@/lib/checkin-questions";
@@ -10,6 +10,7 @@ interface NextChangeInput {
   interventions: unknown;
   week_focus: string;
   watch_signal: string;
+  created_at: string;
 }
 
 function toInterventionText(value: unknown): string {
@@ -21,14 +22,56 @@ function toInterventionText(value: unknown): string {
   return String(value);
 }
 
-export function NextChangeCard({ rx }: { rx: NextChangeInput | null }) {
+export function NextChangeCard({
+  rx,
+  venueId,
+  initialActiveIndex = 0,
+}: {
+  rx: NextChangeInput | null;
+  venueId: string;
+  initialActiveIndex?: number;
+}) {
   const changes = useMemo(() => {
     if (!rx || !Array.isArray(rx.interventions)) return [];
     return rx.interventions.map(toInterventionText).filter(Boolean);
   }, [rx]);
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [activeIndex, setActiveIndex] = useState(initialActiveIndex);
+  const [saving, setSaving] = useState(false);
   const active = changes[activeIndex];
   const domain = rx?.primary_domain as Domain | undefined;
+  const prescriptionKey = rx?.created_at ?? "";
+
+  useEffect(() => {
+    setActiveIndex(initialActiveIndex);
+  }, [initialActiveIndex, prescriptionKey]);
+
+  async function handleHeld(held: boolean) {
+    if (!rx || !prescriptionKey) return;
+    if (!held) return;
+
+    setSaving(true);
+    try {
+      const res = await fetch("/api/venues/change-progress", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          venueId,
+          prescriptionKey,
+          held: true,
+          maxIndex: Math.max(0, changes.length - 1),
+        }),
+      });
+      if (!res.ok) {
+        throw new Error("Failed to save progress");
+      }
+      const data = await res.json();
+      setActiveIndex(typeof data.activeIndex === "number" ? data.activeIndex : activeIndex);
+    } catch {
+      setActiveIndex((i) => Math.min(i + 1, changes.length - 1));
+    } finally {
+      setSaving(false);
+    }
+  }
 
   if (!rx || !active) {
     return (
@@ -46,7 +89,7 @@ export function NextChangeCard({ rx }: { rx: NextChangeInput | null }) {
   }
 
   return (
-    <section className="border-l-[3px] border-primary bg-card p-5 sm:p-6">
+    <section className="border-l-[3px] border-primary bg-card p-5 sm:p-6" data-testid="next-change-card">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
@@ -89,12 +132,13 @@ export function NextChangeCard({ rx }: { rx: NextChangeInput | null }) {
       <div className="mt-5 flex flex-col gap-3 sm:flex-row">
         <Button
           type="button"
-          onClick={() => setActiveIndex((i) => Math.min(i + 1, changes.length - 1))}
-          disabled={activeIndex === changes.length - 1}
+          onClick={() => handleHeld(true)}
+          disabled={saving || activeIndex >= changes.length - 1}
+          data-testid="mark-held-btn"
         >
-          Mark held
+          {saving ? "Saving…" : "Mark held"}
         </Button>
-        <Button type="button" variant="outline">
+        <Button type="button" variant="outline" disabled={saving}>
           Not yet held
         </Button>
       </div>
