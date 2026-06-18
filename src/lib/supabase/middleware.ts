@@ -1,6 +1,14 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+/** API paths that authenticate via their own mechanism (Stripe signature, CRON_SECRET, etc.). */
+export function isAuthExemptPath(pathname: string): boolean {
+  return (
+    pathname.startsWith("/api/webhooks/") ||
+    pathname.startsWith("/api/cron/")
+  );
+}
+
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
@@ -32,7 +40,8 @@ export async function updateSession(request: NextRequest) {
   const isOnboarding = path === "/onboarding";
   const isPricing = path === "/pricing";
   const isAuthCallback = path.startsWith("/auth/");
-  const isPublic = isLogin || isPricing || isAuthCallback || path === "/";
+  const isPublic =
+    isLogin || isPricing || isAuthCallback || path === "/" || isAuthExemptPath(path);
 
   if (user && isLogin) {
     const url = request.nextUrl.clone();

@@ -55,6 +55,10 @@ vi.mock("@/lib/stripe", () => ({
   },
 }));
 
+vi.mock("@/lib/sentry", () => ({
+  captureException: vi.fn(),
+}));
+
 import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
@@ -193,6 +197,51 @@ describe("POST /api/checkout/create-session", () => {
     expect(mockCheckoutSessionsCreate).toHaveBeenCalledWith(
       expect.objectContaining({ customer: "cus_new" })
     );
+  });
+
+  it("returns 503 when Stripe secret key is missing", async () => {
+    vi.stubEnv("STRIPE_SECRET_KEY", "");
+    const POST = await getCheckoutPost();
+    const req = new Request("http://localhost/api/checkout/create-session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ planId: "essentials" }),
+    });
+    const res = await POST(req);
+    expect(res.status).toBe(503);
+    vi.stubEnv("STRIPE_SECRET_KEY", "sk_test_fake");
+  });
+
+  it("returns 400 for invalid JSON body", async () => {
+    const POST = await getCheckoutPost();
+    const req = new Request("http://localhost/api/checkout/create-session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: "not-json",
+    });
+    const res = await POST(req);
+    expect(res.status).toBe(400);
+  });
+
+  it("returns 502 when Stripe API rejects checkout creation", async () => {
+    const { default: Stripe } = await import("stripe");
+    mockCheckoutSessionsCreate.mockRejectedValueOnce(
+      new Stripe.errors.StripeInvalidRequestError({
+        message: "No such price",
+        type: "invalid_request_error",
+      })
+    );
+
+    const POST = await getCheckoutPost();
+    const req = new Request("http://localhost/api/checkout/create-session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ planId: "essentials" }),
+    });
+    const res = await POST(req);
+    expect(res.status).toBe(502);
+    const data = await res.json();
+    expect(data.error).toMatch(/Unable to start checkout/i);
   });
 });
 

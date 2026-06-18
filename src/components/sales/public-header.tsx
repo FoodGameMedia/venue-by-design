@@ -8,7 +8,22 @@ export function PublicHeader() {
         <Link href="/" className="cursor-pointer font-serif text-lg text-foreground">
           Venue by Design
         </Link>
-        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+        <div className="flex flex-wrap items-center justify-end gap-x-3 gap-y-2">
+          <Link
+            href="/pricing?diagnostic=required"
+            className="cursor-pointer text-xs text-muted-foreground transition-colors duration-200 hover:text-primary sm:text-sm"
+            data-testid="header-cta-diagnostic"
+          >
+            <span className="sm:hidden">Diagnostic</span>
+            <span className="hidden sm:inline">Book your Deep Diagnostic</span>
+          </Link>
+          <Link
+            href="/pricing"
+            className="cursor-pointer text-xs text-muted-foreground transition-colors duration-200 hover:text-primary sm:text-sm"
+            data-testid="header-cta-pricing"
+          >
+            View pricing
+          </Link>
           <Link
             href="/advisor"
             className="cursor-pointer text-xs text-muted-foreground transition-colors duration-200 hover:text-primary sm:text-sm"

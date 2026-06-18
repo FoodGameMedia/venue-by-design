@@ -67,13 +67,13 @@ export default function Home() {
                 one that runs well whoever is on. Score your calm, find where the pressure lives, and
                 make one small change at a time until the place carries itself.
               </p>
-              <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
                 <Link
                   href={DIAGNOSTIC_CTA}
                   className={`${CTA_BASE} ${CTA_LG} ${CTA_PRIMARY}`}
-                  data-testid="sales-cta-diagnostic"
+                  data-testid="sales-cta-get-started"
                 >
-                  Book your Deep Diagnostic
+                  Get started
                 </Link>
                 <Link
                   href={PRICING_CTA}
@@ -82,13 +82,14 @@ export default function Home() {
                 >
                   View pricing
                 </Link>
+                <a
+                  href="#loop"
+                  className="cursor-pointer text-sm text-muted-foreground transition-colors duration-200 hover:text-primary sm:ml-1"
+                  data-testid="sales-cta-how-it-works"
+                >
+                  See how it works
+                </a>
               </div>
-              <a
-                href="#loop"
-                className="mt-8 inline-block cursor-pointer text-sm text-muted-foreground transition-colors duration-200 hover:text-primary"
-              >
-                See how it works
-              </a>
             </div>
             <HeroCalmThermostat />
           </div>

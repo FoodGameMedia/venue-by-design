@@ -6,11 +6,18 @@ test.describe("Public sales page", () => {
     await expect(page.getByTestId("sales-hero-headline")).toBeVisible();
     await expect(page.getByTestId("sales-hero-thermostat")).toBeVisible();
     await expect(page.getByTestId("sales-hero-glow")).toBeAttached();
-    await expect(page.getByTestId("sales-cta-diagnostic")).toHaveAttribute(
+    await expect(page.getByTestId("sales-cta-get-started")).toHaveAttribute(
       "href",
       "/pricing?diagnostic=required"
     );
+    await expect(page.getByTestId("sales-cta-get-started")).toHaveText("Get started");
     await expect(page.getByTestId("sales-cta-pricing")).toHaveAttribute("href", "/pricing");
+    await expect(page.getByTestId("sales-cta-how-it-works")).toHaveAttribute("href", "#loop");
+    await expect(page.getByTestId("header-cta-diagnostic")).toHaveAttribute(
+      "href",
+      "/pricing?diagnostic=required"
+    );
+    await expect(page.getByTestId("header-cta-pricing")).toHaveAttribute("href", "/pricing");
     await expect(page.getByRole("link", { name: "Sign in" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Advisor Portal" })).toBeVisible();
     await expect(page.getByTestId("sales-social-proof")).toHaveCount(0);

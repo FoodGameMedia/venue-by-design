@@ -8,6 +8,7 @@ import {
   SCORE_LABELS,
   type Domain,
 } from "@/lib/checkin-questions";
+import { CheckinExplainer } from "@/components/checkin/checkin-explainer";
 import { DOMAIN_DEFINITIONS, DOMAIN_GROUPS, DOMAIN_LABELS, getGroupForDomain } from "@/lib/domains";
 
 type Responses = Partial<Record<Domain, number>>;
@@ -128,6 +129,7 @@ export function CheckinForm({
       </header>
 
       <main className="mx-auto mt-6 w-full max-w-[375px] flex-1">
+        {step === 0 && <CheckinExplainer />}
         <div className="mb-4 space-y-2">
           {DOMAIN_GROUPS.map((group) => (
             <div
