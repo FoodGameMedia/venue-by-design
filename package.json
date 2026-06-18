@@ -13,7 +13,9 @@
     "test:e2e:install": "npx playwright install chromium",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "stripe:verify": "tsx scripts/stripe-pricing.ts verify",
+    "stripe:create": "tsx scripts/stripe-pricing.ts create"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.80.0",
