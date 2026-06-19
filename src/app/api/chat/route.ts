@@ -10,7 +10,12 @@ import {
   validateChatMessages,
   type VenueContext,
 } from "@/lib/venue-advisor-chat";
-import { anthropicErrorDetails } from "@/lib/anthropic-models";
+import {
+  ANTHROPIC_MODELS,
+  anthropicErrorDetails,
+  chatApiErrorPayload,
+  isAnthropicApiKeyConfigured,
+} from "@/lib/anthropic-models";
 import { captureException } from "@/lib/sentry";
 
 export const maxDuration = 60;
@@ -20,10 +25,8 @@ export async function POST(request: Request) {
     return await handleChatPost(request);
   } catch (error) {
     captureException(error, { context: "venue_advisor_chat_route" });
-    return NextResponse.json(
-      { error: "Unable to generate a response right now. Please try again." },
-      { status: 500 }
-    );
+    const payload = chatApiErrorPayload(error);
+    return NextResponse.json(payload, { status: 500 });
   }
 }
 
@@ -154,19 +157,32 @@ async function handleChatPost(request: Request) {
 
   const systemPrompt = buildSystemPrompt(venueContext, bookExcerpts);
 
+  if (!isAnthropicApiKeyConfigured()) {
+    const payload = chatApiErrorPayload();
+    captureException(new Error("ANTHROPIC_API_KEY is not configured"), {
+      context: "venue_advisor_chat_config",
+      venueId,
+      userId: dbUser.id,
+      code: payload.code,
+    });
+    return NextResponse.json(payload, { status: 503 });
+  }
+
   try {
     const message = await chatWithAdvisor(validation.messages, systemPrompt);
     return NextResponse.json({ message });
   } catch (error) {
+    const payload = chatApiErrorPayload(error);
     captureException(error, {
       context: "venue_advisor_chat",
       venueId,
       userId: dbUser.id,
+      code: payload.code,
+      model: payload.code === "ANTHROPIC_MODEL_NOT_FOUND" ? ANTHROPIC_MODELS.sonnet : undefined,
       ...anthropicErrorDetails(error),
     });
-    return NextResponse.json(
-      { error: "Unable to generate a response right now. Please try again." },
-      { status: 500 }
-    );
+    return NextResponse.json(payload, {
+      status: payload.code === "ANTHROPIC_MODEL_NOT_FOUND" ? 502 : 500,
+    });
   }
 }
