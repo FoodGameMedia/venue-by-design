@@ -182,14 +182,21 @@
 }
 
 @layer components {
+  /* Page shells are transparent so site cityscape art shows through */
+  .vbd-site-shell > .min-h-screen.bg-background,
+  .vbd-site-shell > .vbd-page-bg,
+  .vbd-site-shell > div.min-h-screen:has(> main),
+  .vbd-site-shell > div.flex.min-h-screen {
+    background-color: transparent;
+  }
+
   .vbd-page-bg {
-    background-color: var(--charcoal);
+    background-color: transparent;
     background-image:
-      radial-gradient(ellipse 90% 55% at 8% -8%, rgba(201, 168, 124, 0.14), transparent 55%),
-      radial-gradient(ellipse 70% 50% at 92% 12%, rgba(214, 150, 169, 0.12), transparent 50%),
-      radial-gradient(ellipse 60% 45% at 100% 85%, rgba(201, 168, 124, 0.1), transparent 55%),
-      radial-gradient(ellipse 55% 40% at 0% 75%, rgba(139, 58, 82, 0.1), transparent 50%),
-      linear-gradient(180deg, var(--charcoal) 0%, var(--surface-warm) 50%, var(--charcoal) 100%);
+      radial-gradient(ellipse 90% 55% at 8% -8%, rgba(201, 168, 124, 0.08), transparent 55%),
+      radial-gradient(ellipse 70% 50% at 92% 12%, rgba(214, 150, 169, 0.06), transparent 50%),
+      radial-gradient(ellipse 60% 45% at 100% 85%, rgba(201, 168, 124, 0.05), transparent 55%),
+      radial-gradient(ellipse 55% 40% at 0% 75%, rgba(139, 58, 82, 0.05), transparent 50%);
   }
 
   .vbd-section-label {

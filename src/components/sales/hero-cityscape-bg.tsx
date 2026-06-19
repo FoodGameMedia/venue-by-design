@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { CITYSCAPE_CSS_VARS } from "@/components/sales/cityscape-palette";
 import {
   CityscapeDividerStrip,
   CityscapeFarLayer,
@@ -43,6 +44,7 @@ export function HeroCityscapeBg({ variant = "hero", testId }: HeroCityscapeBgPro
       data-testid={testId}
       className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
       style={{
+        ...CITYSCAPE_CSS_VARS,
         maskImage: isHero
           ? "linear-gradient(to bottom, black 0%, black 55%, transparent 100%)"
           : "linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%)",
@@ -51,40 +53,54 @@ export function HeroCityscapeBg({ variant = "hero", testId }: HeroCityscapeBgPro
           : "linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%)",
       }}
     >
-      {/* Far skyline — champagne tint, 8% */}
+      {/* Far skyline — sky wash layer */}
       <div
-        className="absolute inset-x-0 top-0 h-[55%] text-[var(--champagne)] opacity-[0.08] max-sm:h-[45%] max-sm:opacity-[0.06]"
-        style={{ transform: isHero ? `translateY(${offsetY * 0.15}px)` : undefined }}
+        className={`absolute inset-x-0 top-0 h-[55%] max-sm:h-[45%] ${
+          isHero ? "opacity-[0.22] max-sm:opacity-[0.16]" : "opacity-[0.12]"
+        }`}
+        style={{
+          mixBlendMode: "multiply",
+          transform: isHero ? `translateY(${offsetY * 0.15}px)` : undefined,
+        }}
       >
         <CityscapeFarLayer className="h-full w-full" />
       </div>
 
-      {/* Mid street — dusty rose, 12% hero / 6% faint */}
+      {/* Mid street — sage, terracotta, sepia accents */}
       <div
-        className={`absolute inset-x-[-5%] bottom-0 h-[70%] w-[110%] text-[var(--rose)] max-sm:inset-x-0 max-sm:w-full max-sm:h-[55%] ${
-          isHero ? "opacity-[0.12] max-sm:opacity-[0.09]" : "opacity-[0.06]"
+        className={`absolute inset-x-[-5%] bottom-0 h-[70%] w-[110%] max-sm:inset-x-0 max-sm:h-[55%] max-sm:w-full ${
+          isHero ? "opacity-[0.28] max-sm:opacity-[0.2]" : "opacity-[0.14]"
         }`}
-        style={{ transform: isHero ? `translateY(${offsetY * 0.35}px)` : undefined }}
+        style={{
+          mixBlendMode: "soft-light",
+          transform: isHero ? `translateY(${offsetY * 0.35}px)` : undefined,
+        }}
       >
         <CityscapeMidLayer className="h-full w-full" />
       </div>
 
-      {/* Foreground corner — champagne, 15% hero / 7% faint */}
+      {/* Foreground corner */}
       <div
-        className={`absolute -bottom-4 -left-[8%] h-[75%] w-[70%] text-[var(--champagne)] max-sm:-left-[15%] max-sm:w-[90%] max-sm:h-[60%] ${
-          isHero ? "opacity-[0.15] max-sm:opacity-[0.11]" : "opacity-[0.07]"
+        className={`absolute -bottom-4 -left-[8%] h-[75%] w-[70%] max-sm:-left-[15%] max-sm:h-[60%] max-sm:w-[90%] ${
+          isHero ? "opacity-[0.32] max-sm:opacity-[0.24]" : "opacity-[0.16]"
         }`}
-        style={{ transform: isHero ? `translateY(${offsetY * 0.5}px)` : undefined }}
+        style={{
+          mixBlendMode: "soft-light",
+          transform: isHero ? `translateY(${offsetY * 0.5}px)` : undefined,
+        }}
       >
         <CityscapeNearLayer className="h-full w-full" />
       </div>
 
-      {/* Right-side accent slice — rose at low opacity for balance */}
+      {/* Right-side mirrored slice for balance */}
       <div
-        className={`absolute -right-[12%] bottom-0 top-[30%] hidden w-[55%] text-[var(--rose)] sm:block ${
-          isHero ? "opacity-[0.09]" : "opacity-[0.05]"
+        className={`absolute -right-[12%] bottom-0 top-[30%] hidden w-[55%] sm:block ${
+          isHero ? "opacity-[0.2]" : "opacity-[0.1]"
         }`}
-        style={{ transform: isHero ? `translateY(${offsetY * 0.25}px) scaleX(-1)` : "scaleX(-1)" }}
+        style={{
+          mixBlendMode: "soft-light",
+          transform: isHero ? `translateY(${offsetY * 0.25}px) scaleX(-1)` : "scaleX(-1)",
+        }}
       >
         <CityscapeNearLayer className="h-full w-full" />
       </div>
@@ -102,7 +118,8 @@ export function SectionCityscapeDivider({ testId }: SectionCityscapeDividerProps
     <div
       aria-hidden="true"
       data-testid={testId}
-      className="pointer-events-none relative h-8 w-full overflow-hidden opacity-[0.22] text-[var(--champagne)]"
+      className="pointer-events-none relative h-8 w-full overflow-hidden opacity-[0.14]"
+      style={{ ...CITYSCAPE_CSS_VARS, mixBlendMode: "soft-light" }}
     >
       <CityscapeDividerStrip className="absolute inset-0 h-full w-full" />
     </div>
