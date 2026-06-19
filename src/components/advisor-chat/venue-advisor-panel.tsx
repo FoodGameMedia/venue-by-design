@@ -139,7 +139,7 @@ export function VenueAdvisorPanel({
           type="button"
           onClick={() => setOpen(true)}
           aria-label="Open venue advisor chat"
-          className="fixed bottom-5 right-5 z-50 h-12 gap-2 rounded-full px-5 shadow-[0_4px_20px_rgba(214,150,169,0.28),0_2px_8px_rgba(0,0,0,0.2)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_6px_28px_rgba(214,150,169,0.35),0_4px_12px_rgba(0,0,0,0.22)] sm:bottom-6 sm:right-6"
+          className="vbd-champagne-ring fixed bottom-5 right-5 z-50 h-12 gap-2 rounded-full border border-[#C9A87C]/40 bg-gradient-to-r from-[#C9A87C] to-[#D696A9] px-5 text-[#211d1a] shadow-[0_4px_24px_rgba(201,168,124,0.35),0_2px_8px_rgba(0,0,0,0.2)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_32px_rgba(201,168,124,0.45),0_4px_12px_rgba(214,150,169,0.25)] sm:bottom-6 sm:right-6"
         >
           <MessageCircle className="size-5" aria-hidden />
           Ask
@@ -156,9 +156,9 @@ export function VenueAdvisorPanel({
           open ? "translate-x-0" : "pointer-events-none translate-x-full"
         )}
       >
-        <header className="flex shrink-0 items-center justify-between border-b border-border/70 bg-card/50 px-4 py-3.5 backdrop-blur-sm">
+        <header className="vbd-panel-header-accent flex shrink-0 items-center justify-between border-b border-border/70 bg-card/50 px-4 py-3.5 backdrop-blur-sm">
           <div>
-            <p className="vbd-section-label">Venue advisor</p>
+            <p className="vbd-section-label-accent">Venue advisor</p>
             <h2 className="font-serif text-lg tracking-tight text-foreground">{venueName}</h2>
           </div>
           <Button
@@ -179,7 +179,7 @@ export function VenueAdvisorPanel({
         >
           {messages.length === 0 && !loading && (
             <div className="space-y-5">
-              <div className="vbd-elevated-card border-l-[3px] border-l-primary p-4">
+              <div className="vbd-elevated-card border-l-[3px] border-l-[#C9A87C] p-4">
                 <p className="font-serif text-base tracking-tight text-foreground">Ask your venue advisor</p>
                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                   Get plain-language help with your weekly focus, domain scores, and calm operations.

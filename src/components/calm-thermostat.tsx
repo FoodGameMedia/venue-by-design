@@ -21,21 +21,30 @@ export function CalmThermostat({
     <div className="vbd-prescription-card p-6 sm:p-8" data-testid="calm-thermostat">
       <div className="grid gap-6 sm:grid-cols-[auto_1fr] sm:items-end">
         <div className="flex items-end gap-4">
-          <div className="flex h-44 w-12 flex-col justify-end rounded-sm border border-border/80 bg-background p-1 shadow-[inset_0_2px_8px_rgba(0,0,0,0.15)]">
-            <div className="w-full bg-primary transition-all duration-500" style={{ height: fill }} />
+          <div className="relative flex h-44 w-12 flex-col justify-end overflow-hidden rounded-sm border border-[#C9A87C]/30 bg-background p-1 shadow-[inset_0_2px_8px_rgba(0,0,0,0.15),0_0_20px_rgba(201,168,124,0.12)]">
+            <div
+              className="w-full transition-all duration-500"
+              style={{
+                height: fill,
+                background: "linear-gradient(180deg, #C9A87C 0%, #D696A9 55%, #8B3A52 100%)",
+              }}
+            />
           </div>
-          <div className="flex h-14 w-14 items-center justify-center rounded-full border border-primary bg-primary/20">
-            <div className="h-8 w-8 rounded-full bg-primary" />
+          <div className="vbd-champagne-ring flex h-14 w-14 items-center justify-center rounded-full border border-[#C9A87C]/50 bg-[#C9A87C]/15">
+            <div
+              className="h-8 w-8 rounded-full"
+              style={{
+                background: "linear-gradient(135deg, #C9A87C 0%, #D696A9 100%)",
+              }}
+            />
           </div>
         </div>
 
         <div>
-          <p className="vbd-section-label">
-            {label}
-          </p>
+          <p className="vbd-section-label-accent">{label}</p>
           <div className="mt-2 flex items-end gap-2">
             <span
-              className="font-serif text-[72px] leading-none text-primary"
+              className="vbd-stat-highlight font-serif text-[72px] leading-none"
               data-testid={valueTestId}
             >
               {safeValue.toFixed(safeValue % 1 === 0 ? 0 : 1)}
@@ -56,7 +65,7 @@ export function CalmThermostat({
             key={b.id}
             className={`rounded-sm border px-3 py-2 text-xs transition-colors duration-200 ${
               b.id === band.id
-                ? "border-primary bg-primary/15 text-foreground shadow-[0_2px_8px_rgba(214,150,169,0.12)]"
+                ? "border-[#C9A87C]/50 bg-[#C9A87C]/12 text-foreground shadow-[0_2px_12px_rgba(201,168,124,0.18)]"
                 : "border-border/80 bg-background text-muted-foreground"
             }`}
           >

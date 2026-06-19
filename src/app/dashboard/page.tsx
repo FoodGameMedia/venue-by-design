@@ -125,8 +125,8 @@ export default async function DashboardPage() {
       <AppNav />
       <main className="w-full px-4 py-8 pb-14 sm:px-6 lg:px-8">
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <p className="vbd-section-label">Dashboard</p>
+          <div className="vbd-section-header">
+            <p className="vbd-section-label-accent">Dashboard</p>
             <h2 className="mt-1 font-serif text-2xl tracking-tight text-foreground sm:text-3xl">This Week</h2>
             <p className="mt-1.5 text-sm text-muted-foreground">{venue.name}</p>
           </div>
@@ -179,7 +179,7 @@ export default async function DashboardPage() {
             <CalmThermostat value={latestCalmIndex} valueTestId="dashboard-calm-index" />
 
             <section className="vbd-prescription-card p-4 sm:p-6">
-              <h3 className="vbd-section-label">
+              <h3 className="vbd-section-label-accent">
                 Calm Index trend
               </h3>
               <p className="mt-1 text-sm text-muted-foreground">
@@ -217,7 +217,7 @@ export default async function DashboardPage() {
 
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
               <section className="vbd-prescription-card p-4 sm:p-6">
-                <h3 className="vbd-section-label">
+                <h3 className="vbd-section-label-accent">
                   Domains at a glance
                 </h3>
                 {trendData.length > 0 && (
@@ -228,7 +228,7 @@ export default async function DashboardPage() {
               </section>
 
               <section className="vbd-prescription-card p-4 sm:p-6">
-                <h3 className="vbd-section-label">
+                <h3 className="vbd-section-label-accent">
                   Check-in history
                 </h3>
                 <div className="mt-4">

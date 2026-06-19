@@ -24,7 +24,7 @@ function ProductCard({
 }) {
   return (
     <div className="vbd-product-card">
-      <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-[#2A2A28]/55">
+      <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-[#8B3A52]/70">
         {subtitle}
       </p>
       <h3 className="mt-2 font-serif text-2xl tracking-tight text-[#2A2A28]">{title}</h3>
@@ -42,9 +42,11 @@ export default function Home() {
         {/* Hero */}
         <section className="relative isolate flex min-h-screen flex-col justify-center overflow-hidden px-4 py-20 sm:px-6 sm:py-24 lg:px-8">
           <SectionGlow variant="hero" testId="sales-hero-glow" />
+          <SectionGlow variant="champagne" testId="sales-hero-champagne-glow" />
           <div className="flex w-full flex-col items-center gap-12 lg:flex-row lg:items-center lg:justify-between lg:gap-20">
             <div className="vbd-hero-accent w-full max-w-4xl">
-              <p className="vbd-section-label">For Australian hospitality operators</p>
+              <span className="vbd-hero-badge">Designed for calm</span>
+              <p className="vbd-section-label-accent mt-4">For Australian hospitality operators</p>
               <h1
                 className="mt-5 font-serif text-4xl leading-[1.06] tracking-tight text-foreground sm:text-5xl lg:text-[3.5rem] lg:leading-[1.05]"
                 data-testid="sales-hero-headline"
@@ -85,7 +87,7 @@ export default function Home() {
         </section>
 
         {/* The problem */}
-        <section className="vbd-section-divider vbd-muted-section px-4 py-20 sm:px-6 lg:px-8">
+        <section className="vbd-section-divider vbd-section-alt px-4 py-20 sm:px-6 lg:px-8">
           <div className="vbd-prescription-card w-full max-w-3xl p-6 sm:p-8">
             <h2 className="font-serif text-3xl tracking-tight text-foreground sm:text-4xl">
               Most venues are carried, not designed.
@@ -103,7 +105,7 @@ export default function Home() {
         {/* How it works */}
         <section id="loop" className="vbd-section-divider px-4 py-20 sm:px-6 lg:px-8">
           <div className="w-full space-y-12">
-            <div className="max-w-3xl">
+            <div className="vbd-section-header max-w-3xl">
               <h2 className="font-serif text-3xl tracking-tight text-foreground sm:text-4xl">
                 Find the pressure. Make one change. Let it compound.
               </h2>
@@ -143,7 +145,7 @@ export default function Home() {
 
             <CalmThermostat value={6} label="Example Calm Index" />
 
-            <blockquote className="vbd-prescription-card border-l-4 border-l-accent p-6 sm:p-8">
+            <blockquote className="vbd-prescription-card border-l-4 border-l-[#C9A87C] p-6 sm:p-8">
               <p className="font-serif text-xl leading-relaxed text-foreground sm:text-2xl">
                 Every change passes one test. Does it hold on the night its author is rostered off?
                 If it needs you in the building, it is not yet a design.
@@ -153,9 +155,11 @@ export default function Home() {
         </section>
 
         {/* What you get */}
-        <section className="vbd-section-divider vbd-muted-section px-4 py-20 sm:px-6 lg:px-8">
+        <section className="vbd-section-divider vbd-section-alt px-4 py-20 sm:px-6 lg:px-8">
           <div className="w-full space-y-10">
-            <h2 className="font-serif text-3xl tracking-tight text-foreground sm:text-4xl">What you get</h2>
+            <div className="vbd-section-header">
+              <h2 className="font-serif text-3xl tracking-tight text-foreground sm:text-4xl">What you get</h2>
+            </div>
             <div className="grid gap-5 lg:grid-cols-2">
               <ProductCard
                 title="Deep Diagnostic"
@@ -174,6 +178,7 @@ export default function Home() {
         {/* The quiet advantage */}
         <section className="vbd-muted-section relative isolate overflow-hidden px-4 py-20 sm:px-6 lg:px-8">
           <SectionGlow variant="quiet-advantage" testId="sales-quiet-advantage-glow" />
+          <SectionGlow variant="champagne" testId="sales-champagne-glow" />
           <div className="vbd-prescription-card relative w-full max-w-3xl p-6 sm:p-8">
             <h2 className="font-serif text-3xl tracking-tight text-foreground sm:text-4xl">The quiet advantage</h2>
             <p className="mt-5 text-sm leading-relaxed text-muted-foreground sm:text-base">
@@ -187,7 +192,7 @@ export default function Home() {
         </section>
 
         {/* Who it is for */}
-        <section className="vbd-section-divider vbd-muted-section px-4 py-20 sm:px-6 lg:px-8">
+        <section className="vbd-section-divider vbd-section-alt px-4 py-20 sm:px-6 lg:px-8">
           <div className="vbd-prescription-card w-full max-w-3xl p-6 sm:p-8">
             <h2 className="font-serif text-3xl tracking-tight text-foreground sm:text-4xl">Who it is for</h2>
             <p className="mt-5 text-sm leading-relaxed text-muted-foreground sm:text-base">

@@ -23,7 +23,7 @@ export function CalmIndexTrend({ data }: { data: DataPoint[] }) {
     <div className="h-[180px] w-full min-w-0">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#C4A0AC" strokeOpacity={0.12} />
+          <CartesianGrid strokeDasharray="3 3" stroke="#C9A87C" strokeOpacity={0.18} />
           <XAxis
             dataKey="week"
             tick={{ fill: "#C4A0AC", fontSize: 11 }}
@@ -59,10 +59,10 @@ export function CalmIndexTrend({ data }: { data: DataPoint[] }) {
           <Line
             type="monotone"
             dataKey="score"
-            stroke="#D696A9"
-            strokeWidth={2}
-            dot={{ fill: "#D696A9", r: 3 }}
-            activeDot={{ r: 5, fill: "#C97E95" }}
+            stroke="#C9A87C"
+            strokeWidth={2.5}
+            dot={{ fill: "#C9A87C", stroke: "#D696A9", strokeWidth: 1, r: 3 }}
+            activeDot={{ r: 5, fill: "#D696A9", stroke: "#C9A87C", strokeWidth: 2 }}
           />
         </LineChart>
       </ResponsiveContainer>

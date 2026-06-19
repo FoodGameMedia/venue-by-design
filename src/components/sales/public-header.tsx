@@ -11,7 +11,7 @@ export function PublicHeader() {
         <div className="flex flex-wrap items-center justify-end gap-x-3 gap-y-2">
           <Link
             href="/pricing?diagnostic=required"
-            className="cursor-pointer text-xs text-muted-foreground transition-colors duration-200 hover:text-primary sm:text-sm"
+            className="cursor-pointer text-xs text-muted-foreground transition-colors duration-200 hover:text-[#C9A87C] sm:text-sm"
             data-testid="header-cta-diagnostic"
           >
             <span className="sm:hidden">Diagnostic</span>
@@ -19,14 +19,14 @@ export function PublicHeader() {
           </Link>
           <Link
             href="/pricing"
-            className="cursor-pointer text-xs text-muted-foreground transition-colors duration-200 hover:text-primary sm:text-sm"
+            className="cursor-pointer text-xs text-muted-foreground transition-colors duration-200 hover:text-[#C9A87C] sm:text-sm"
             data-testid="header-cta-pricing"
           >
             View pricing
           </Link>
           <Link
             href="/advisor"
-            className="cursor-pointer text-xs text-muted-foreground transition-colors duration-200 hover:text-primary sm:text-sm"
+            className="cursor-pointer text-xs text-muted-foreground transition-colors duration-200 hover:text-[#C9A87C] sm:text-sm"
           >
             Advisor Portal
           </Link>

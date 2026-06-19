@@ -40,6 +40,9 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-champagne: var(--champagne);
+  --color-champagne-foreground: var(--champagne-foreground);
+  --color-champagne-muted: var(--champagne-muted);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -52,17 +55,24 @@
 /*
  * Design overhaul palette — dark background mode only.
  * Charcoal #2A2A28 | Surface #1F1F1D | Dusty Rose #D696A9 |
- * Deep Plum #8B3A52 | Warm Blush #F5EDE8 | Muted #C4A0AC
+ * Deep Plum #8B3A52 | Warm Blush #F5EDE8 | Muted #C4A0AC |
+ * Champagne #C9A87C (tertiary lift accent)
  */
 :root {
   --charcoal: #2a2a28;
   --surface: #1f1f1d;
   --surface-raised: #2f2f2c;
+  --surface-warm: #2a2824;
   --rose: #d696a9;
   --rose-strong: #c97e95;
   --plum: #8b3a52;
   --blush: #f5ede8;
   --muted-rose: #c4a0ac;
+  --champagne: #c9a87c;
+  --champagne-light: #d4b896;
+  --champagne-foreground: #211d1a;
+  --champagne-muted: rgba(201, 168, 124, 0.22);
+  --champagne-glow: rgba(201, 168, 124, 0.35);
 
   --background: var(--charcoal);
   --foreground: var(--blush);
@@ -98,13 +108,22 @@
   --sidebar-ring: var(--rose);
 
   --card-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.16), 0 4px 20px rgba(0, 0, 0, 0.12),
-    inset 0 1px 0 rgba(245, 237, 232, 0.05);
-  --card-shadow-hover:
-    0 2px 4px rgba(0, 0, 0, 0.18), 0 8px 28px rgba(0, 0, 0, 0.16),
+    0 2px 4px rgba(0, 0, 0, 0.2), 0 8px 28px rgba(0, 0, 0, 0.18),
+    0 0 0 1px rgba(201, 168, 124, 0.06),
     inset 0 1px 0 rgba(245, 237, 232, 0.08);
-  --card-border-subtle: rgba(245, 237, 232, 0.1);
-  --card-border-accent: rgba(214, 150, 169, 0.18);
+  --card-shadow-hover:
+    0 4px 8px rgba(0, 0, 0, 0.22), 0 14px 36px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(201, 168, 124, 0.14),
+    inset 0 1px 0 rgba(245, 237, 232, 0.12);
+  --card-border-subtle: rgba(245, 237, 232, 0.12);
+  --card-border-accent: rgba(214, 150, 169, 0.28);
+  --card-border-champagne: rgba(201, 168, 124, 0.32);
+  --card-gradient: linear-gradient(
+    145deg,
+    rgba(201, 168, 124, 0.08) 0%,
+    rgba(31, 31, 29, 1) 42%,
+    rgba(139, 58, 82, 0.06) 100%
+  );
 }
 
 .dark {
@@ -164,28 +183,78 @@
 
 @layer components {
   .vbd-page-bg {
+    background-color: var(--charcoal);
     background-image:
-      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(214, 150, 169, 0.06), transparent),
-      radial-gradient(ellipse 60% 40% at 100% 50%, rgba(139, 58, 82, 0.04), transparent);
+      radial-gradient(ellipse 90% 55% at 8% -8%, rgba(201, 168, 124, 0.14), transparent 55%),
+      radial-gradient(ellipse 70% 50% at 92% 12%, rgba(214, 150, 169, 0.12), transparent 50%),
+      radial-gradient(ellipse 60% 45% at 100% 85%, rgba(201, 168, 124, 0.1), transparent 55%),
+      radial-gradient(ellipse 55% 40% at 0% 75%, rgba(139, 58, 82, 0.1), transparent 50%),
+      linear-gradient(180deg, var(--charcoal) 0%, var(--surface-warm) 50%, var(--charcoal) 100%);
   }
 
   .vbd-section-label {
     @apply text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground;
   }
 
+  .vbd-section-label-accent {
+    @apply text-[10px] font-medium uppercase tracking-[0.14em];
+    color: var(--champagne);
+  }
+
+  .vbd-section-header {
+    @apply relative pl-4;
+  }
+
+  .vbd-section-header::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.15em;
+    bottom: 0.15em;
+    width: 3px;
+    border-radius: 2px;
+    background: linear-gradient(180deg, var(--champagne) 0%, var(--rose) 100%);
+  }
+
   .vbd-section-divider {
-    @apply border-t border-border/60;
+    @apply border-t border-border/80;
+  }
+
+  .vbd-section-alt {
+    background-color: rgba(42, 40, 36, 0.55);
+    background-image: linear-gradient(
+      180deg,
+      rgba(201, 168, 124, 0.04) 0%,
+      transparent 40%,
+      rgba(214, 150, 169, 0.03) 100%
+    );
+  }
+
+  .vbd-muted-section {
+    background-color: rgba(31, 31, 29, 0.65);
+    background-image: linear-gradient(
+      135deg,
+      rgba(139, 58, 82, 0.05) 0%,
+      transparent 50%,
+      rgba(201, 168, 124, 0.04) 100%
+    );
   }
 
   .vbd-header-bar {
-    @apply border-b border-border/70 bg-card/80 backdrop-blur-md supports-[backdrop-filter]:bg-card/65;
+    border-bottom: 1px solid rgba(201, 168, 124, 0.28);
+    background-color: rgba(31, 31, 29, 0.88);
+    box-shadow:
+      0 4px 24px rgba(0, 0, 0, 0.22),
+      inset 0 -1px 0 rgba(201, 168, 124, 0.12);
+    @apply backdrop-blur-lg supports-[backdrop-filter]:bg-card/75;
   }
 
   .vbd-prescription-card {
     border-radius: var(--radius-lg);
     border: 1px solid var(--card-border-subtle);
     border-left: 3px solid var(--rose);
-    background-color: var(--surface);
+    border-top: 1px solid var(--card-border-champagne);
+    background: var(--card-gradient);
     box-shadow: var(--card-shadow);
     transition:
       box-shadow 200ms ease,
@@ -195,7 +264,8 @@
   .vbd-elevated-card {
     border-radius: var(--radius-lg);
     border: 1px solid var(--card-border-subtle);
-    background-color: var(--surface);
+    border-top: 1px solid var(--card-border-champagne);
+    background: var(--card-gradient);
     box-shadow: var(--card-shadow);
     transition:
       box-shadow 200ms ease,
@@ -214,7 +284,8 @@
   }
 
   .vbd-hero-accent {
-    border-left: 4px solid var(--rose);
+    border-left: 4px solid transparent;
+    border-image: linear-gradient(180deg, var(--champagne) 0%, var(--rose) 55%, var(--plum) 100%) 1;
     padding-left: 1.5rem;
   }
 
@@ -222,6 +293,23 @@
     .vbd-hero-accent {
       padding-left: 2.5rem;
     }
+  }
+
+  .vbd-hero-badge {
+    @apply inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[10px] font-medium uppercase tracking-[0.14em];
+    border-color: rgba(201, 168, 124, 0.45);
+    background: linear-gradient(135deg, rgba(201, 168, 124, 0.18), rgba(214, 150, 169, 0.1));
+    color: var(--champagne-light);
+    box-shadow: 0 0 20px rgba(201, 168, 124, 0.15);
+  }
+
+  .vbd-hero-badge::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 9999px;
+    background: var(--champagne);
+    box-shadow: 0 0 8px var(--champagne-glow);
   }
 
   .vbd-cta {
@@ -233,23 +321,97 @@
   }
 
   .vbd-cta-primary {
-    @apply bg-primary text-primary-foreground hover:-translate-y-px hover:opacity-95 hover:shadow-[0_4px_14px_rgba(214,150,169,0.22)];
+  background: linear-gradient(135deg, var(--champagne) 0%, var(--rose) 52%, var(--rose-strong) 100%);
+    color: var(--champagne-foreground);
+    box-shadow:
+      0 0 0 1px rgba(201, 168, 124, 0.35),
+      0 4px 18px rgba(201, 168, 124, 0.28),
+      0 4px 14px rgba(214, 150, 169, 0.22);
+  }
+
+  .vbd-cta-primary:hover {
+    @apply -translate-y-px;
+    box-shadow:
+      0 0 0 1px rgba(201, 168, 124, 0.5),
+      0 6px 24px rgba(201, 168, 124, 0.35),
+      0 6px 20px rgba(214, 150, 169, 0.28);
   }
 
   .vbd-cta-outline {
-    @apply border-border bg-background hover:-translate-y-px hover:border-primary/30 hover:bg-muted hover:text-foreground hover:shadow-[0_2px_10px_rgba(0,0,0,0.12)];
+    @apply border-border bg-background hover:-translate-y-px hover:bg-muted hover:text-foreground;
+    border-color: rgba(201, 168, 124, 0.25);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.14);
+  }
+
+  .vbd-cta-outline:hover {
+    border-color: rgba(201, 168, 124, 0.45);
+    box-shadow:
+      0 0 0 1px rgba(201, 168, 124, 0.2),
+      0 4px 16px rgba(0, 0, 0, 0.16);
   }
 
   .vbd-product-card {
-    @apply cursor-pointer rounded-[14px] border border-[#2A2A28]/[0.08] bg-[#F5EDE8] p-6 text-[#2A2A28] shadow-[0_2px_12px_rgba(42,42,40,0.08),inset_0_1px_0_rgba(255,255,255,0.55)] transition-[box-shadow,transform,border-color] duration-200 hover:-translate-y-0.5 hover:border-[#D696A9]/30 hover:shadow-[0_6px_24px_rgba(42,42,40,0.12),inset_0_1px_0_rgba(255,255,255,0.65)] sm:p-8;
+    @apply relative cursor-pointer overflow-hidden rounded-[14px] border border-[#C9A87C]/25 bg-[#F5EDE8] p-6 text-[#2A2A28] transition-[box-shadow,transform,border-color] duration-200 hover:-translate-y-0.5 hover:border-[#C9A87C]/45 sm:p-8;
+    box-shadow:
+      0 4px 20px rgba(42, 42, 40, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.65),
+      inset 0 3px 0 rgba(201, 168, 124, 0.35);
   }
 
-  .vbd-muted-section {
-    @apply bg-card/25;
+  .vbd-product-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #c9a87c 0%, #d696a9 50%, #c9a87c 100%);
+  }
+
+  .vbd-product-card:hover {
+    box-shadow:
+      0 8px 32px rgba(42, 42, 40, 0.14),
+      0 0 0 1px rgba(201, 168, 124, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.75),
+      inset 0 3px 0 rgba(201, 168, 124, 0.5);
+  }
+
+  .vbd-stat-highlight {
+    color: var(--champagne-light);
+    text-shadow: 0 0 24px rgba(201, 168, 124, 0.35);
+  }
+
+  .vbd-champagne-ring {
+    box-shadow:
+      0 0 0 2px rgba(201, 168, 124, 0.45),
+      0 0 20px rgba(201, 168, 124, 0.25);
+  }
+
+  .vbd-icon-ring {
+    @apply flex shrink-0 items-center justify-center rounded-full;
+    background: linear-gradient(135deg, rgba(201, 168, 124, 0.22), rgba(214, 150, 169, 0.15));
+    box-shadow:
+      0 0 0 1px rgba(201, 168, 124, 0.35),
+      inset 0 1px 0 rgba(245, 237, 232, 0.08);
+  }
+
+  .vbd-panel-header-accent {
+    border-top: 3px solid transparent;
+    border-image: linear-gradient(90deg, var(--champagne) 0%, var(--rose) 50%, var(--champagne) 100%) 1;
+  }
+
+  .vbd-nav-active {
+    border-color: rgba(201, 168, 124, 0.55) !important;
+    background: linear-gradient(135deg, rgba(201, 168, 124, 0.14), rgba(214, 150, 169, 0.1)) !important;
+    color: var(--champagne-light) !important;
+    box-shadow:
+      0 0 0 1px rgba(201, 168, 124, 0.25),
+      var(--card-shadow) !important;
   }
 
   .vbd-chat-bubble-user {
-    @apply ml-auto rounded-xl rounded-br-sm bg-primary px-3.5 py-2.5 text-sm leading-relaxed text-primary-foreground shadow-[0_2px_8px_rgba(214,150,169,0.2)];
+    background: linear-gradient(135deg, var(--champagne) 0%, var(--rose) 100%);
+    @apply ml-auto rounded-xl rounded-br-sm px-3.5 py-2.5 text-sm leading-relaxed text-primary-foreground shadow-[0_4px_14px_rgba(201,168,124,0.25),0_2px_8px_rgba(214,150,169,0.2)];
   }
 
   .vbd-chat-bubble-assistant {

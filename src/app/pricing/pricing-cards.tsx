@@ -69,17 +69,17 @@ export function PricingCards() {
           {VENUE_PULSE.map((plan) => (
             <Card
               key={plan.id}
-              className={`flex flex-col bg-card ${
+              className={`flex flex-col border-t-2 bg-card ${
                 plan.recommended
-                  ? "border-primary ring-2 ring-primary"
-                  : "border-border"
+                  ? "border-t-[#C9A87C] border-primary ring-2 ring-[#C9A87C]/40"
+                  : "border-t-[#C9A87C]/40 border-border"
               }`}
             >
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-card-foreground">{plan.name}</CardTitle>
                   {plan.recommended && (
-                    <span className="bg-primary px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.12em] text-primary-foreground">
+                    <span className="bg-gradient-to-r from-[#C9A87C] to-[#D696A9] px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.12em] text-[#211d1a]">
                       Recommended
                     </span>
                   )}
@@ -87,7 +87,7 @@ export function PricingCards() {
                 <CardDescription>Venue Pulse · Monthly</CardDescription>
               </CardHeader>
               <CardContent className="flex-1">
-                <p className="font-serif text-3xl text-primary">
+                <p className="font-serif text-3xl text-[#C9A87C]">
                   ${plan.price}
                   <span className="text-base font-normal text-muted-foreground">/mo</span>
                 </p>
@@ -114,13 +114,13 @@ export function PricingCards() {
         </h2>
         <div className="grid gap-6 md:grid-cols-2">
           {DEEP_DIAGNOSTIC.map((plan) => (
-            <Card key={plan.id} className="flex flex-col border-border bg-card">
+            <Card key={plan.id} className="flex flex-col border-t-2 border-t-[#C9A87C]/40 border-border bg-card">
               <CardHeader>
                 <CardTitle className="text-card-foreground">{plan.name}</CardTitle>
                 <CardDescription>Deep Diagnostic · One-time</CardDescription>
               </CardHeader>
               <CardContent className="flex-1">
-                <p className="font-serif text-3xl text-primary">${plan.price}</p>
+                <p className="font-serif text-3xl text-[#C9A87C]">${plan.price}</p>
                 <p className="mt-2 text-sm text-muted-foreground">{plan.desc}</p>
               </CardContent>
               <CardFooter>
