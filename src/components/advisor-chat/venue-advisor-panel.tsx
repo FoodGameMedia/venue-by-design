@@ -139,7 +139,7 @@ export function VenueAdvisorPanel({
           type="button"
           onClick={() => setOpen(true)}
           aria-label="Open venue advisor chat"
-          className="fixed bottom-5 right-5 z-50 h-12 gap-2 rounded-full px-5 shadow-lg sm:bottom-6 sm:right-6"
+          className="fixed bottom-5 right-5 z-50 h-12 gap-2 rounded-full px-5 shadow-[0_4px_20px_rgba(214,150,169,0.28),0_2px_8px_rgba(0,0,0,0.2)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_6px_28px_rgba(214,150,169,0.35),0_4px_12px_rgba(0,0,0,0.22)] sm:bottom-6 sm:right-6"
         >
           <MessageCircle className="size-5" aria-hidden />
           Ask
@@ -152,16 +152,14 @@ export function VenueAdvisorPanel({
         aria-label="Venue advisor chat"
         aria-hidden={!open}
         className={cn(
-          "fixed inset-y-0 right-0 z-50 flex w-full flex-col border-l border-border bg-card shadow-2xl transition-transform duration-300 ease-out sm:w-[400px]",
+          "fixed inset-y-0 right-0 z-50 flex w-full flex-col border-l border-border/80 bg-card/95 shadow-2xl backdrop-blur-md transition-transform duration-300 ease-out sm:w-[400px]",
           open ? "translate-x-0" : "pointer-events-none translate-x-full"
         )}
       >
-        <header className="flex shrink-0 items-center justify-between border-b border-border px-4 py-3">
+        <header className="flex shrink-0 items-center justify-between border-b border-border/70 bg-card/50 px-4 py-3.5 backdrop-blur-sm">
           <div>
-            <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
-              Venue advisor
-            </p>
-            <h2 className="font-serif text-lg text-foreground">{venueName}</h2>
+            <p className="vbd-section-label">Venue advisor</p>
+            <h2 className="font-serif text-lg tracking-tight text-foreground">{venueName}</h2>
           </div>
           <Button
             type="button"
@@ -176,29 +174,27 @@ export function VenueAdvisorPanel({
 
         <div
           ref={listRef}
-          className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-4 py-4"
+          className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-4 py-5"
           aria-live="polite"
         >
           {messages.length === 0 && !loading && (
-            <div className="space-y-4">
-              <div>
-                <p className="font-serif text-base text-foreground">Ask your venue advisor</p>
+            <div className="space-y-5">
+              <div className="vbd-elevated-card border-l-[3px] border-l-primary p-4">
+                <p className="font-serif text-base tracking-tight text-foreground">Ask your venue advisor</p>
                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                   Get plain-language help with your weekly focus, domain scores, and calm operations.
                   Answers use your venue scores and the Calm Venue method.
                 </p>
               </div>
               <div>
-                <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
-                  Try asking
-                </p>
-                <div className="mt-2 flex flex-wrap gap-2">
+                <p className="vbd-section-label">Try asking</p>
+                <div className="mt-2.5 flex flex-wrap gap-2">
                   {STARTER_QUESTIONS.map((q) => (
                     <button
                       key={q}
                       type="button"
                       onClick={() => void sendMessage(q)}
-                      className="cursor-pointer rounded-full border border-border bg-background px-3 py-1.5 text-left text-xs leading-snug text-foreground transition-colors hover:border-primary/50 hover:text-primary"
+                      className="cursor-pointer rounded-full border border-border/80 bg-background px-3 py-1.5 text-left text-xs leading-snug text-foreground shadow-[var(--card-shadow)] transition-all duration-200 hover:-translate-y-px hover:border-primary/40 hover:text-primary hover:shadow-[var(--card-shadow-hover)]"
                     >
                       {q}
                     </button>
@@ -212,10 +208,8 @@ export function VenueAdvisorPanel({
             <div
               key={`${msg.role}-${i}`}
               className={cn(
-                "max-w-[90%] rounded-lg px-3 py-2 text-sm leading-relaxed",
-                msg.role === "user"
-                  ? "ml-auto bg-primary text-primary-foreground"
-                  : "mr-auto border border-border bg-background text-foreground"
+                "max-w-[90%]",
+                msg.role === "user" ? "vbd-chat-bubble-user" : "vbd-chat-bubble-assistant"
               )}
             >
               {msg.content}
@@ -224,7 +218,7 @@ export function VenueAdvisorPanel({
 
           {loading && (
             <div
-              className="mr-auto max-w-[90%] rounded-lg border border-border bg-background px-3 py-2 text-sm text-muted-foreground"
+              className="vbd-chat-bubble-assistant text-muted-foreground"
               aria-busy="true"
             >
               Thinking…
@@ -238,7 +232,7 @@ export function VenueAdvisorPanel({
           </p>
         )}
 
-        <footer className="shrink-0 border-t border-border p-4">
+        <footer className="shrink-0 border-t border-border/70 bg-card/50 p-4 backdrop-blur-sm">
           <div className="flex items-end gap-2">
             <textarea
               ref={inputRef}
@@ -249,7 +243,7 @@ export function VenueAdvisorPanel({
               rows={2}
               disabled={loading}
               aria-label="Chat message"
-              className="min-h-[44px] flex-1 resize-none rounded-lg border border-input bg-transparent px-2.5 py-2 text-sm text-foreground placeholder:text-muted-foreground focus-visible:border-ring focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50 disabled:opacity-50"
+              className="min-h-[44px] flex-1 resize-none rounded-lg border border-input/80 bg-background/80 px-3 py-2 text-sm text-foreground shadow-[inset_0_1px_2px_rgba(0,0,0,0.06)] placeholder:text-muted-foreground transition-colors duration-200 focus-visible:border-ring focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50 disabled:opacity-50"
             />
             <Button
               type="button"
@@ -257,6 +251,7 @@ export function VenueAdvisorPanel({
               onClick={() => void sendMessage(input)}
               disabled={loading || !input.trim()}
               aria-label="Send message"
+              className="shadow-[0_2px_8px_rgba(214,150,169,0.2)]"
             >
               <Send className="size-4" />
             </Button>
@@ -268,7 +263,7 @@ export function VenueAdvisorPanel({
         <button
           type="button"
           aria-label="Close chat overlay"
-          className="fixed inset-0 z-40 bg-black/40 sm:bg-black/20"
+          className="fixed inset-0 z-40 bg-black/40 backdrop-blur-[2px] transition-opacity duration-200 sm:bg-black/25"
           onClick={() => setOpen(false)}
         />
       )}

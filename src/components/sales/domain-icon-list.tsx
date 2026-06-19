@@ -42,7 +42,7 @@ export function DomainIconList() {
         return (
           <li
             key={domain}
-            className="flex items-center gap-3 rounded-lg border border-border/60 bg-card/40 px-3 py-2.5"
+            className="vbd-elevated-card flex items-center gap-3 px-3 py-2.5 transition-[box-shadow,border-color] duration-200 hover:border-primary/25"
           >
             <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/15">
               <Icon className="size-4 text-primary" strokeWidth={1.75} aria-hidden />

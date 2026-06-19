@@ -9,19 +9,8 @@ import { SocialProofSection } from "@/components/sales/social-proof-section";
 const DIAGNOSTIC_CTA = "/pricing?diagnostic=required";
 const PRICING_CTA = "/pricing";
 
-const CTA_BASE =
-  "group/button inline-flex shrink-0 cursor-pointer items-center justify-center rounded-lg border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-colors duration-200 outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 active:translate-y-px disabled:pointer-events-none disabled:opacity-50";
-const CTA_LG = "h-9 gap-1.5 px-2.5";
-const CTA_PRIMARY = "bg-primary text-primary-foreground hover:opacity-95";
-const CTA_OUTLINE =
-  "border-border bg-background hover:bg-muted hover:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50";
-
 function SectionLabel({ children }: { children: string }) {
-  return (
-    <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
-      {children}
-    </p>
-  );
+  return <p className="vbd-section-label">{children}</p>;
 }
 
 function ProductCard({
@@ -34,50 +23,50 @@ function ProductCard({
   body: string;
 }) {
   return (
-    <div className="rounded-[14px] bg-[#F5EDE8] p-6 text-[#2A2A28] sm:p-8">
-      <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-[#2A2A28]/60">
+    <div className="vbd-product-card">
+      <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-[#2A2A28]/55">
         {subtitle}
       </p>
-      <h3 className="mt-2 font-serif text-2xl text-[#2A2A28]">{title}</h3>
-      <p className="mt-3 text-sm leading-relaxed text-[#2A2A28]/80">{body}</p>
+      <h3 className="mt-2 font-serif text-2xl tracking-tight text-[#2A2A28]">{title}</h3>
+      <p className="mt-3 text-sm leading-relaxed text-[#2A2A28]/75">{body}</p>
     </div>
   );
 }
 
 export default function Home() {
   return (
-    <div className="relative min-h-screen w-full bg-background">
+    <div className="vbd-page-bg relative min-h-screen w-full bg-background">
       <PublicHeader />
 
       <main>
         {/* Hero */}
-        <section className="relative isolate overflow-hidden flex min-h-screen flex-col justify-center px-4 py-16 sm:px-6 lg:px-8">
+        <section className="relative isolate flex min-h-screen flex-col justify-center overflow-hidden px-4 py-20 sm:px-6 sm:py-24 lg:px-8">
           <SectionGlow variant="hero" testId="sales-hero-glow" />
-          <div className="flex w-full flex-col items-center gap-10 lg:flex-row lg:items-center lg:justify-between lg:gap-16">
-            <div className="w-full max-w-4xl border-l-4 border-primary pl-6 sm:pl-10">
-              <p className="text-sm text-muted-foreground">For Australian hospitality operators</p>
+          <div className="flex w-full flex-col items-center gap-12 lg:flex-row lg:items-center lg:justify-between lg:gap-20">
+            <div className="vbd-hero-accent w-full max-w-4xl">
+              <p className="vbd-section-label">For Australian hospitality operators</p>
               <h1
-                className="mt-4 font-serif text-4xl leading-[1.08] text-foreground sm:text-5xl lg:text-6xl"
+                className="mt-5 font-serif text-4xl leading-[1.06] tracking-tight text-foreground sm:text-5xl lg:text-[3.5rem] lg:leading-[1.05]"
                 data-testid="sales-hero-headline"
               >
                 Calm is not a personality trait. It is a design outcome.
               </h1>
-              <p className="mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+              <p className="mt-7 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg sm:leading-relaxed">
                 Venue by Design is the weekly system that turns a venue held together by effort into
                 one that runs well whoever is on. Score your calm, find where the pressure lives, and
                 make one small change at a time until the place carries itself.
               </p>
-              <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+              <div className="mt-12 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
                 <Link
                   href={DIAGNOSTIC_CTA}
-                  className={`${CTA_BASE} ${CTA_LG} ${CTA_PRIMARY}`}
+                  className="vbd-cta vbd-cta-lg vbd-cta-primary"
                   data-testid="sales-cta-get-started"
                 >
                   Get started
                 </Link>
                 <Link
                   href={PRICING_CTA}
-                  className={`${CTA_BASE} ${CTA_LG} ${CTA_OUTLINE}`}
+                  className="vbd-cta vbd-cta-lg vbd-cta-outline"
                   data-testid="sales-cta-pricing"
                 >
                   View pricing
@@ -96,9 +85,9 @@ export default function Home() {
         </section>
 
         {/* The problem */}
-        <section className="border-t border-border bg-card/20 px-4 py-16 sm:px-6 lg:px-8">
-          <div className="w-full max-w-3xl border-l-[3px] border-primary bg-card p-6 sm:p-8">
-            <h2 className="font-serif text-3xl text-foreground sm:text-4xl">
+        <section className="vbd-section-divider vbd-muted-section px-4 py-20 sm:px-6 lg:px-8">
+          <div className="vbd-prescription-card w-full max-w-3xl p-6 sm:p-8">
+            <h2 className="font-serif text-3xl tracking-tight text-foreground sm:text-4xl">
               Most venues are carried, not designed.
             </h2>
             <p className="mt-5 text-sm leading-relaxed text-muted-foreground sm:text-base">
@@ -112,35 +101,35 @@ export default function Home() {
         </section>
 
         {/* How it works */}
-        <section id="loop" className="border-t border-border px-4 py-16 sm:px-6 lg:px-8">
-          <div className="w-full space-y-10">
+        <section id="loop" className="vbd-section-divider px-4 py-20 sm:px-6 lg:px-8">
+          <div className="w-full space-y-12">
             <div className="max-w-3xl">
-              <h2 className="font-serif text-3xl text-foreground sm:text-4xl">
+              <h2 className="font-serif text-3xl tracking-tight text-foreground sm:text-4xl">
                 Find the pressure. Make one change. Let it compound.
               </h2>
             </div>
 
-            <div className="grid gap-6 lg:grid-cols-3">
-              <div className="border-l-[3px] border-primary bg-card p-6">
+            <div className="grid gap-5 lg:grid-cols-3">
+              <div className="vbd-prescription-card p-6">
                 <SectionLabel>Step 1</SectionLabel>
-                <h3 className="mt-2 font-serif text-xl text-foreground">Diagnose</h3>
+                <h3 className="mt-2 font-serif text-xl tracking-tight text-foreground">Diagnose</h3>
                 <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
                   A short diagnostic scores a normal trading day across seven domains and gives you
                   one number, your Calm Index, plus a shortlist of where to start. Your score is
                   not a grade, it is a map.
                 </p>
               </div>
-              <div className="border-l-[3px] border-primary bg-card p-6">
+              <div className="vbd-prescription-card p-6">
                 <SectionLabel>Step 2</SectionLabel>
-                <h3 className="mt-2 font-serif text-xl text-foreground">Prescribe</h3>
+                <h3 className="mt-2 font-serif text-xl tracking-tight text-foreground">Prescribe</h3>
                 <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
                   You get one design change per domain, sequenced into ninety days, shortest stave
                   first. One change at a time, made real before the next begins.
                 </p>
               </div>
-              <div className="border-l-[3px] border-primary bg-card p-6">
+              <div className="vbd-prescription-card p-6">
                 <SectionLabel>Step 3</SectionLabel>
-                <h3 className="mt-2 font-serif text-xl text-foreground">The weekly loop</h3>
+                <h3 className="mt-2 font-serif text-xl tracking-tight text-foreground">The weekly loop</h3>
                 <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
                   Once a week the app brings you back. It re-asks the questions, plots your number
                   over time, and puts the next small change in front of you once the last has held. A
@@ -154,7 +143,7 @@ export default function Home() {
 
             <CalmThermostat value={6} label="Example Calm Index" />
 
-            <blockquote className="border-l-4 border-accent bg-card p-6 sm:p-8">
+            <blockquote className="vbd-prescription-card border-l-4 border-l-accent p-6 sm:p-8">
               <p className="font-serif text-xl leading-relaxed text-foreground sm:text-2xl">
                 Every change passes one test. Does it hold on the night its author is rostered off?
                 If it needs you in the building, it is not yet a design.
@@ -164,10 +153,10 @@ export default function Home() {
         </section>
 
         {/* What you get */}
-        <section className="border-t border-border bg-card/20 px-4 py-16 sm:px-6 lg:px-8">
-          <div className="w-full space-y-8">
-            <h2 className="font-serif text-3xl text-foreground sm:text-4xl">What you get</h2>
-            <div className="grid gap-6 lg:grid-cols-2">
+        <section className="vbd-section-divider vbd-muted-section px-4 py-20 sm:px-6 lg:px-8">
+          <div className="w-full space-y-10">
+            <h2 className="font-serif text-3xl tracking-tight text-foreground sm:text-4xl">What you get</h2>
+            <div className="grid gap-5 lg:grid-cols-2">
               <ProductCard
                 title="Deep Diagnostic"
                 subtitle="One-time"
@@ -183,10 +172,10 @@ export default function Home() {
         </section>
 
         {/* The quiet advantage */}
-        <section className="relative isolate overflow-hidden border-t border-border bg-card/20 px-4 py-16 sm:px-6 lg:px-8">
+        <section className="vbd-muted-section relative isolate overflow-hidden px-4 py-20 sm:px-6 lg:px-8">
           <SectionGlow variant="quiet-advantage" testId="sales-quiet-advantage-glow" />
-          <div className="w-full max-w-3xl border-l-[3px] border-primary bg-card p-6 sm:p-8">
-            <h2 className="font-serif text-3xl text-foreground sm:text-4xl">The quiet advantage</h2>
+          <div className="vbd-prescription-card relative w-full max-w-3xl p-6 sm:p-8">
+            <h2 className="font-serif text-3xl tracking-tight text-foreground sm:text-4xl">The quiet advantage</h2>
             <p className="mt-5 text-sm leading-relaxed text-muted-foreground sm:text-base">
               Calm does not show up in your dining room as anything dramatic. It shows up as a place
               that runs well whoever is on, keeps what it has learned, and quietly compounds, while
@@ -198,9 +187,9 @@ export default function Home() {
         </section>
 
         {/* Who it is for */}
-        <section className="border-t border-border bg-card/20 px-4 py-16 sm:px-6 lg:px-8">
-          <div className="w-full max-w-3xl border-l-[3px] border-primary bg-card p-6 sm:p-8">
-            <h2 className="font-serif text-3xl text-foreground sm:text-4xl">Who it is for</h2>
+        <section className="vbd-section-divider vbd-muted-section px-4 py-20 sm:px-6 lg:px-8">
+          <div className="vbd-prescription-card w-full max-w-3xl p-6 sm:p-8">
+            <h2 className="font-serif text-3xl tracking-tight text-foreground sm:text-4xl">Who it is for</h2>
             <p className="mt-5 text-sm leading-relaxed text-muted-foreground sm:text-base">
               Built for those who know they are working hard but not seeing results. Owner-operators,
               venue managers, and small groups who are tired of carrying the day on effort and want a
@@ -213,11 +202,11 @@ export default function Home() {
 
         {/* Commitment */}
         <section
-          className="border-t border-border px-4 py-16 sm:px-6 lg:px-8"
+          className="vbd-section-divider px-4 py-20 sm:px-6 lg:px-8"
           data-testid="sales-commitment-section"
         >
-          <div className="w-full max-w-3xl border-l-[3px] border-primary bg-card p-6 sm:p-8">
-            <h2 className="font-serif text-3xl text-foreground sm:text-4xl">
+          <div className="vbd-prescription-card w-full max-w-3xl p-6 sm:p-8">
+            <h2 className="font-serif text-3xl tracking-tight text-foreground sm:text-4xl">
               The hard part is not starting. It is not stopping.
             </h2>
             <p className="mt-5 text-sm leading-relaxed text-muted-foreground sm:text-base">
@@ -232,23 +221,23 @@ export default function Home() {
         </section>
 
         {/* Final CTA */}
-        <section className="border-t border-border bg-card/20 px-4 py-20 sm:px-6 lg:px-8">
-          <div className="w-full max-w-3xl border-l-4 border-primary pl-6 sm:pl-10">
+        <section className="vbd-section-divider vbd-muted-section px-4 py-24 sm:px-6 lg:px-8">
+          <div className="vbd-hero-accent w-full max-w-3xl">
             <h2
-              className="font-serif text-4xl text-foreground sm:text-5xl"
+              className="font-serif text-4xl tracking-tight text-foreground sm:text-5xl"
               data-testid="sales-final-cta-heading"
             >
               Commit to the next ninety days.
             </h2>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              <Link href={DIAGNOSTIC_CTA} className={`${CTA_BASE} ${CTA_LG} ${CTA_PRIMARY}`}>
+            <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-4">
+              <Link href={DIAGNOSTIC_CTA} className="vbd-cta vbd-cta-lg vbd-cta-primary">
                 Book your Deep Diagnostic
               </Link>
-              <Link href={PRICING_CTA} className={`${CTA_BASE} ${CTA_LG} ${CTA_OUTLINE}`}>
+              <Link href={PRICING_CTA} className="vbd-cta vbd-cta-lg vbd-cta-outline">
                 View pricing
               </Link>
             </div>
-            <p className="mt-10 font-serif text-lg text-muted-foreground">
+            <p className="mt-12 font-serif text-lg text-muted-foreground">
               Calm is not a personality trait. It is a design outcome.
             </p>
           </div>

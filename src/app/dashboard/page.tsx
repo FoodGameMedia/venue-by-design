@@ -121,26 +121,27 @@ export default async function DashboardPage() {
   );
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="vbd-page-bg min-h-screen bg-background">
       <AppNav />
-      <main className="w-full px-4 py-6 pb-12 sm:px-6 lg:px-8">
-        <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+      <main className="w-full px-4 py-8 pb-14 sm:px-6 lg:px-8">
+        <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h2 className="font-serif text-2xl text-foreground">This Week</h2>
-            <p className="mt-1 text-sm text-muted-foreground">{venue.name}</p>
+            <p className="vbd-section-label">Dashboard</p>
+            <h2 className="mt-1 font-serif text-2xl tracking-tight text-foreground sm:text-3xl">This Week</h2>
+            <p className="mt-1.5 text-sm text-muted-foreground">{venue.name}</p>
           </div>
           {!isEmpty && (
             <div className="flex flex-wrap gap-3">
               <Link
                 href="/checkin"
-                className="inline-flex h-11 cursor-pointer items-center justify-center bg-primary px-5 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:bg-primary/90"
+                className="vbd-cta vbd-cta-lg vbd-cta-primary"
               >
                 Weekly check-in
               </Link>
               {diagnosticAccess && (
                 <Link
                   href="/my-plan"
-                  className="inline-flex h-11 cursor-pointer items-center justify-center border border-border bg-card px-5 text-sm font-medium text-foreground transition-colors duration-200 hover:bg-muted"
+                  className="vbd-cta vbd-cta-lg vbd-cta-outline"
                 >
                   My Plan
                 </Link>
@@ -150,23 +151,23 @@ export default async function DashboardPage() {
         </div>
 
         {isEmpty ? (
-          <div className="border-l-[3px] border-primary bg-card p-6 sm:p-8">
+          <div className="vbd-prescription-card p-6 sm:p-8">
             <p className="font-serif text-xl text-foreground">No check-ins yet</p>
             <p className="mt-2 max-w-prose text-sm text-muted-foreground">
               Complete your first weekly check-in to see your Calm Index, domain scores, and
               prescription brief.
             </p>
-            <div className="mt-5 flex flex-wrap gap-3">
+            <div className="mt-6 flex flex-wrap gap-3">
               <Link
                 href="/checkin"
-                className="inline-flex h-11 cursor-pointer items-center justify-center bg-primary px-5 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:bg-primary/90"
+                className="vbd-cta vbd-cta-lg vbd-cta-primary"
               >
                 Start your first check-in
               </Link>
               {diagnosticAccess && (
                 <Link
                   href="/diagnostic"
-                  className="inline-flex h-11 cursor-pointer items-center justify-center border border-border bg-card px-5 text-sm font-medium text-foreground transition-colors duration-200 hover:bg-muted"
+                  className="vbd-cta vbd-cta-lg vbd-cta-outline"
                 >
                   Deep Diagnostic
                 </Link>
@@ -177,8 +178,8 @@ export default async function DashboardPage() {
           <div className="space-y-6">
             <CalmThermostat value={latestCalmIndex} valueTestId="dashboard-calm-index" />
 
-            <section className="border-l-[3px] border-primary bg-card p-4 sm:p-6">
-              <h3 className="text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
+            <section className="vbd-prescription-card p-4 sm:p-6">
+              <h3 className="vbd-section-label">
                 Calm Index trend
               </h3>
               <p className="mt-1 text-sm text-muted-foreground">
@@ -197,17 +198,17 @@ export default async function DashboardPage() {
               initialActiveIndex={changeProgressIndex}
             />
 
-            <section className="border-l-[3px] border-primary bg-card p-5 sm:p-6">
+            <section className="vbd-prescription-card p-5 sm:p-6">
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <div>
-                  <h3 className="font-serif text-xl text-foreground">Weekly re-score</h3>
+                  <h3 className="font-serif text-xl tracking-tight text-foreground">Weekly re-score</h3>
                   <p className="mt-1 max-w-prose text-sm text-muted-foreground">
                     Answer for a normal day. A low score is not an accusation, it is where the map starts.
                   </p>
                 </div>
                 <Link
                   href="/checkin"
-                  className="inline-flex h-11 cursor-pointer items-center justify-center bg-primary px-5 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:bg-primary/90"
+                  className="vbd-cta vbd-cta-lg vbd-cta-primary"
                 >
                   Weekly check-in
                 </Link>
@@ -215,8 +216,8 @@ export default async function DashboardPage() {
             </section>
 
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-              <section className="border-l-[3px] border-primary bg-card p-4 sm:p-6">
-                <h3 className="text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
+              <section className="vbd-prescription-card p-4 sm:p-6">
+                <h3 className="vbd-section-label">
                   Domains at a glance
                 </h3>
                 {trendData.length > 0 && (
@@ -226,11 +227,13 @@ export default async function DashboardPage() {
                 )}
               </section>
 
-              <section className="border-l-[3px] border-primary bg-card p-4 sm:p-6">
-                <h3 className="mb-3 text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
+              <section className="vbd-prescription-card p-4 sm:p-6">
+                <h3 className="vbd-section-label">
                   Check-in history
                 </h3>
-                <CheckinHistory checkins={historyList.slice(0, 5)} />
+                <div className="mt-4">
+                  <CheckinHistory checkins={historyList.slice(0, 5)} />
+                </div>
               </section>
             </div>
           </div>

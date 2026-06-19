@@ -6,7 +6,7 @@ export function HeroCalmThermostat() {
       role="img"
       aria-label="Calm Index thermostat at 7.4 out of 10, designed for calm"
       data-testid="sales-hero-thermostat"
-      className="mx-auto shrink-0 lg:mx-0"
+      className="mx-auto shrink-0 drop-shadow-[0_8px_24px_rgba(214,150,169,0.15)] lg:mx-0"
     >
       <defs>
         <linearGradient id="cvfill" x1="0" y1="1" x2="0" y2="0">

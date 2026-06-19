@@ -75,8 +75,8 @@ export function NextChangeCard({
 
   if (!rx || !active) {
     return (
-      <section className="border-l-[3px] border-primary bg-card p-5 sm:p-6">
-        <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
+      <section className="vbd-prescription-card p-5 sm:p-6">
+        <p className="vbd-section-label">
           Your next change
         </p>
         <p className="mt-2 font-serif text-xl text-foreground">No active change yet</p>
@@ -89,22 +89,22 @@ export function NextChangeCard({
   }
 
   return (
-    <section className="border-l-[3px] border-primary bg-card p-5 sm:p-6" data-testid="next-change-card">
+    <section className="vbd-prescription-card p-5 sm:p-6" data-testid="next-change-card">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
+          <p className="vbd-section-label">
             Your next change
           </p>
-          <h2 className="mt-2 font-serif text-2xl text-foreground">{active}</h2>
+          <h2 className="mt-2 font-serif text-2xl tracking-tight text-foreground">{active}</h2>
         </div>
-        <span className="border border-border bg-background px-3 py-1 text-xs text-muted-foreground">
+        <span className="rounded-md border border-border/80 bg-background px-3 py-1 text-xs text-muted-foreground shadow-[var(--card-shadow)]">
           {activeIndex + 1} of {changes.length}
         </span>
       </div>
 
       <div className="mt-5 grid gap-4 md:grid-cols-3">
         <div>
-          <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
+          <p className="vbd-section-label">
             Domain
           </p>
           <p className="mt-1 text-sm text-foreground">
@@ -112,13 +112,13 @@ export function NextChangeCard({
           </p>
         </div>
         <div>
-          <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
+          <p className="vbd-section-label">
             Cue
           </p>
           <p className="mt-1 text-sm text-foreground">{rx.watch_signal}</p>
         </div>
         <div>
-          <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
+          <p className="vbd-section-label">
             Owner
           </p>
           <p className="mt-1 text-sm text-foreground">Shift lead on duty</p>

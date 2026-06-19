@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 
 export function PublicHeader() {
   return (
-    <header className="border-b border-border bg-card">
+    <header className="vbd-header-bar sticky top-0 z-20">
       <div className="flex min-h-[56px] w-full items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
         <Link href="/" className="cursor-pointer font-serif text-lg text-foreground">
           Venue by Design

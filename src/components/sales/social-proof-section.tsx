@@ -5,16 +5,16 @@ export function SocialProofSection() {
 
   return (
     <section
-      className="border-t border-border px-4 py-16 sm:px-6 lg:px-8"
+      className="vbd-section-divider px-4 py-20 sm:px-6 lg:px-8"
       data-testid="sales-social-proof"
     >
-      <div className="border-l-[3px] border-primary bg-card p-6 sm:p-8">
-      <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
+      <div className="vbd-prescription-card p-6 sm:p-8">
+      <p className="vbd-section-label">
         Operators like you
       </p>
-      <div className="mt-6 grid gap-6 md:grid-cols-2">
+      <div className="mt-6 grid gap-5 md:grid-cols-2">
         {SALES_TESTIMONIALS.map((item) => (
-          <blockquote key={`${item.name}-${item.quote.slice(0, 24)}`} className="border border-border bg-background p-5">
+          <blockquote key={`${item.name}-${item.quote.slice(0, 24)}`} className="vbd-elevated-card bg-background p-5">
             <p className="text-sm leading-relaxed text-foreground">&ldquo;{item.quote}&rdquo;</p>
             <footer className="mt-4 text-xs text-muted-foreground">
               <span className="font-medium text-foreground">{item.name}</span>
