@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { DM_Sans, DM_Serif_Display } from "next/font/google";
 import "./globals.css";
 import { PwaRegister } from "@/components/pwa-register";
+import { VenueAdvisorHost } from "@/components/advisor-chat/venue-advisor-host";
 
 const dmSans = DM_Sans({
   variable: "--font-sans",
@@ -44,6 +45,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
         {children}
+        <VenueAdvisorHost />
         <PwaRegister />
       </body>
     </html>

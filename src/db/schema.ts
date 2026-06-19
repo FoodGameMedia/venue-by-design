@@ -8,6 +8,7 @@ import {
   jsonb,
   integer,
   real,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 
 // ── Enums ──────────────────────────────────────────────────────────────────────
@@ -242,3 +243,23 @@ export const designProjects = pgTable("design_projects", {
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });
+
+// ── Book Chunks (Ask advisor manuscript memory) ─────────────────────────────────
+
+export const bookChunks = pgTable(
+  "book_chunks",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    bookId: text("book_id").notNull(),
+    chapter: text("chapter").notNull(),
+    content: text("content").notNull(),
+    contentHash: text("content_hash").notNull(),
+    sourcePath: text("source_path").notNull(),
+    chunkIndex: integer("chunk_index").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => [
+    uniqueIndex("book_chunks_source_chunk_idx").on(table.sourcePath, table.chunkIndex),
+  ]
+);

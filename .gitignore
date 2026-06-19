@@ -43,3 +43,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Book manuscripts (copyright — do not commit)
+content/books/**/*.md
+content/books/**/*.txt
+!content/books/README.md

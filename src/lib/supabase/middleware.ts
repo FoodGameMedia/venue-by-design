@@ -37,7 +37,6 @@ export async function updateSession(request: NextRequest) {
 
   const path = request.nextUrl.pathname;
   const isLogin = path === "/login";
-  const isOnboarding = path === "/onboarding";
   const isPricing = path === "/pricing";
   const isAuthCallback = path.startsWith("/auth/");
   const isPublic =

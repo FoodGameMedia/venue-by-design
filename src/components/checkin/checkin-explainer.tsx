@@ -10,7 +10,9 @@ export function CheckinExplainer() {
       <h1 className="mt-2 font-serif text-xl text-foreground">Keep the loop going</h1>
       <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
         Each week you re-score your domains so Venue by Design can refresh your Calm Index, track
-        how your venue is shifting, and keep the weekly loop going.
+        how your venue is shifting, and keep the weekly loop going. Stuck on your scores? Tap{" "}
+        <span className="font-medium text-foreground">Ask</span> for help grounded in the Calm Venue
+        method.
       </p>
       <p className="mt-4 text-sm leading-relaxed text-foreground">
         <span className="font-medium">How to proceed:</span>{" "}

@@ -131,6 +131,19 @@ describe("POST /api/checkout/create-session", () => {
     expect(res.status).toBe(400);
   });
 
+  it("returns 503 when checkout env is not configured", async () => {
+    vi.stubEnv("STRIPE_SECRET_KEY", "");
+    const POST = await getCheckoutPost();
+    const req = new Request("http://localhost/api/checkout/create-session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ planId: "essentials" }),
+    });
+    const res = await POST(req);
+    expect(res.status).toBe(503);
+    vi.stubEnv("STRIPE_SECRET_KEY", "sk_test_fake");
+  });
+
   it("creates checkout session for subscription plan and returns url", async () => {
     const POST = await getCheckoutPost();
     const req = new Request("http://localhost/api/checkout/create-session", {

@@ -7,15 +7,22 @@ import { db } from "@/db";
 import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
-const PLAN_TO_PRICE: Record<string, string> = {
-  essentials: process.env.STRIPE_PRICE_ESSENTIALS ?? "",
-  pro: process.env.STRIPE_PRICE_PRO ?? "",
-  group: process.env.STRIPE_PRICE_GROUP ?? "",
-  solo: process.env.STRIPE_PRICE_DIAGNOSTIC_SOLO ?? "",
-  staff_pulse: process.env.STRIPE_PRICE_DIAGNOSTIC_STAFF ?? "",
+const SUBSCRIPTION_PLANS = ["essentials", "pro", "group"];
+
+const PLAN_TO_ENV_KEY: Record<string, string> = {
+  essentials: "STRIPE_PRICE_ESSENTIALS",
+  pro: "STRIPE_PRICE_PRO",
+  group: "STRIPE_PRICE_GROUP",
+  solo: "STRIPE_PRICE_DIAGNOSTIC_SOLO",
+  staff_pulse: "STRIPE_PRICE_DIAGNOSTIC_STAFF",
 };
 
-const SUBSCRIPTION_PLANS = ["essentials", "pro", "group"];
+/** Read Stripe price IDs at request time (not build time) for Netlify/runtime env. */
+function getPriceIdForPlan(planId: string): string {
+  const envKey = PLAN_TO_ENV_KEY[planId];
+  if (!envKey) return "";
+  return process.env[envKey]?.trim() ?? "";
+}
 
 function getMissingCheckoutEnv(planId?: string): string | null {
   if (!process.env.STRIPE_SECRET_KEY?.trim()) return "STRIPE_SECRET_KEY";
@@ -24,15 +31,8 @@ function getMissingCheckoutEnv(planId?: string): string | null {
     return "NEXT_PUBLIC_SITE_URL";
   }
 
-  if (planId && PLAN_TO_PRICE[planId] && !PLAN_TO_PRICE[planId].trim()) {
-    const envByPlan: Record<string, string> = {
-      essentials: "STRIPE_PRICE_ESSENTIALS",
-      pro: "STRIPE_PRICE_PRO",
-      group: "STRIPE_PRICE_GROUP",
-      solo: "STRIPE_PRICE_DIAGNOSTIC_SOLO",
-      staff_pulse: "STRIPE_PRICE_DIAGNOSTIC_STAFF",
-    };
-    return envByPlan[planId] ?? null;
+  if (planId && PLAN_TO_ENV_KEY[planId] && !getPriceIdForPlan(planId)) {
+    return PLAN_TO_ENV_KEY[planId];
   }
 
   return null;
@@ -74,7 +74,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const priceId = PLAN_TO_PRICE[planId];
+    const priceId = getPriceIdForPlan(planId);
     const isDiagnostic = ["solo", "staff_pulse"].includes(planId);
     const isE2eMockCheckout =
       process.env.E2E_MOCK_STRIPE_CHECKOUT === "1" && process.env.NODE_ENV !== "production";
