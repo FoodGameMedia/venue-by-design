@@ -53,52 +53,48 @@ export function HeroCityscapeBg({ variant = "hero", testId }: HeroCityscapeBgPro
           : "linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%)",
       }}
     >
-      {/* Far skyline — sky wash layer */}
       <div
         className={`absolute inset-x-0 top-0 h-[55%] max-sm:h-[45%] ${
-          isHero ? "opacity-[0.22] max-sm:opacity-[0.16]" : "opacity-[0.12]"
+          isHero ? "opacity-[0.38] max-sm:opacity-[0.3]" : "opacity-[0.22]"
         }`}
         style={{
-          mixBlendMode: "multiply",
+          mixBlendMode: "normal",
           transform: isHero ? `translateY(${offsetY * 0.15}px)` : undefined,
         }}
       >
         <CityscapeFarLayer className="h-full w-full" />
       </div>
 
-      {/* Mid street — sage, terracotta, sepia accents */}
       <div
         className={`absolute inset-x-[-5%] bottom-0 h-[70%] w-[110%] max-sm:inset-x-0 max-sm:h-[55%] max-sm:w-full ${
-          isHero ? "opacity-[0.28] max-sm:opacity-[0.2]" : "opacity-[0.14]"
+          isHero ? "opacity-[0.72] max-sm:opacity-[0.62]" : "opacity-[0.38]"
         }`}
         style={{
-          mixBlendMode: "soft-light",
+          mixBlendMode: "normal",
           transform: isHero ? `translateY(${offsetY * 0.35}px)` : undefined,
         }}
       >
         <CityscapeMidLayer className="h-full w-full" />
       </div>
 
-      {/* Foreground corner */}
       <div
         className={`absolute -bottom-4 -left-[8%] h-[75%] w-[70%] max-sm:-left-[15%] max-sm:h-[60%] max-sm:w-[90%] ${
-          isHero ? "opacity-[0.32] max-sm:opacity-[0.24]" : "opacity-[0.16]"
+          isHero ? "opacity-[0.78] max-sm:opacity-[0.68]" : "opacity-[0.42]"
         }`}
         style={{
-          mixBlendMode: "soft-light",
+          mixBlendMode: "normal",
           transform: isHero ? `translateY(${offsetY * 0.5}px)` : undefined,
         }}
       >
         <CityscapeNearLayer className="h-full w-full" />
       </div>
 
-      {/* Right-side mirrored slice for balance */}
       <div
         className={`absolute -right-[12%] bottom-0 top-[30%] hidden w-[55%] sm:block ${
-          isHero ? "opacity-[0.2]" : "opacity-[0.1]"
+          isHero ? "opacity-[0.55]" : "opacity-[0.28]"
         }`}
         style={{
-          mixBlendMode: "soft-light",
+          mixBlendMode: "normal",
           transform: isHero ? `translateY(${offsetY * 0.25}px) scaleX(-1)` : "scaleX(-1)",
         }}
       >
@@ -118,8 +114,8 @@ export function SectionCityscapeDivider({ testId }: SectionCityscapeDividerProps
     <div
       aria-hidden="true"
       data-testid={testId}
-      className="pointer-events-none relative h-8 w-full overflow-hidden opacity-[0.14]"
-      style={{ ...CITYSCAPE_CSS_VARS, mixBlendMode: "soft-light" }}
+      className="pointer-events-none relative h-8 w-full overflow-hidden opacity-[0.45]"
+      style={{ ...CITYSCAPE_CSS_VARS, mixBlendMode: "normal" }}
     >
       <CityscapeDividerStrip className="absolute inset-0 h-full w-full" />
     </div>

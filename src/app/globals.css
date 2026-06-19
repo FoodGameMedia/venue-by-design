@@ -160,7 +160,8 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply text-foreground font-sans;
+    background-color: transparent;
   }
   html {
     @apply font-sans;
@@ -178,20 +179,17 @@
 
 @layer components {
   /* Page shells are transparent so site cityscape art shows through */
+  .vbd-site-shell > .min-h-screen,
   .vbd-site-shell > .min-h-screen.bg-background,
   .vbd-site-shell > .vbd-page-bg,
   .vbd-site-shell > div.min-h-screen:has(> main),
   .vbd-site-shell > div.flex.min-h-screen {
-    background-color: transparent;
+    background-color: transparent !important;
   }
 
   .vbd-page-bg {
-    background-color: transparent;
-    background-image:
-      radial-gradient(ellipse 90% 55% at 8% -8%, rgba(201, 168, 124, 0.04), transparent 55%),
-      radial-gradient(ellipse 70% 50% at 92% 12%, rgba(214, 150, 169, 0.03), transparent 50%),
-      radial-gradient(ellipse 60% 45% at 100% 85%, rgba(201, 168, 124, 0.025), transparent 55%),
-      radial-gradient(ellipse 55% 40% at 0% 75%, rgba(139, 58, 82, 0.025), transparent 50%);
+    background-color: transparent !important;
+    background-image: none;
   }
 
   .vbd-section-label {

@@ -28,38 +28,40 @@ export function CityscapeFarLayer({ className }: LayerProps) {
       xmlns="http://www.w3.org/2000/svg"
     >
       {/* Sky watercolor washes */}
-      <ellipse cx="280" cy="95" rx="220" ry="55" fill={C.sky} opacity="0.28" />
-      <ellipse cx="720" cy="75" rx="280" ry="48" fill={C.sky} opacity="0.22" />
-      <ellipse cx="1020" cy="110" rx="160" ry="40" fill={C.sky} opacity="0.2" />
+      <ellipse cx="280" cy="95" rx="220" ry="55" fill={C.sky} opacity="0.32" />
+      <ellipse cx="720" cy="75" rx="280" ry="48" fill={C.sky} opacity="0.28" />
+      <ellipse cx="1020" cy="110" rx="160" ry="40" fill={C.sky} opacity="0.25" />
 
       {/* Power lines */}
       <path
         d="M0 68 Q180 62 360 70 T720 65 T1080 72 T1200 68"
         stroke={C.slate}
-        strokeWidth="0.9"
+        strokeWidth="1.5"
+        strokeOpacity="0.82"
         strokeLinecap="round"
       />
       <path
         d="M0 82 Q200 76 400 84 T800 79 T1200 84"
         stroke={C.slate}
-        strokeWidth="0.7"
+        strokeWidth="1.2"
+        strokeOpacity="0.75"
         strokeLinecap="round"
-        opacity="0.7"
       />
-      <path d="M120 68 L118 110" stroke={C.sepiaDark} strokeWidth="0.8" />
-      <path d="M340 70 L338 108" stroke={C.sepiaDark} strokeWidth="0.8" />
-      <path d="M580 66 L578 112" stroke={C.sepiaDark} strokeWidth="0.8" />
-      <path d="M860 72 L858 114" stroke={C.sepiaDark} strokeWidth="0.8" />
-      <path d="M1040 70 L1038 108" stroke={C.sepiaDark} strokeWidth="0.8" />
+      <path d="M120 68 L118 110" stroke={C.sepiaLight} strokeWidth="1.2" strokeOpacity="0.8" />
+      <path d="M340 70 L338 108" stroke={C.sepiaLight} strokeWidth="1.2" strokeOpacity="0.8" />
+      <path d="M580 66 L578 112" stroke={C.sepiaLight} strokeWidth="1.2" strokeOpacity="0.8" />
+      <path d="M860 72 L858 114" stroke={C.sepiaLight} strokeWidth="1.2" strokeOpacity="0.8" />
+      <path d="M1040 70 L1038 108" stroke={C.sepiaLight} strokeWidth="1.2" strokeOpacity="0.8" />
 
       {/* Distant skyline */}
       <path
         d="M0 280 L0 180 L45 180 L45 155 L78 155 L78 130 L110 130 L110 165 L145 165 L145 120 L175 120 L175 95 L210 95 L210 140 L250 140 L250 110 L285 110 L285 85 L320 85 L320 150 L360 150 L360 125 L395 125 L395 100 L430 100 L430 170 L470 170 L470 135 L505 135 L505 90 L540 90 L540 155 L580 155 L580 120 L615 120 L615 95 L650 95 L650 160 L690 160 L690 130 L725 130 L725 105 L760 105 L760 175 L800 175 L800 140 L835 140 L835 115 L870 115 L870 165 L910 165 L910 130 L945 130 L945 100 L980 100 L980 155 L1020 155 L1020 125 L1055 125 L1055 90 L1090 90 L1090 170 L1125 170 L1125 145 L1160 145 L1160 120 L1200 120 L1200 280 Z"
         stroke={C.slate}
-        strokeWidth="1"
+        strokeWidth="1.5"
+        strokeOpacity="0.8"
         strokeLinejoin="round"
         fill={C.slate}
-        fillOpacity="0.06"
+        fillOpacity="0.1"
       />
       <path
         d="M145 165 L145 120 L175 120 L175 95 L210 95 L210 140 L250 140 L250 110 L285 110 L285 85 L320 85 L320 150 L360 150"
@@ -104,8 +106,9 @@ export function CityscapeMidLayer({ className }: LayerProps) {
     >
       <path
         d="M0 420 L1200 420"
-        stroke={C.sepiaDark}
-        strokeWidth="1.2"
+        stroke={C.sepiaLight}
+        strokeWidth="1.6"
+        strokeOpacity="0.85"
         strokeLinecap="round"
       />
 
@@ -113,27 +116,30 @@ export function CityscapeMidLayer({ className }: LayerProps) {
       <path
         d="M0 420 L0 260 L85 260 L85 220 L95 220 L95 260 L180 260 L180 420"
         stroke={C.sepiaLight}
-        strokeWidth="1.1"
+        strokeWidth="1.4"
+        strokeOpacity="0.82"
         strokeLinejoin="round"
         fill={C.sepiaLight}
-        fillOpacity="0.05"
+        fillOpacity="0.08"
       />
       <path d="M30 260 L30 295 M55 260 L55 310 M80 260 L80 285" stroke={C.sepiaDark} strokeWidth="0.7" opacity="0.8" />
       <path
         d="M95 220 L95 210 Q140 200 185 210 L185 220 Z"
         stroke={C.sage}
-        strokeWidth="0.9"
+        strokeWidth="1.1"
+        strokeOpacity="0.8"
         strokeLinejoin="round"
         fill={C.sage}
-        fillOpacity="0.18"
+        fillOpacity="0.28"
       />
       <path d="M110 210 L110 205 M130 207 L130 202 M150 208 L150 203 M170 207 L170 202" stroke={C.sage} strokeWidth="0.5" opacity="0.7" />
 
       {/* Centre-left venue storefront */}
       <path
         d="M180 420 L180 240 L320 240 L320 420"
-        stroke={C.sepiaDark}
-        strokeWidth="1.1"
+        stroke={C.sepiaLight}
+        strokeWidth="1.4"
+        strokeOpacity="0.82"
         strokeLinejoin="round"
       />
       <path
@@ -157,7 +163,8 @@ export function CityscapeMidLayer({ className }: LayerProps) {
       <path
         d="M320 420 L320 200 L480 200 L480 420"
         stroke={C.sepiaLight}
-        strokeWidth="1.1"
+        strokeWidth="1.4"
+        strokeOpacity="0.8"
         strokeLinejoin="round"
       />
       <path d="M340 280 L340 260 L460 260 L460 280" stroke={C.slate} strokeWidth="0.8" />
@@ -168,17 +175,19 @@ export function CityscapeMidLayer({ className }: LayerProps) {
       {/* Right-side corner eatery */}
       <path
         d="M480 420 L480 230 L620 230 L620 195 L640 195 L640 230 L780 230 L780 420"
-        stroke={C.sepiaDark}
-        strokeWidth="1.1"
+        stroke={C.sepiaLight}
+        strokeWidth="1.4"
+        strokeOpacity="0.82"
         strokeLinejoin="round"
       />
       <path
         d="M620 195 L620 182 Q700 168 780 182 L780 195"
         stroke={C.terracotta}
-        strokeWidth="0.9"
+        strokeWidth="1.2"
+        strokeOpacity="0.8"
         strokeLinecap="round"
         fill={C.terracotta}
-        fillOpacity="0.15"
+        fillOpacity="0.3"
       />
       <path d="M635 188 L635 178 M665 184 L665 174 M695 180 L695 170 M725 184 L725 174 M755 188 L755 178" stroke={C.ochre} strokeWidth="0.45" opacity="0.75" />
       <rect x="655" y="248" width="52" height="38" rx="2" stroke={C.ochre} strokeWidth="0.7" fill={C.ochre} fillOpacity="0.1" />
@@ -188,7 +197,8 @@ export function CityscapeMidLayer({ className }: LayerProps) {
       <path
         d="M780 420 L780 270 L920 270 L920 250 L940 250 L940 270 L1080 270 L1080 420"
         stroke={C.slate}
-        strokeWidth="1"
+        strokeWidth="1.3"
+        strokeOpacity="0.78"
         strokeLinejoin="round"
       />
       <path d="M810 270 L810 310 M850 270 L850 320 M890 270 L890 305 M930 270 L930 315" stroke={C.slate} strokeWidth="0.65" opacity="0.8" />
@@ -250,8 +260,9 @@ export function CityscapeNearLayer({ className }: LayerProps) {
 
       <path
         d="M40 600 L40 380 L115 380 L115 600"
-        stroke={C.sepiaDark}
-        strokeWidth="1.1"
+        stroke={C.sepiaLight}
+        strokeWidth="1.4"
+        strokeOpacity="0.82"
         strokeLinejoin="round"
       />
       <path d="M77 380 L77 600" stroke={C.sepiaLight} strokeWidth="0.7" opacity="0.75" />
@@ -339,7 +350,8 @@ export function CityscapeDividerStrip({ className }: LayerProps) {
       <path
         d="M0 36 L80 36 L80 28 L95 28 L95 36 M115 36 L115 26 L130 26 L130 36 M155 36 L155 28 L170 28 L170 36 M200 36 L200 24 L215 24 L215 36 M245 36 L245 30 L260 30 L260 36 M290 36 L290 28 L305 28 L305 36 M335 36 L335 26 L350 26 L350 36 M380 36 L380 30 L395 30 L395 36 M420 36 L420 28 L435 28 L435 36 M470 36 L470 32 L485 32 L485 36 M520 36 L520 26 L535 26 L535 36 M570 36 L570 32 L585 32 L585 36 M620 38 L625 34 L640 34 L655 38 L670 34 L685 38 M720 38 L735 32 L750 32 L765 38 L780 32 L795 32 L810 38 L825 32 L840 38 L855 32 L870 38 L885 32 L900 38 L915 32 L930 38 L945 32 L960 38 L975 32 L990 38 L1005 32 L1020 38 L1035 32 L1050 38 L1065 32 L1080 38 L1095 32 L1110 38 L1125 38 L1140 32 L1155 38 L1170 32 L1185 38 L1200 38"
         stroke={C.sepiaLight}
-        strokeWidth="0.65"
+        strokeWidth="1.5"
+        strokeOpacity="0.85"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
@@ -351,8 +363,8 @@ export function CityscapeDividerStrip({ className }: LayerProps) {
 /** Full panoramic stack for site-wide fixed background */
 export function CityscapePanorama({
   className,
-  lineOpacity = 0.5,
-  fillOpacity = 0.32,
+  lineOpacity = 0.8,
+  fillOpacity = 0.35,
 }: PanoramaProps) {
   const layerStyle = {
     opacity: lineOpacity,
@@ -371,7 +383,10 @@ export function CityscapePanorama({
       <div className="absolute inset-x-[-4%] bottom-0 h-[72%] w-[108%]" style={layerStyle}>
         <CityscapeMidLayer className="h-full w-full" />
       </div>
-      <div className="absolute -bottom-2 -left-[6%] h-[74%] w-[68%]" style={{ ...layerStyle, opacity: lineOpacity * 1.15 }}>
+      <div
+        className="absolute -bottom-2 -left-[6%] h-[74%] w-[68%]"
+        style={{ ...layerStyle, opacity: Math.min(lineOpacity * 1.1, 1) }}
+      >
         <CityscapeNearLayer className="h-full w-full" />
       </div>
     </div>

@@ -9,10 +9,10 @@ type Intensity = "public" | "app";
 
 const INTENSITY: Record<
   Intensity,
-  { line: number; fill: number; layer: number; scrim: number }
+  { line: number; fill: number; layer: number; vignette: number }
 > = {
-  public: { line: 0.55, fill: 0.36, layer: 1, scrim: 0.32 },
-  app: { line: 0.5, fill: 0.32, layer: 1, scrim: 0.36 },
+  public: { line: 0.82, fill: 0.38, layer: 1, vignette: 0.22 },
+  app: { line: 0.78, fill: 0.34, layer: 1, vignette: 0.28 },
 };
 
 /** Marketing and auth surfaces — slightly stronger illustration */
@@ -54,17 +54,15 @@ export function SiteCityscapeBackground() {
       <div className="absolute inset-0 bg-[var(--charcoal)]" />
 
       <div
-        className="absolute inset-x-[-12%] bottom-0 top-[8%] sm:inset-x-[-8%] sm:top-[5%]"
+        className="absolute inset-x-[-10%] bottom-0 top-[4%] sm:inset-x-[-6%] sm:top-[2%]"
         style={{
           opacity: tokens.layer,
           transform: `translateY(${offsetY}px)`,
           mixBlendMode: "normal",
           WebkitMaskImage:
-            "linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%), radial-gradient(ellipse 90% 85% at 50% 65%, black 30%, transparent 78%)",
+            "linear-gradient(to bottom, transparent 0%, black 8%, black 92%, transparent 100%)",
           maskImage:
-            "linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%), radial-gradient(ellipse 90% 85% at 50% 65%, black 30%, transparent 78%)",
-          WebkitMaskComposite: "source-in",
-          maskComposite: "intersect",
+            "linear-gradient(to bottom, transparent 0%, black 8%, black 92%, transparent 100%)",
         }}
       >
         <CityscapePanorama
@@ -75,43 +73,43 @@ export function SiteCityscapeBackground() {
       </div>
 
       <div
-        className="absolute -right-[6%] bottom-0 top-[22%] hidden w-[48%] lg:block"
+        className="absolute -right-[6%] bottom-0 top-[18%] hidden w-[48%] lg:block"
         style={{
-          opacity: tokens.layer * 0.72,
+          opacity: tokens.layer * 0.85,
           mixBlendMode: "normal",
           transform: `translateY(${offsetY * 0.6}px) scaleX(-1)`,
-          WebkitMaskImage: "linear-gradient(to left, black 40%, transparent 100%)",
-          maskImage: "linear-gradient(to left, black 40%, transparent 100%)",
+          WebkitMaskImage: "linear-gradient(to left, black 50%, transparent 100%)",
+          maskImage: "linear-gradient(to left, black 50%, transparent 100%)",
         }}
       >
         <CityscapePanorama
           className="h-full w-full"
-          lineOpacity={tokens.line * 0.85}
-          fillOpacity={tokens.fill * 0.85}
+          lineOpacity={tokens.line * 0.9}
+          fillOpacity={tokens.fill * 0.9}
         />
       </div>
 
-      {/* Center readability scrim — lighter so line art shows through */}
+      {/* Edge vignette only — keeps center art visible */}
       <div
         className="absolute inset-0"
         style={{
-          background: `radial-gradient(ellipse 58% 72% at 50% 42%, rgba(42, 42, 40, ${tokens.scrim}) 0%, rgba(42, 42, 40, ${tokens.scrim * 0.3}) 38%, transparent 68%)`,
+          background: `radial-gradient(ellipse 95% 90% at 50% 50%, transparent 42%, rgba(42, 42, 40, ${tokens.vignette}) 100%)`,
         }}
       />
 
       <div
-        className="absolute inset-x-0 top-0 h-[18%] min-h-[72px]"
+        className="absolute inset-x-0 top-0 h-[14%] min-h-[64px]"
         style={{
           background:
-            "linear-gradient(to bottom, rgba(42, 42, 40, 0.72) 0%, rgba(42, 42, 40, 0.28) 55%, transparent 100%)",
+            "linear-gradient(to bottom, rgba(42, 42, 40, 0.5) 0%, rgba(42, 42, 40, 0.15) 60%, transparent 100%)",
         }}
       />
 
       <div
-        className="absolute inset-x-0 bottom-0 h-[12%]"
+        className="absolute inset-x-0 bottom-0 h-[10%]"
         style={{
           background:
-            "linear-gradient(to top, rgba(42, 42, 40, 0.55) 0%, transparent 100%)",
+            "linear-gradient(to top, rgba(42, 42, 40, 0.4) 0%, transparent 100%)",
         }}
       />
     </div>
