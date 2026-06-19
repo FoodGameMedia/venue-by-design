@@ -102,7 +102,7 @@ export function SectionCityscapeDivider({ testId }: SectionCityscapeDividerProps
     <div
       aria-hidden="true"
       data-testid={testId}
-      className="pointer-events-none relative h-8 w-full overflow-hidden opacity-[0.07] text-[var(--champagne)]"
+      className="pointer-events-none relative h-8 w-full overflow-hidden opacity-[0.22] text-[var(--champagne)]"
     >
       <CityscapeDividerStrip className="absolute inset-0 h-full w-full" />
     </div>

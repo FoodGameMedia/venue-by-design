@@ -2,10 +2,7 @@ import Link from "next/link";
 import { CalmThermostat } from "@/components/calm-thermostat";
 import { DomainIconList } from "@/components/sales/domain-icon-list";
 import { HeroCalmThermostat } from "@/components/sales/hero-calm-thermostat";
-import {
-  HeroCityscapeBg,
-  SectionCityscapeDivider,
-} from "@/components/sales/hero-cityscape-bg";
+import { SectionCityscapeDivider } from "@/components/sales/hero-cityscape-bg";
 import { PublicHeader } from "@/components/sales/public-header";
 import { SectionGlow } from "@/components/sales/section-glow";
 import { SocialProofSection } from "@/components/sales/social-proof-section";
@@ -45,7 +42,6 @@ export default function Home() {
       <main>
         {/* Hero */}
         <section className="relative isolate flex min-h-screen flex-col justify-center overflow-hidden px-4 py-20 sm:px-6 sm:py-24 lg:px-8">
-          <HeroCityscapeBg variant="hero" testId="sales-hero-cityscape" />
           <SectionGlow variant="hero" testId="sales-hero-glow" />
           <SectionGlow variant="champagne" testId="sales-hero-champagne-glow" />
           <div className="relative z-10 flex w-full flex-col items-center gap-12 lg:flex-row lg:items-center lg:justify-between lg:gap-20">
@@ -95,7 +91,6 @@ export default function Home() {
 
         {/* The problem */}
         <section className="relative vbd-section-divider vbd-section-alt overflow-hidden px-4 py-20 sm:px-6 lg:px-8">
-          <HeroCityscapeBg variant="faint" testId="sales-problem-cityscape" />
           <div className="relative z-10 vbd-prescription-card w-full max-w-3xl p-6 sm:p-8">
             <h2 className="font-serif text-3xl tracking-tight text-foreground sm:text-4xl">
               Most venues are carried, not designed.
@@ -112,7 +107,6 @@ export default function Home() {
 
         {/* How it works */}
         <section id="loop" className="relative vbd-section-divider overflow-hidden px-4 py-20 sm:px-6 lg:px-8">
-          <HeroCityscapeBg variant="faint" testId="sales-loop-cityscape" />
           <div className="relative z-10 w-full space-y-12">
             <div className="vbd-section-header max-w-3xl">
               <h2 className="font-serif text-3xl tracking-tight text-foreground sm:text-4xl">
