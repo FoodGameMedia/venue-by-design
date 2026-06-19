@@ -121,7 +121,7 @@ export default async function DashboardPage() {
   );
 
   return (
-    <div className="vbd-page-bg min-h-screen bg-background">
+    <div className="vbd-page-bg min-h-screen">
       <AppNav />
       <main className="w-full px-4 py-8 pb-14 sm:px-6 lg:px-8">
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4">

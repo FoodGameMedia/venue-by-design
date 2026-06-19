@@ -11,8 +11,8 @@ const INTENSITY: Record<
   Intensity,
   { line: number; fill: number; layer: number; scrim: number }
 > = {
-  public: { line: 0.42, fill: 0.28, layer: 1, scrim: 0.56 },
-  app: { line: 0.36, fill: 0.22, layer: 0.92, scrim: 0.64 },
+  public: { line: 0.55, fill: 0.36, layer: 1, scrim: 0.32 },
+  app: { line: 0.5, fill: 0.32, layer: 1, scrim: 0.36 },
 };
 
 /** Marketing and auth surfaces — slightly stronger illustration */
@@ -58,7 +58,7 @@ export function SiteCityscapeBackground() {
         style={{
           opacity: tokens.layer,
           transform: `translateY(${offsetY}px)`,
-          mixBlendMode: "soft-light",
+          mixBlendMode: "normal",
           WebkitMaskImage:
             "linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%), radial-gradient(ellipse 90% 85% at 50% 65%, black 30%, transparent 78%)",
           maskImage:
@@ -78,7 +78,7 @@ export function SiteCityscapeBackground() {
         className="absolute -right-[6%] bottom-0 top-[22%] hidden w-[48%] lg:block"
         style={{
           opacity: tokens.layer * 0.72,
-          mixBlendMode: "soft-light",
+          mixBlendMode: "normal",
           transform: `translateY(${offsetY * 0.6}px) scaleX(-1)`,
           WebkitMaskImage: "linear-gradient(to left, black 40%, transparent 100%)",
           maskImage: "linear-gradient(to left, black 40%, transparent 100%)",
@@ -91,11 +91,11 @@ export function SiteCityscapeBackground() {
         />
       </div>
 
-      {/* Center readability scrim — stronger for busier colored washes */}
+      {/* Center readability scrim — lighter so line art shows through */}
       <div
         className="absolute inset-0"
         style={{
-          background: `radial-gradient(ellipse 54% 68% at 50% 42%, rgba(42, 42, 40, ${tokens.scrim}) 0%, rgba(42, 42, 40, ${tokens.scrim * 0.6}) 40%, transparent 70%)`,
+          background: `radial-gradient(ellipse 58% 72% at 50% 42%, rgba(42, 42, 40, ${tokens.scrim}) 0%, rgba(42, 42, 40, ${tokens.scrim * 0.3}) 38%, transparent 68%)`,
         }}
       />
 
@@ -103,7 +103,7 @@ export function SiteCityscapeBackground() {
         className="absolute inset-x-0 top-0 h-[18%] min-h-[72px]"
         style={{
           background:
-            "linear-gradient(to bottom, rgba(42, 42, 40, 0.94) 0%, rgba(42, 42, 40, 0.5) 55%, transparent 100%)",
+            "linear-gradient(to bottom, rgba(42, 42, 40, 0.72) 0%, rgba(42, 42, 40, 0.28) 55%, transparent 100%)",
         }}
       />
 
@@ -111,7 +111,7 @@ export function SiteCityscapeBackground() {
         className="absolute inset-x-0 bottom-0 h-[12%]"
         style={{
           background:
-            "linear-gradient(to top, rgba(42, 42, 40, 0.78) 0%, transparent 100%)",
+            "linear-gradient(to top, rgba(42, 42, 40, 0.55) 0%, transparent 100%)",
         }}
       />
     </div>

@@ -71,8 +71,8 @@
   --champagne: #c9a87c;
   --champagne-light: #d4b896;
   --champagne-foreground: #211d1a;
-  --champagne-muted: rgba(201, 168, 124, 0.22);
-  --champagne-glow: rgba(201, 168, 124, 0.35);
+  --champagne-muted: rgba(201, 168, 124, 0.14);
+  --champagne-glow: rgba(201, 168, 124, 0.22);
 
   --background: var(--charcoal);
   --foreground: var(--blush);
@@ -109,21 +109,16 @@
 
   --card-shadow:
     0 2px 4px rgba(0, 0, 0, 0.2), 0 8px 28px rgba(0, 0, 0, 0.18),
-    0 0 0 1px rgba(201, 168, 124, 0.06),
-    inset 0 1px 0 rgba(245, 237, 232, 0.08);
+    0 0 0 1px rgba(201, 168, 124, 0.04),
+    inset 0 1px 0 rgba(245, 237, 232, 0.06);
   --card-shadow-hover:
     0 4px 8px rgba(0, 0, 0, 0.22), 0 14px 36px rgba(0, 0, 0, 0.2),
-    0 0 0 1px rgba(201, 168, 124, 0.14),
-    inset 0 1px 0 rgba(245, 237, 232, 0.12);
+    0 0 0 1px rgba(201, 168, 124, 0.1),
+    inset 0 1px 0 rgba(245, 237, 232, 0.08);
   --card-border-subtle: rgba(245, 237, 232, 0.12);
-  --card-border-accent: rgba(214, 150, 169, 0.28);
-  --card-border-champagne: rgba(201, 168, 124, 0.32);
-  --card-gradient: linear-gradient(
-    145deg,
-    rgba(201, 168, 124, 0.08) 0%,
-    rgba(31, 31, 29, 1) 42%,
-    rgba(139, 58, 82, 0.06) 100%
-  );
+  --card-border-accent: rgba(214, 150, 169, 0.22);
+  --card-border-champagne: rgba(201, 168, 124, 0.14);
+  --card-surface: rgba(31, 31, 29, 0.78);
 }
 
 .dark {
@@ -193,10 +188,10 @@
   .vbd-page-bg {
     background-color: transparent;
     background-image:
-      radial-gradient(ellipse 90% 55% at 8% -8%, rgba(201, 168, 124, 0.08), transparent 55%),
-      radial-gradient(ellipse 70% 50% at 92% 12%, rgba(214, 150, 169, 0.06), transparent 50%),
-      radial-gradient(ellipse 60% 45% at 100% 85%, rgba(201, 168, 124, 0.05), transparent 55%),
-      radial-gradient(ellipse 55% 40% at 0% 75%, rgba(139, 58, 82, 0.05), transparent 50%);
+      radial-gradient(ellipse 90% 55% at 8% -8%, rgba(201, 168, 124, 0.04), transparent 55%),
+      radial-gradient(ellipse 70% 50% at 92% 12%, rgba(214, 150, 169, 0.03), transparent 50%),
+      radial-gradient(ellipse 60% 45% at 100% 85%, rgba(201, 168, 124, 0.025), transparent 55%),
+      radial-gradient(ellipse 55% 40% at 0% 75%, rgba(139, 58, 82, 0.025), transparent 50%);
   }
 
   .vbd-section-label {
@@ -228,41 +223,42 @@
   }
 
   .vbd-section-alt {
-    background-color: rgba(42, 40, 36, 0.55);
+    background-color: rgba(42, 40, 36, 0.1);
     background-image: linear-gradient(
       180deg,
-      rgba(201, 168, 124, 0.04) 0%,
+      rgba(201, 168, 124, 0.02) 0%,
       transparent 40%,
-      rgba(214, 150, 169, 0.03) 100%
+      rgba(214, 150, 169, 0.015) 100%
     );
   }
 
   .vbd-muted-section {
-    background-color: rgba(31, 31, 29, 0.65);
+    background-color: rgba(31, 31, 29, 0.12);
     background-image: linear-gradient(
       135deg,
-      rgba(139, 58, 82, 0.05) 0%,
+      rgba(139, 58, 82, 0.02) 0%,
       transparent 50%,
-      rgba(201, 168, 124, 0.04) 100%
+      rgba(201, 168, 124, 0.02) 100%
     );
   }
 
   .vbd-header-bar {
-    border-bottom: 1px solid rgba(201, 168, 124, 0.28);
-    background-color: rgba(31, 31, 29, 0.88);
+    border-bottom: 1px solid rgba(201, 168, 124, 0.16);
+    background-color: rgba(31, 31, 29, 0.72);
     box-shadow:
-      0 4px 24px rgba(0, 0, 0, 0.22),
-      inset 0 -1px 0 rgba(201, 168, 124, 0.12);
-    @apply backdrop-blur-lg supports-[backdrop-filter]:bg-card/75;
+      0 4px 24px rgba(0, 0, 0, 0.18),
+      inset 0 -1px 0 rgba(201, 168, 124, 0.06);
+    @apply backdrop-blur-lg supports-[backdrop-filter]:bg-card/60;
   }
 
   .vbd-prescription-card {
     border-radius: var(--radius-lg);
-    border: 1px solid var(--card-border-subtle);
+    border: 1px solid var(--card-border-accent);
     border-left: 3px solid var(--rose);
-    border-top: 1px solid var(--card-border-champagne);
-    background: var(--card-gradient);
+    background: var(--card-surface);
     box-shadow: var(--card-shadow);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     transition:
       box-shadow 200ms ease,
       border-color 200ms ease;
@@ -271,9 +267,10 @@
   .vbd-elevated-card {
     border-radius: var(--radius-lg);
     border: 1px solid var(--card-border-subtle);
-    border-top: 1px solid var(--card-border-champagne);
-    background: var(--card-gradient);
+    background: var(--card-surface);
     box-shadow: var(--card-shadow);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     transition:
       box-shadow 200ms ease,
       border-color 200ms ease,
@@ -304,10 +301,12 @@
 
   .vbd-hero-badge {
     @apply inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[10px] font-medium uppercase tracking-[0.14em];
-    border-color: rgba(201, 168, 124, 0.45);
-    background: linear-gradient(135deg, rgba(201, 168, 124, 0.18), rgba(214, 150, 169, 0.1));
+    border-color: rgba(201, 168, 124, 0.28);
+    background: rgba(31, 31, 29, 0.65);
     color: var(--champagne-light);
-    box-shadow: 0 0 20px rgba(201, 168, 124, 0.15);
+    box-shadow: 0 0 12px rgba(201, 168, 124, 0.08);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
   }
 
   .vbd-hero-badge::before {
@@ -396,10 +395,10 @@
 
   .vbd-icon-ring {
     @apply flex shrink-0 items-center justify-center rounded-full;
-    background: linear-gradient(135deg, rgba(201, 168, 124, 0.22), rgba(214, 150, 169, 0.15));
+    background: rgba(31, 31, 29, 0.7);
     box-shadow:
-      0 0 0 1px rgba(201, 168, 124, 0.35),
-      inset 0 1px 0 rgba(245, 237, 232, 0.08);
+      0 0 0 1px rgba(201, 168, 124, 0.2),
+      inset 0 1px 0 rgba(245, 237, 232, 0.06);
   }
 
   .vbd-panel-header-accent {
@@ -408,11 +407,11 @@
   }
 
   .vbd-nav-active {
-    border-color: rgba(201, 168, 124, 0.55) !important;
-    background: linear-gradient(135deg, rgba(201, 168, 124, 0.14), rgba(214, 150, 169, 0.1)) !important;
+    border-color: rgba(201, 168, 124, 0.35) !important;
+    background: rgba(31, 31, 29, 0.75) !important;
     color: var(--champagne-light) !important;
     box-shadow:
-      0 0 0 1px rgba(201, 168, 124, 0.25),
+      0 0 0 1px rgba(201, 168, 124, 0.15),
       var(--card-shadow) !important;
   }
 

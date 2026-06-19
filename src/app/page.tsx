@@ -36,14 +36,13 @@ function ProductCard({
 
 export default function Home() {
   return (
-    <div className="vbd-page-bg relative min-h-screen w-full bg-background">
+    <div className="vbd-page-bg relative min-h-screen w-full">
       <PublicHeader />
 
       <main>
         {/* Hero */}
         <section className="relative isolate flex min-h-screen flex-col justify-center overflow-hidden px-4 py-20 sm:px-6 sm:py-24 lg:px-8">
           <SectionGlow variant="hero" testId="sales-hero-glow" />
-          <SectionGlow variant="champagne" testId="sales-hero-champagne-glow" />
           <div className="relative z-10 flex w-full flex-col items-center gap-12 lg:flex-row lg:items-center lg:justify-between lg:gap-20">
             <div className="vbd-hero-accent w-full max-w-4xl">
               <span className="vbd-hero-badge">Designed for calm</span>
@@ -181,7 +180,6 @@ export default function Home() {
         {/* The quiet advantage */}
         <section className="vbd-muted-section relative isolate overflow-hidden px-4 py-20 sm:px-6 lg:px-8">
           <SectionGlow variant="quiet-advantage" testId="sales-quiet-advantage-glow" />
-          <SectionGlow variant="champagne" testId="sales-champagne-glow" />
           <div className="vbd-prescription-card relative w-full max-w-3xl p-6 sm:p-8">
             <h2 className="font-serif text-3xl tracking-tight text-foreground sm:text-4xl">The quiet advantage</h2>
             <p className="mt-5 text-sm leading-relaxed text-muted-foreground sm:text-base">

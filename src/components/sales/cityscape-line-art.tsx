@@ -351,16 +351,16 @@ export function CityscapeDividerStrip({ className }: LayerProps) {
 /** Full panoramic stack for site-wide fixed background */
 export function CityscapePanorama({
   className,
-  lineOpacity = 0.4,
-  fillOpacity = 0.26,
+  lineOpacity = 0.5,
+  fillOpacity = 0.32,
 }: PanoramaProps) {
   const layerStyle = {
     opacity: lineOpacity,
-    mixBlendMode: "soft-light" as const,
+    mixBlendMode: "normal" as const,
   };
   const washStyle = {
     opacity: fillOpacity,
-    mixBlendMode: "multiply" as const,
+    mixBlendMode: "normal" as const,
   };
 
   return (
