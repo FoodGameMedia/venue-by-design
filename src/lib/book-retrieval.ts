@@ -1,4 +1,4 @@
-import { sql } from "drizzle-orm";
+import { ilike, or, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { bookChunks } from "@/db/schema";
 
@@ -121,7 +121,10 @@ async function retrieveViaKeywordFallback(
   const keywords = extractQueryKeywords(query);
   if (!keywords.length) return [];
 
-  const allChunks = await db
+  const keywordMatches = keywords.map((kw) => ilike(bookChunks.content, `%${kw}%`));
+  const candidateLimit = Math.min(limit * 8, 48);
+
+  const candidates = await db
     .select({
       bookId: bookChunks.bookId,
       chapter: bookChunks.chapter,
@@ -129,9 +132,11 @@ async function retrieveViaKeywordFallback(
       sourcePath: bookChunks.sourcePath,
       chunkIndex: bookChunks.chunkIndex,
     })
-    .from(bookChunks);
+    .from(bookChunks)
+    .where(or(...keywordMatches))
+    .limit(candidateLimit);
 
-  return scoreChunksByKeywords(allChunks, query).slice(0, limit);
+  return scoreChunksByKeywords(candidates, query).slice(0, limit);
 }
 
 /**
@@ -151,8 +156,12 @@ export async function retrieveBookChunks(
     const ftsResults = await retrieveViaFullTextSearch(trimmed, safeLimit);
     if (ftsResults.length > 0) return ftsResults;
 
-    return retrieveViaKeywordFallback(trimmed, safeLimit);
+    return await retrieveViaKeywordFallback(trimmed, safeLimit);
   } catch {
-    return retrieveViaKeywordFallback(trimmed, safeLimit);
+    try {
+      return await retrieveViaKeywordFallback(trimmed, safeLimit);
+    } catch {
+      return [];
+    }
   }
 }

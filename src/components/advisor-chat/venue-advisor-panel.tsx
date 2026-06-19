@@ -88,15 +88,26 @@ export function VenueAdvisorPanel({
           body: JSON.stringify({ venueId, messages: nextMessages }),
         });
 
-        const data = (await res.json()) as { message?: string; error?: string };
+        const data = (await res.json().catch(() => ({}))) as {
+          message?: string;
+          error?: string;
+        };
 
         if (!res.ok) {
-          throw new Error(data.error ?? "Something went wrong");
+          const fallback =
+            res.status === 502 || res.status === 504
+              ? "The request timed out. Please try again."
+              : "Something went wrong";
+          throw new Error(data.error ?? fallback);
+        }
+
+        if (!data.message?.trim()) {
+          throw new Error("No response from advisor. Please try again.");
         }
 
         const assistantMessage: ChatMessage = {
           role: "assistant",
-          content: data.message ?? "",
+          content: data.message,
         };
         const withReply = [...nextMessages, assistantMessage];
         setMessages(withReply);

@@ -340,4 +340,38 @@ describe("POST /api/chat", () => {
     expect(mockMessagesCreate).toHaveBeenCalled();
     expect(mockRetrieveBookChunks).toHaveBeenCalledWith("What should I focus on?", 6);
   });
+
+  it("returns JSON error when Anthropic fails", async () => {
+    mockMessagesCreate.mockRejectedValueOnce(new Error("Anthropic unavailable"));
+    const POST = await getChatPost();
+    const res = await POST(
+      new Request("http://localhost/api/chat", {
+        method: "POST",
+        body: JSON.stringify({
+          venueId: "venue_1",
+          messages: [{ role: "user", content: "What should I focus on?" }],
+        }),
+      })
+    );
+    expect(res.status).toBe(500);
+    const body = await res.json();
+    expect(body.error).toContain("Unable to generate a response");
+  });
+
+  it("still responds when book retrieval throws", async () => {
+    mockRetrieveBookChunks.mockRejectedValueOnce(new Error("DB unavailable"));
+    const POST = await getChatPost();
+    const res = await POST(
+      new Request("http://localhost/api/chat", {
+        method: "POST",
+        body: JSON.stringify({
+          venueId: "venue_1",
+          messages: [{ role: "user", content: "What should I focus on?" }],
+        }),
+      })
+    );
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.message).toBe("Try a five-minute pre-service briefing.");
+  });
 });

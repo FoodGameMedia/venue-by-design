@@ -217,7 +217,7 @@ export async function chatWithAdvisor(
   systemPrompt: string,
   client?: Anthropic
 ): Promise<string> {
-  const anthropic = client ?? new Anthropic();
+  const anthropic = client ?? new Anthropic({ timeout: 25_000 });
 
   const response = await anthropic.messages.create({
     model: "claude-sonnet-4-20250514",

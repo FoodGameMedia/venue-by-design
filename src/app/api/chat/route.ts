@@ -12,7 +12,21 @@ import {
 } from "@/lib/venue-advisor-chat";
 import { captureException } from "@/lib/sentry";
 
+export const maxDuration = 60;
+
 export async function POST(request: Request) {
+  try {
+    return await handleChatPost(request);
+  } catch (error) {
+    captureException(error, { context: "venue_advisor_chat_route" });
+    return NextResponse.json(
+      { error: "Unable to generate a response right now. Please try again." },
+      { status: 500 }
+    );
+  }
+}
+
+async function handleChatPost(request: Request) {
   const supabase = await createClient();
   const {
     data: { user: authUser },
@@ -124,9 +138,18 @@ export async function POST(request: Request) {
   };
 
   const lastUserMessage = [...validation.messages].reverse().find((m) => m.role === "user");
-  const bookExcerpts = lastUserMessage
-    ? await retrieveBookChunks(lastUserMessage.content, 6)
-    : [];
+  let bookExcerpts: Awaited<ReturnType<typeof retrieveBookChunks>> = [];
+  if (lastUserMessage) {
+    try {
+      bookExcerpts = await retrieveBookChunks(lastUserMessage.content, 6);
+    } catch (error) {
+      captureException(error, {
+        context: "venue_advisor_book_retrieval",
+        venueId,
+        userId: dbUser.id,
+      });
+    }
+  }
 
   const systemPrompt = buildSystemPrompt(venueContext, bookExcerpts);
 
