@@ -35,7 +35,7 @@ function ProductCard({
 
 export default function Home() {
   return (
-    <div className="vbd-page-bg relative min-h-screen w-full bg-background">
+    <div className="relative min-h-screen w-full bg-background">
       <PublicHeader />
 
       <main>
