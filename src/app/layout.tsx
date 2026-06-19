@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { DM_Sans, DM_Serif_Display } from "next/font/google";
 import "./globals.css";
 import { PwaRegister } from "@/components/pwa-register";
+import { ScrollingCollageBackground } from "@/components/scrolling-collage-background";
 import { VenueAdvisorHost } from "@/components/advisor-chat/venue-advisor-host";
 
 const dmSans = DM_Sans({
@@ -43,8 +44,8 @@ export default function RootLayout({
       lang="en"
       className={`${dmSans.variable} ${dmSerif.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col" suppressHydrationWarning>
-        {children}
+      <body className="min-h-full flex flex-col bg-background" suppressHydrationWarning>
+        <ScrollingCollageBackground>{children}</ScrollingCollageBackground>
         <VenueAdvisorHost />
         <PwaRegister />
       </body>
