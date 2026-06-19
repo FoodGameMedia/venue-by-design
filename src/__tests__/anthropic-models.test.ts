@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   ANTHROPIC_MODELS,
   chatApiErrorPayload,
+  isAnthropicAuthError,
   isAnthropicModelNotFoundError,
 } from "@/lib/anthropic-models";
 
@@ -20,5 +21,17 @@ describe("anthropic-models", () => {
     };
     expect(isAnthropicModelNotFoundError(error)).toBe(true);
     expect(chatApiErrorPayload(error).code).toBe("ANTHROPIC_MODEL_NOT_FOUND");
+  });
+
+  it("detects Anthropic auth errors", () => {
+    const error = {
+      status: 401,
+      error: {
+        type: "error",
+        error: { type: "authentication_error", message: "invalid x-api-key" },
+      },
+    };
+    expect(isAnthropicAuthError(error)).toBe(true);
+    expect(chatApiErrorPayload(error).code).toBe("ANTHROPIC_AUTH_ERROR");
   });
 });

@@ -1,5 +1,5 @@
-import Anthropic from "@anthropic-ai/sdk";
-import { ANTHROPIC_MODELS } from "@/lib/anthropic-models";
+import type Anthropic from "@anthropic-ai/sdk";
+import { ANTHROPIC_MODELS, createAnthropicClient } from "@/lib/anthropic-models";
 import type { DiagnosticQuestion } from "./diagnostic-questions";
 
 export interface DiagnosticReport {
@@ -99,7 +99,7 @@ export async function generateDiagnosticReport(
   input: DiagnosticReportInput,
   client?: Anthropic
 ): Promise<DiagnosticReport> {
-  const anthropic = client ?? new Anthropic();
+  const anthropic = client ?? createAnthropicClient();
 
   const message = await anthropic.messages.create({
     model: ANTHROPIC_MODELS.opus,

@@ -182,7 +182,12 @@ async function handleChatPost(request: Request) {
       ...anthropicErrorDetails(error),
     });
     return NextResponse.json(payload, {
-      status: payload.code === "ANTHROPIC_MODEL_NOT_FOUND" ? 502 : 500,
+      status:
+        payload.code === "ANTHROPIC_MODEL_NOT_FOUND"
+          ? 502
+          : payload.code === "ANTHROPIC_AUTH_ERROR"
+            ? 502
+            : 500,
     });
   }
 }

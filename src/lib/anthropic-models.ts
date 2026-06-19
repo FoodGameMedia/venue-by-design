@@ -1,3 +1,5 @@
+import Anthropic from "@anthropic-ai/sdk";
+
 /** Current Anthropic model IDs (see platform.claude.com/docs/en/about-claude/model-deprecations). */
 export const ANTHROPIC_MODELS = {
   /** Default for chat, prescriptions, and other Sonnet workloads. */
@@ -6,8 +8,21 @@ export const ANTHROPIC_MODELS = {
   opus: "claude-opus-4-8",
 } as const;
 
+export function getAnthropicApiKey(): string | undefined {
+  const key = process.env.ANTHROPIC_API_KEY?.trim();
+  return key || undefined;
+}
+
 export function isAnthropicApiKeyConfigured(): boolean {
-  return Boolean(process.env.ANTHROPIC_API_KEY?.trim());
+  return Boolean(getAnthropicApiKey());
+}
+
+export function createAnthropicClient(options?: { timeout?: number }): Anthropic {
+  const apiKey = getAnthropicApiKey();
+  if (!apiKey) {
+    throw new Error("ANTHROPIC_API_KEY is not configured");
+  }
+  return new Anthropic({ apiKey, ...options });
 }
 
 export function anthropicErrorDetails(error: unknown): Record<string, unknown> {
@@ -34,9 +49,16 @@ export function isAnthropicModelNotFoundError(error: unknown): boolean {
   return typeof message === "string" && message.includes("model:");
 }
 
+export function isAnthropicAuthError(error: unknown): boolean {
+  const details = anthropicErrorDetails(error);
+  if (details.anthropicStatus === 401) return true;
+  return details.anthropicErrorType === "authentication_error";
+}
+
 export type ChatApiErrorCode =
   | "CHAT_UNAVAILABLE"
   | "ANTHROPIC_NOT_CONFIGURED"
+  | "ANTHROPIC_AUTH_ERROR"
   | "ANTHROPIC_MODEL_NOT_FOUND";
 
 const CHAT_UNAVAILABLE_MESSAGE =
@@ -50,6 +72,13 @@ export function chatApiErrorPayload(error?: unknown): {
     return {
       error: CHAT_UNAVAILABLE_MESSAGE,
       code: "ANTHROPIC_MODEL_NOT_FOUND",
+    };
+  }
+
+  if (error && isAnthropicAuthError(error)) {
+    return {
+      error: CHAT_UNAVAILABLE_MESSAGE,
+      code: "ANTHROPIC_AUTH_ERROR",
     };
   }
 

@@ -1,5 +1,5 @@
-import Anthropic from "@anthropic-ai/sdk";
-import { ANTHROPIC_MODELS } from "@/lib/anthropic-models";
+import type Anthropic from "@anthropic-ai/sdk";
+import { ANTHROPIC_MODELS, createAnthropicClient } from "@/lib/anthropic-models";
 import type { Domain } from "@/lib/checkin-questions";
 
 export interface Prescription {
@@ -65,7 +65,7 @@ export async function generatePrescription(
   input: PrescriptionInput,
   client?: Anthropic
 ): Promise<Prescription> {
-  const anthropic = client ?? new Anthropic();
+  const anthropic = client ?? createAnthropicClient();
 
   const message = await anthropic.messages.create({
     model: ANTHROPIC_MODELS.sonnet,

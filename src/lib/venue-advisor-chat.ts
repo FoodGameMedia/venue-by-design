@@ -1,5 +1,5 @@
-import Anthropic from "@anthropic-ai/sdk";
-import { ANTHROPIC_MODELS } from "@/lib/anthropic-models";
+import type Anthropic from "@anthropic-ai/sdk";
+import { ANTHROPIC_MODELS, createAnthropicClient } from "@/lib/anthropic-models";
 import type { Domain } from "@/lib/checkin-questions";
 import { formatBookExcerpts, type BookExcerpt } from "@/lib/book-retrieval";
 import {
@@ -218,7 +218,7 @@ export async function chatWithAdvisor(
   systemPrompt: string,
   client?: Anthropic
 ): Promise<string> {
-  const anthropic = client ?? new Anthropic({ timeout: 25_000 });
+  const anthropic = client ?? createAnthropicClient({ timeout: 25_000 });
 
   const response = await anthropic.messages.create({
     model: ANTHROPIC_MODELS.sonnet,
