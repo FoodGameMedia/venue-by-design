@@ -2,7 +2,6 @@ import Link from "next/link";
 import { CalmThermostat } from "@/components/calm-thermostat";
 import { DomainIconList } from "@/components/sales/domain-icon-list";
 import { HeroCalmThermostat } from "@/components/sales/hero-calm-thermostat";
-import { SectionCityscapeDivider } from "@/components/sales/hero-cityscape-bg";
 import { PublicHeader } from "@/components/sales/public-header";
 import { SectionGlow } from "@/components/sales/section-glow";
 import { SocialProofSection } from "@/components/sales/social-proof-section";
@@ -36,7 +35,7 @@ function ProductCard({
 
 export default function Home() {
   return (
-    <div className="vbd-page-bg relative min-h-screen w-full bg-transparent">
+    <div className="vbd-page-bg relative min-h-screen w-full bg-background">
       <PublicHeader />
 
       <main>
@@ -85,8 +84,6 @@ export default function Home() {
             <HeroCalmThermostat />
           </div>
         </section>
-
-        <SectionCityscapeDivider testId="sales-cityscape-divider" />
 
         {/* The problem */}
         <section className="relative vbd-section-divider vbd-section-alt overflow-hidden px-4 py-20 sm:px-6 lg:px-8">

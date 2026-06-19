@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { DM_Sans, DM_Serif_Display } from "next/font/google";
 import "./globals.css";
 import { PwaRegister } from "@/components/pwa-register";
-import { SiteCityscapeBackground } from "@/components/site-cityscape-background";
 import { VenueAdvisorHost } from "@/components/advisor-chat/venue-advisor-host";
 
 const dmSans = DM_Sans({
@@ -45,8 +44,7 @@ export default function RootLayout({
       className={`${dmSans.variable} ${dmSerif.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
-        <SiteCityscapeBackground />
-        <div className="vbd-site-shell relative z-10 flex min-h-full flex-1 flex-col">{children}</div>
+        {children}
         <VenueAdvisorHost />
         <PwaRegister />
       </body>
