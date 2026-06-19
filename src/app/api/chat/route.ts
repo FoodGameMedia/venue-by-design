@@ -10,6 +10,7 @@ import {
   validateChatMessages,
   type VenueContext,
 } from "@/lib/venue-advisor-chat";
+import { anthropicErrorDetails } from "@/lib/anthropic-models";
 import { captureException } from "@/lib/sentry";
 
 export const maxDuration = 60;
@@ -157,7 +158,12 @@ async function handleChatPost(request: Request) {
     const message = await chatWithAdvisor(validation.messages, systemPrompt);
     return NextResponse.json({ message });
   } catch (error) {
-    captureException(error, { context: "venue_advisor_chat", venueId, userId: dbUser.id });
+    captureException(error, {
+      context: "venue_advisor_chat",
+      venueId,
+      userId: dbUser.id,
+      ...anthropicErrorDetails(error),
+    });
     return NextResponse.json(
       { error: "Unable to generate a response right now. Please try again." },
       { status: 500 }

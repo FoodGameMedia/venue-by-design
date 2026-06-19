@@ -1,4 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { ANTHROPIC_MODELS } from "@/lib/anthropic-models";
 import type { Domain } from "@/lib/checkin-questions";
 
 export interface Prescription {
@@ -67,7 +68,7 @@ export async function generatePrescription(
   const anthropic = client ?? new Anthropic();
 
   const message = await anthropic.messages.create({
-    model: "claude-sonnet-4-20250514",
+    model: ANTHROPIC_MODELS.sonnet,
     max_tokens: 1024,
     messages: [
       {

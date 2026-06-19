@@ -1,4 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { ANTHROPIC_MODELS } from "@/lib/anthropic-models";
 import type { Domain } from "@/lib/checkin-questions";
 import { formatBookExcerpts, type BookExcerpt } from "@/lib/book-retrieval";
 import {
@@ -220,7 +221,7 @@ export async function chatWithAdvisor(
   const anthropic = client ?? new Anthropic({ timeout: 25_000 });
 
   const response = await anthropic.messages.create({
-    model: "claude-sonnet-4-20250514",
+    model: ANTHROPIC_MODELS.sonnet,
     max_tokens: 1024,
     system: systemPrompt,
     messages: messages.map((m) => ({

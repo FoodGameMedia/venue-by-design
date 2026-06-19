@@ -1,4 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { ANTHROPIC_MODELS } from "@/lib/anthropic-models";
 import type { DiagnosticQuestion } from "./diagnostic-questions";
 
 export interface DiagnosticReport {
@@ -101,7 +102,7 @@ export async function generateDiagnosticReport(
   const anthropic = client ?? new Anthropic();
 
   const message = await anthropic.messages.create({
-    model: "claude-opus-4-20250514",
+    model: ANTHROPIC_MODELS.opus,
     max_tokens: 4096,
     messages: [{ role: "user", content: buildUserPrompt(input) }],
     system: SYSTEM_PROMPT,
