@@ -11,6 +11,7 @@ import { AppNav } from "@/components/app-nav";
 import { CalmThermostat } from "@/components/calm-thermostat";
 import { NextChangeCard } from "@/components/next-change-card";
 import { getActiveChangeIndex } from "@/lib/venue-progress";
+import { ThisWeekExplainer } from "@/components/page-explainer";
 
 function getWeekKey(date: Date): string {
   const d = new Date(date);
@@ -149,6 +150,8 @@ export default async function DashboardPage() {
             </div>
           )}
         </div>
+
+        <ThisWeekExplainer />
 
         {isEmpty ? (
           <div className="vbd-prescription-card p-6 sm:p-8">

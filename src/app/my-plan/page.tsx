@@ -13,6 +13,7 @@ import {
 import { DIAGNOSTIC_QUESTIONS, type DiagnosticDomain } from "@/lib/diagnostic-questions";
 import type { DiagnosticReport } from "@/lib/diagnostic-report";
 import type { Domain } from "@/lib/checkin-questions";
+import { MyPlanExplainer } from "@/components/page-explainer";
 
 interface DiagnosticRow {
   calm_index: number | null;
@@ -164,6 +165,8 @@ export default async function MyPlanPage() {
           <h1 className="font-serif text-2xl text-foreground">My Plan</h1>
           <p className="mt-1 text-sm text-muted-foreground">{venue.name}</p>
         </div>
+
+        <MyPlanExplainer />
 
         <div className="space-y-6">
           <CalmThermostat value={baseCalmIndex} label="Base Calm Index" />

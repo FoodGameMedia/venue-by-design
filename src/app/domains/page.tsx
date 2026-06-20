@@ -8,6 +8,7 @@ import {
   DOMAIN_LABELS,
 } from "@/lib/domains";
 import type { Domain } from "@/lib/checkin-questions";
+import { DomainsExplainer } from "@/components/page-explainer";
 
 interface CheckinRow {
   responses: Record<string, number> | null;
@@ -86,12 +87,10 @@ export default async function DomainsPage() {
       <main className="w-full px-4 py-6 pb-12 sm:px-6 lg:px-8">
         <div className="mb-6">
           <h1 className="font-serif text-2xl text-foreground">Domains</h1>
-          <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-            The seven domains sit inside three groups. Keep the structure visible so a score
-            lands somewhere useful.
-          </p>
           <p className="mt-1 text-sm text-muted-foreground">{venue.name}</p>
         </div>
+
+        <DomainsExplainer />
 
         <div className="space-y-6">
           {DOMAIN_GROUPS.map((group) => (
