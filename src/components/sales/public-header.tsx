@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/lib/button-variants";
+import { cn } from "@/lib/utils";
 
 export function PublicHeader() {
   return (
@@ -30,10 +31,11 @@ export function PublicHeader() {
           >
             Advisor Portal
           </Link>
-          <Link href="/login" className="cursor-pointer">
-            <Button variant="outline" size="sm" className="text-xs sm:text-sm">
-              Sign in
-            </Button>
+          <Link
+            href="/login"
+            className={cn(buttonVariants({ variant: "outline", size: "sm" }), "text-xs sm:text-sm")}
+          >
+            Sign in
           </Link>
         </div>
       </div>

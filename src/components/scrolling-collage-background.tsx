@@ -13,7 +13,7 @@ export function ScrollingCollageBackground({ children }: { children: ReactNode }
           backgroundPosition: "top center",
           backgroundSize: "100% auto",
         }}
-        aria-hidden
+        aria-hidden="true"
       />
       <div className="relative flex flex-1 flex-col">{children}</div>
     </div>

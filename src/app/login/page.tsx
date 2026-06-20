@@ -86,7 +86,7 @@ function LoginForm() {
                 : "Sign in to your account"}
           </CardDescription>
         </CardHeader>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <CardContent className="space-y-4">
             {(message || displayError) && (
               <div
