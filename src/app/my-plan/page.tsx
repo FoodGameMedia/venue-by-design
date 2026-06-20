@@ -123,7 +123,7 @@ export default async function MyPlanPage() {
 
   if (!diagnostic) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-transparent">
         <AppNav />
         <main className="w-full px-4 py-6 pb-12 sm:px-6 lg:px-8">
           <section className="border-l-4 border-primary bg-card p-6 sm:p-8">
@@ -157,7 +157,7 @@ export default async function MyPlanPage() {
   const ninetyDayDate = addDays(diagnostic.created_at, 90);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-transparent">
       <AppNav />
       <main className="w-full px-4 py-6 pb-12 sm:px-6 lg:px-8">
         <div className="mb-6">

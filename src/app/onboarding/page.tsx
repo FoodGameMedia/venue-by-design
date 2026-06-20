@@ -81,14 +81,14 @@ export default function OnboardingPage() {
 
   if (checking) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="min-h-screen flex items-center justify-center bg-transparent">
         <p className="text-muted-foreground">Loading…</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4">
+    <div className="min-h-screen flex items-center justify-center bg-transparent px-4">
       <Card className="w-full max-w-md border-border bg-card">
         <CardHeader>
           <CardTitle className="text-2xl font-serif text-card-foreground">

@@ -71,7 +71,7 @@ function LoginForm() {
   const displayError = authError === "auth" ? "Authentication failed. Please try again." : null;
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center gap-6 bg-background px-4 py-8">
+    <div className="flex min-h-screen flex-col items-center justify-center gap-6 bg-transparent px-4 py-8">
       {advisorLogin && <AdvisorPortalExplainer />}
       <Card className="w-full max-w-md border-border bg-card">
         <CardHeader>
@@ -173,7 +173,7 @@ function LoginForm() {
 export default function LoginPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="min-h-screen flex items-center justify-center bg-transparent">
         <p className="text-muted-foreground">Loading…</p>
       </div>
     }>

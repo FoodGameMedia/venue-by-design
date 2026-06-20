@@ -16,7 +16,7 @@ export default async function AdvisorPage() {
   if (!account) redirect("/advisor/onboarding");
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-transparent">
       <header className="sticky top-0 z-10 border-b border-border bg-card">
         <div className="flex h-14 min-h-[56px] w-full items-center justify-between px-4 sm:px-6 lg:px-8">
           <h1 className="font-serif text-lg text-foreground">Advisor Portal</h1>

@@ -81,7 +81,7 @@ export default async function DomainsPage() {
   const latestPrescription = prescriptionRes.data;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-transparent">
       <AppNav />
       <main className="w-full px-4 py-6 pb-12 sm:px-6 lg:px-8">
         <div className="mb-6">

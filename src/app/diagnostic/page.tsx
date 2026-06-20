@@ -42,7 +42,7 @@ export default async function DiagnosticPage({
   const venue = userVenues[0];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-transparent">
       <DiagnosticForm venueId={venue.id} userId={dbUser.id} venueName={venue.name} />
     </div>
   );

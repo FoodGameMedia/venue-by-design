@@ -75,7 +75,7 @@ export function CheckinForm({
 
   if (result) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4 py-8 sm:px-6">
+      <div className="flex min-h-screen flex-col items-center justify-center bg-transparent px-4 py-8 sm:px-6">
         <div className="w-full max-w-[375px] border-l-4 border-primary bg-card p-6">
           <h1 className="font-serif text-2xl text-foreground">Your Calm Index</h1>
           <p className="mt-1 text-muted-foreground">{venueName}</p>
@@ -107,7 +107,7 @@ export function CheckinForm({
   const progress = ((step + 1) / CHECKIN_QUESTIONS.length) * 100;
 
   return (
-    <div className="flex min-h-screen flex-col bg-background px-4 py-8 sm:px-6">
+    <div className="flex min-h-screen flex-col bg-transparent px-4 py-8 sm:px-6">
       <header className="mx-auto w-full max-w-[375px]">
         <div className="flex items-center justify-between">
           <Link

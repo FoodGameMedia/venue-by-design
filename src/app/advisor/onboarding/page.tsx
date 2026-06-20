@@ -74,7 +74,7 @@ export default function AdvisorOnboardingPage() {
 
   if (checking) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
+      <div className="flex min-h-screen items-center justify-center bg-transparent">
         <p className="text-muted-foreground">Loading…</p>
       </div>
     );
@@ -82,7 +82,7 @@ export default function AdvisorOnboardingPage() {
 
   if (submitted) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background px-4">
+      <div className="flex min-h-screen items-center justify-center bg-transparent px-4">
         <Card className="w-full max-w-md border-border bg-card">
           <CardHeader>
             <CardTitle className="text-2xl font-serif text-card-foreground">
@@ -107,7 +107,7 @@ export default function AdvisorOnboardingPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+    <div className="flex min-h-screen items-center justify-center bg-transparent px-4">
       <Card className="w-full max-w-md border-border bg-card">
         <CardHeader>
           <CardTitle className="text-2xl font-serif text-card-foreground">

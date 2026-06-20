@@ -28,7 +28,7 @@ export default async function CheckinPage() {
   const venue = userVenues[0];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-transparent">
       <CheckinForm venueId={venue.id} userId={dbUser.id} venueName={venue.name} />
     </div>
   );

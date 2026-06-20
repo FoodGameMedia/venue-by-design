@@ -19,7 +19,7 @@ export default async function PricingPage({
   const showDiagnosticBanner = params.diagnostic === "required";
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-transparent">
       <header className="border-b border-border bg-card">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
           <Link href="/" className="cursor-pointer text-xl font-semibold text-foreground">
