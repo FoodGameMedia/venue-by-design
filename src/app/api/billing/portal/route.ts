@@ -1,6 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
+import { headers } from "next/headers";
 import { stripe } from "@/lib/stripe";
+import { captureException } from "@/lib/sentry";
 import { db } from "@/db";
 import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
@@ -19,17 +21,25 @@ export async function POST() {
     where: eq(users.authId, authUser.id),
   });
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  const headersList = await headers();
+  const host = headersList.get("host") ?? "localhost:3000";
+  const proto = headersList.get("x-forwarded-proto") ?? "http";
+  const origin = `${proto}://${host}`;
 
   // No billing account yet: send them to plans to upgrade or add a new service.
   if (!dbUser?.stripeCustomerId) {
-    return NextResponse.redirect(`${baseUrl}/pricing`, { status: 303 });
+    return NextResponse.redirect(`${origin}/pricing`, { status: 303 });
   }
 
-  const session = await stripe.billingPortal.sessions.create({
-    customer: dbUser.stripeCustomerId,
-    return_url: `${baseUrl}/dashboard`,
-  });
+  try {
+    const session = await stripe.billingPortal.sessions.create({
+      customer: dbUser.stripeCustomerId,
+      return_url: `${origin}/dashboard`,
+    });
 
-  return NextResponse.redirect(session.url);
+    return NextResponse.redirect(session.url);
+  } catch (err) {
+    captureException(err, { context: "billing_portal", userId: dbUser.id });
+    return NextResponse.redirect(`${origin}/pricing`, { status: 303 });
+  }
 }

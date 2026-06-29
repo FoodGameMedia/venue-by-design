@@ -29,6 +29,24 @@ export const DOMAIN_DEFINITIONS: Record<Domain, string> = {
   operational_memory: "Learning from failure, debrief, documentation",
 };
 
+/** Expanded reference copy for the Domains page reference section. */
+export const DOMAIN_REFERENCE_DETAILS: Record<Domain, string> = {
+  throughput:
+    "Throughput is how work moves through your venue when the room is full and the pass is hot — orders, tables, drinks, and handovers without the whole shift depending on one person sprinting. It covers roster design, station layout, and whether your capacity matches how you actually trade on a Friday night. When throughput is weak, every service feels like a rescue mission; when it holds, the team can breathe and guests feel the difference.",
+  defaults:
+    "Defaults are the behaviours your venue runs on without anyone having to think — how a table is set, what happens when a dish 86s, how a handover starts, what gets done before doors open. Strong defaults mean the floor and pass know what 'normal' looks like, so exceptions do not become chaos. Calm operations depend on a handful of clear protocols that hold even when the GM or head chef is not in the building.",
+  signals:
+    "Signals are what your venue communicates without saying a word — menu layout, lighting, music, signage, how staff greet and redirect, what guests see when they walk in. In Australian hospitality, where turnover is high and first impressions matter, weak signals force staff to explain everything verbally and absorb pressure that good design would carry. Clear signals reduce friction for guests and give your team fewer fires to fight on the floor.",
+  pacing:
+    "Pacing is the rhythm of your week and your service — prep windows, opening routines, reset between sittings, and whether the venue can recover before the next rush hits. A venue with poor pacing trades in a permanent state of catch-up: late prep, rushed briefings, no time to fix what broke last night. Steady pacing is what lets small improvements stick instead of being washed away by the next busy shift.",
+  endings:
+    "Endings shape what guests remember — the bill moment, the farewell, the last drink, how you handle a complaint at close. Hospitality research shows people weight the peak and the end of an experience heavily; a great meal can still leave a sour taste if payment is awkward or the goodbye feels rushed. Strong endings protect your reputation and stop one rough final ten minutes from undoing an otherwise calm service.",
+  people_load:
+    "People Load is the invisible weight your team carries — emotional labour on the floor, cognitive load in the pass, the pressure to be the hero who saves every service. Hero culture feels noble in the moment but burns people out and hides system problems behind individual effort. When people load is high, rostering, training, and leadership all need attention; when it eases, your best people stay longer and your systems get a fair test.",
+  operational_memory:
+    "Operational Memory is how your venue learns — debriefs after a blow-up, notes that survive a staff change, documentation that turns a one-off fix into a lasting standard. Without it, the same Saturday-night failure returns every few weeks because the lesson lived in one person's head. Building operational memory is how calm operations compound over months instead of resetting every time the roster turns over.",
+};
+
 export type DomainGroupId = "systems_flow" | "people_memory" | "operational_memory";
 
 export interface DomainGroup {

@@ -1,11 +1,12 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { AppNav } from "@/components/app-nav";
+import { AppShell } from "@/components/app-shell";
 import {
   DOMAIN_DEFINITIONS,
   DOMAIN_GROUPS,
   DOMAIN_LABELS,
+  DOMAIN_REFERENCE_DETAILS,
 } from "@/lib/domains";
 import type { Domain } from "@/lib/checkin-questions";
 import { DomainsExplainer } from "@/components/page-explainer";
@@ -82,8 +83,7 @@ export default async function DomainsPage() {
   const latestPrescription = prescriptionRes.data;
 
   return (
-    <div className="min-h-screen bg-transparent">
-      <AppNav />
+    <AppShell>
       <main className="w-full px-4 py-6 pb-12 sm:px-6 lg:px-8">
         <div className="mb-6">
           <h1 className="font-serif text-2xl text-foreground">Domains</h1>
@@ -183,14 +183,17 @@ export default async function DomainsPage() {
           </p>
           <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             {DOMAIN_GROUPS.flatMap((g) => g.domains).map((domain) => (
-              <div key={domain} className="border border-border bg-background p-3">
+              <div key={domain} className="border border-border bg-background p-4">
                 <p className="font-serif text-lg text-foreground">{DOMAIN_LABELS[domain]}</p>
-                <p className="mt-1 text-sm text-muted-foreground">{DOMAIN_DEFINITIONS[domain]}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{DOMAIN_DEFINITIONS[domain]}</p>
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                  {DOMAIN_REFERENCE_DETAILS[domain]}
+                </p>
               </div>
             ))}
           </div>
         </section>
       </main>
-    </div>
+    </AppShell>
   );
 }

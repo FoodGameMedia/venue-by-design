@@ -9,6 +9,11 @@
  *
  * Create in live mode (requires explicit confirmation):
  *   STRIPE_CREATE_LIVE=1 npx tsx scripts/stripe-pricing.ts create
+ *
+ * Create a 100% off beta promotion code (test or live):
+ *   npx tsx scripts/stripe-pricing.ts create-beta-promo
+ *   STRIPE_BETA_PROMO_CODE=VENUEBETA npx tsx scripts/stripe-pricing.ts create-beta-promo
+ *   STRIPE_CREATE_LIVE=1 npx tsx scripts/stripe-pricing.ts create-beta-promo
  */
 import "dotenv/config";
 import { config } from "dotenv";
@@ -218,6 +223,57 @@ async function create() {
   }
 }
 
+async function createBetaPromo() {
+  const stripe = getStripe();
+  const key = process.env.STRIPE_SECRET_KEY!;
+  const isLive = key.startsWith("sk_live_");
+  const code = (process.env.STRIPE_BETA_PROMO_CODE ?? "VENUEBETA").trim().toUpperCase();
+
+  if (isLive && process.env.STRIPE_CREATE_LIVE !== "1") {
+    console.error(
+      "Refusing to create LIVE promotion codes without STRIPE_CREATE_LIVE=1.\n" +
+        "Set STRIPE_CREATE_LIVE=1 only when you intend to create production coupons."
+    );
+    process.exit(1);
+  }
+
+  console.log(`Stripe create-beta-promo (${modeLabel(key)})\n`);
+
+  const existing = await stripe.promotionCodes.list({ code, limit: 1 });
+  if (existing.data[0]?.active) {
+    const promo = existing.data[0];
+    console.log(`✓ Promotion code already exists: ${code}`);
+    console.log(`  STRIPE_BETA_PROMO_CODE=${code}`);
+    console.log(`  STRIPE_BETA_PROMOTION_CODE_ID=${promo.id}`);
+    return;
+  }
+
+  const coupon = await stripe.coupons.create({
+    percent_off: 100,
+    duration: "once",
+    name: "Venue by Design beta testers",
+    metadata: { venue_by_design: "beta" },
+  });
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const promotionCode = await stripe.promotionCodes.create({
+    coupon: coupon.id,
+    code,
+    max_redemptions: 100,
+    metadata: { venue_by_design: "beta" },
+  } as any);
+
+  console.log(`✓ Created 100% off coupon and promotion code: ${code}`);
+  console.log(`  Coupon: ${coupon.id}`);
+  console.log(`  Promotion code: ${promotionCode.id}`);
+  console.log("\nAdd to Netlify / .env.local:\n");
+  console.log(`STRIPE_BETA_PROMO_CODE=${code}`);
+  console.log(`STRIPE_BETA_PROMOTION_CODE_ID=${promotionCode.id}`);
+  console.log(
+    "\nBeta testers can enter the code on /pricing or at Stripe Checkout (allow_promotion_codes is enabled)."
+  );
+}
+
 const command = process.argv[2] ?? "verify";
 
 if (command === "verify") {
@@ -230,7 +286,12 @@ if (command === "verify") {
     console.error(err);
     process.exit(1);
   });
+} else if (command === "create-beta-promo") {
+  createBetaPromo().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
 } else {
-  console.error("Usage: npx tsx scripts/stripe-pricing.ts [verify|create]");
+  console.error("Usage: npx tsx scripts/stripe-pricing.ts [verify|create|create-beta-promo]");
   process.exit(1);
 }

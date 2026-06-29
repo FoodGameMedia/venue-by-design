@@ -1,14 +1,20 @@
-import type { ReactNode } from "react";
+"use client";
 
-const COLLAGE_URL = "/backgrounds/venue-collage-loop.png";
+import { usePathname } from "next/navigation";
+import type { ReactNode } from "react";
+import { COLLAGE_URLS, getCollageVariant } from "@/lib/collage-background";
 
 export function ScrollingCollageBackground({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
+  const variant = getCollageVariant(pathname ?? "/");
+  const collageUrl = COLLAGE_URLS[variant];
+
   return (
     <div className="relative isolate flex min-h-full flex-1 flex-col">
       <div
-        className="pointer-events-none absolute inset-0 -z-10 opacity-50"
+        className="pointer-events-none absolute inset-0 -z-10 opacity-[0.35]"
         style={{
-          backgroundImage: `url('${COLLAGE_URL}')`,
+          backgroundImage: `url('${collageUrl}')`,
           backgroundRepeat: "repeat-y",
           backgroundPosition: "top center",
           backgroundSize: "100% auto",

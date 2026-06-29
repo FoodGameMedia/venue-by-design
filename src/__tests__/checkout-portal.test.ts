@@ -36,6 +36,7 @@ vi.mock("@/lib/supabase/server", () => ({
 const mockCustomersCreate = vi.fn();
 const mockCheckoutSessionsCreate = vi.fn();
 const mockBillingPortalSessionsCreate = vi.fn();
+const mockPromotionCodesList = vi.fn();
 
 vi.mock("@/lib/stripe", () => ({
   stripe: {
@@ -52,11 +53,28 @@ vi.mock("@/lib/stripe", () => ({
         create: (args: unknown) => mockBillingPortalSessionsCreate(args),
       },
     },
+    promotionCodes: {
+      list: (args: unknown) => mockPromotionCodesList(args),
+    },
   },
+}));
+
+vi.mock("@/lib/stripe-promo", () => ({
+  resolvePromotionCodeId: vi.fn(async (code: string) => {
+    if (code.toUpperCase() === "VENUEBETA") return "promo_beta";
+    return null;
+  }),
 }));
 
 vi.mock("@/lib/sentry", () => ({
   captureException: vi.fn(),
+}));
+
+const mockHeadersGet = vi.fn();
+vi.mock("next/headers", () => ({
+  headers: vi.fn().mockResolvedValue({
+    get: (name: string) => mockHeadersGet(name),
+  }),
 }));
 
 import { users } from "@/db/schema";
@@ -75,6 +93,11 @@ async function getPortalPost() {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  mockHeadersGet.mockImplementation((name: string) => {
+    if (name === "host") return "localhost:3000";
+    if (name === "x-forwarded-proto") return "http";
+    return null;
+  });
   mockGetUser.mockResolvedValue({
     data: {
       user: {
@@ -95,6 +118,10 @@ beforeEach(() => {
   mockBillingPortalSessionsCreate.mockResolvedValue({ url: "https://billing.stripe.com/portal_123" });
 });
 
+function checkoutBody(overrides: Record<string, unknown> = {}) {
+  return JSON.stringify({ planId: "essentials", acceptedTerms: true, ...overrides });
+}
+
 describe("POST /api/checkout/create-session", () => {
   it("returns 401 when not authenticated", async () => {
     mockGetUser.mockResolvedValueOnce({ data: { user: null } });
@@ -102,7 +129,7 @@ describe("POST /api/checkout/create-session", () => {
     const req = new Request("http://localhost/api/checkout/create-session", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ planId: "essentials" }),
+      body: checkoutBody({ planId: "essentials" }),
     });
     const res = await POST(req);
     expect(res.status).toBe(401);
@@ -113,7 +140,7 @@ describe("POST /api/checkout/create-session", () => {
     const req = new Request("http://localhost/api/checkout/create-session", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ planId: "invalid" }),
+      body: checkoutBody({ planId: "invalid" }),
     });
     const res = await POST(req);
     expect(res.status).toBe(400);
@@ -125,7 +152,7 @@ describe("POST /api/checkout/create-session", () => {
     const req = new Request("http://localhost/api/checkout/create-session", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ planId: "essentials" }),
+      body: checkoutBody(),
     });
     const res = await POST(req);
     expect(res.status).toBe(400);
@@ -137,11 +164,24 @@ describe("POST /api/checkout/create-session", () => {
     const req = new Request("http://localhost/api/checkout/create-session", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ planId: "essentials" }),
+      body: checkoutBody(),
     });
     const res = await POST(req);
     expect(res.status).toBe(503);
     vi.stubEnv("STRIPE_SECRET_KEY", "sk_test_fake");
+  });
+
+  it("returns 400 when terms are not accepted", async () => {
+    const POST = await getCheckoutPost();
+    const req = new Request("http://localhost/api/checkout/create-session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ planId: "essentials", acceptedTerms: false }),
+    });
+    const res = await POST(req);
+    expect(res.status).toBe(400);
+    const data = await res.json();
+    expect(data.error).toMatch(/accept the Terms/i);
   });
 
   it("creates checkout session for subscription plan and returns url", async () => {
@@ -149,7 +189,7 @@ describe("POST /api/checkout/create-session", () => {
     const req = new Request("http://localhost/api/checkout/create-session", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ planId: "pro" }),
+      body: checkoutBody({ planId: "pro" }),
     });
     const res = await POST(req);
     expect(res.status).toBe(200);
@@ -161,8 +201,41 @@ describe("POST /api/checkout/create-session", () => {
         client_reference_id: "auth_123",
         mode: "subscription",
         line_items: [{ price: "price_pro", quantity: 1 }],
+        allow_promotion_codes: true,
+        metadata: expect.objectContaining({ acceptedTermsAt: expect.any(String) }),
       })
     );
+  });
+
+  it("applies promotion code when provided", async () => {
+    const POST = await getCheckoutPost();
+    const req = new Request("http://localhost/api/checkout/create-session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: checkoutBody({ planId: "pro", promoCode: "VENUEBETA" }),
+    });
+    const res = await POST(req);
+    expect(res.status).toBe(200);
+    expect(mockCheckoutSessionsCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        discounts: [{ promotion_code: "promo_beta" }],
+        allow_promotion_codes: false,
+        metadata: expect.objectContaining({ promoCode: "VENUEBETA" }),
+      })
+    );
+  });
+
+  it("returns 400 for invalid promotion code", async () => {
+    const POST = await getCheckoutPost();
+    const req = new Request("http://localhost/api/checkout/create-session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: checkoutBody({ planId: "pro", promoCode: "NOTREAL" }),
+    });
+    const res = await POST(req);
+    expect(res.status).toBe(400);
+    const data = await res.json();
+    expect(data.error).toMatch(/promotion code/i);
   });
 
   it("creates checkout session for one-time diagnostic plan", async () => {
@@ -170,7 +243,7 @@ describe("POST /api/checkout/create-session", () => {
     const req = new Request("http://localhost/api/checkout/create-session", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ planId: "solo" }),
+      body: checkoutBody({ planId: "solo" }),
     });
     const res = await POST(req);
     expect(res.status).toBe(200);
@@ -197,7 +270,7 @@ describe("POST /api/checkout/create-session", () => {
     const req = new Request("http://localhost/api/checkout/create-session", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ planId: "essentials" }),
+      body: checkoutBody(),
     });
     const res = await POST(req);
     expect(res.status).toBe(200);
@@ -218,7 +291,7 @@ describe("POST /api/checkout/create-session", () => {
     const req = new Request("http://localhost/api/checkout/create-session", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ planId: "essentials" }),
+      body: checkoutBody(),
     });
     const res = await POST(req);
     expect(res.status).toBe(503);
@@ -249,7 +322,7 @@ describe("POST /api/checkout/create-session", () => {
     const req = new Request("http://localhost/api/checkout/create-session", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ planId: "essentials" }),
+      body: checkoutBody(),
     });
     const res = await POST(req);
     expect(res.status).toBe(502);
@@ -291,5 +364,16 @@ describe("POST /api/billing/portal", () => {
         return_url: "http://localhost:3000/dashboard",
       })
     );
+  });
+
+  it("redirects to pricing when Stripe portal creation fails", async () => {
+    mockBillingPortalSessionsCreate.mockRejectedValueOnce(
+      Object.assign(new Error("No such customer"), { code: "resource_missing" })
+    );
+    const POST = await getPortalPost();
+    const req = new Request("http://localhost/api/billing/portal", { method: "POST" });
+    const res = await POST(req);
+    expect(res.status).toBe(303);
+    expect(res.headers.get("location")).toBe("http://localhost:3000/pricing");
   });
 });

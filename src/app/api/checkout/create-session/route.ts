@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { stripe } from "@/lib/stripe";
+import { resolvePromotionCodeId } from "@/lib/stripe-promo";
 import { captureException } from "@/lib/sentry";
 import { db } from "@/db";
 import { users } from "@/db/schema";
@@ -49,9 +50,23 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
     }
 
-    planId = typeof (body as { planId?: unknown })?.planId === "string"
-      ? (body as { planId: string }).planId
-      : "";
+    const payload = body as {
+      planId?: unknown;
+      acceptedTerms?: unknown;
+      promoCode?: unknown;
+    };
+
+    planId = typeof payload.planId === "string" ? payload.planId : "";
+
+    if (payload.acceptedTerms !== true) {
+      return NextResponse.json(
+        { error: "Please accept the Terms & Conditions and Privacy Policy to continue." },
+        { status: 400 }
+      );
+    }
+
+    const promoCode =
+      typeof payload.promoCode === "string" ? payload.promoCode.trim() : "";
 
     const missingEnv = getMissingCheckoutEnv(planId || undefined);
     if (missingEnv) {
@@ -126,17 +141,40 @@ export async function POST(request: Request) {
 
     const isSubscription = SUBSCRIPTION_PLANS.includes(planId);
 
+    let promotionCodeId: string | null = null;
+    if (promoCode) {
+      promotionCodeId = await resolvePromotionCodeId(promoCode);
+      if (!promotionCodeId) {
+        return NextResponse.json(
+          { error: "Promotion code is invalid or expired." },
+          { status: 400 }
+        );
+      }
+    }
+
     // Stripe 2026 API types differ; customer param is valid per Stripe docs
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const session = await stripe.checkout.sessions.create({
+    const sessionParams: Record<string, unknown> = {
       customer: customerId,
       client_reference_id: authUser.id,
       success_url: successUrl,
       cancel_url: cancelUrl,
       line_items: [{ price: priceId, quantity: 1 }],
       mode: isSubscription ? "subscription" : "payment",
-      metadata: { planId, userId: dbUser.id },
-    } as any);
+      allow_promotion_codes: !promotionCodeId,
+      metadata: {
+        planId,
+        userId: dbUser.id,
+        acceptedTermsAt: new Date().toISOString(),
+        ...(promoCode ? { promoCode } : {}),
+      },
+    };
+
+    if (promotionCodeId) {
+      sessionParams.discounts = [{ promotion_code: promotionCodeId }];
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionParams as any);
 
     if (!session.url) {
       console.error("[checkout/create-session] Stripe session created without url", {

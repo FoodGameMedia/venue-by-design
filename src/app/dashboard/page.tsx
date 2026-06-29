@@ -7,7 +7,7 @@ import { CalmIndexTrend } from "./calm-index-trend";
 import { DomainRadar } from "./domain-radar";
 import { CheckinHistory } from "./checkin-history";
 import { DOMAINS } from "@/lib/checkin-questions";
-import { AppNav } from "@/components/app-nav";
+import { AppShell } from "@/components/app-shell";
 import { CalmThermostat } from "@/components/calm-thermostat";
 import { NextChangeCard } from "@/components/next-change-card";
 import { getActiveChangeIndex } from "@/lib/venue-progress";
@@ -122,8 +122,7 @@ export default async function DashboardPage() {
   );
 
   return (
-    <div className="min-h-screen bg-transparent">
-      <AppNav />
+    <AppShell>
       <main className="w-full px-4 py-8 pb-14 sm:px-6 lg:px-8">
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
           <div className="vbd-section-header">
@@ -242,6 +241,6 @@ export default async function DashboardPage() {
           </div>
         )}
       </main>
-    </div>
+    </AppShell>
   );
 }

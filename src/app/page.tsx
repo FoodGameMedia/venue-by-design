@@ -5,6 +5,7 @@ import { HeroCalmThermostat } from "@/components/sales/hero-calm-thermostat";
 import { PublicHeader } from "@/components/sales/public-header";
 import { SectionGlow } from "@/components/sales/section-glow";
 import { SocialProofSection } from "@/components/sales/social-proof-section";
+import { PublicFooter } from "@/components/sales/public-footer";
 
 const DIAGNOSTIC_CTA = "/pricing?diagnostic=required";
 const PRICING_CTA = "/pricing";
@@ -246,6 +247,7 @@ export default function Home() {
           </div>
         </section>
       </main>
+      <PublicFooter />
     </div>
   );
 }

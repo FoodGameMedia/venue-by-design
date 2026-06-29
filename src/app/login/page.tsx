@@ -86,8 +86,8 @@ function LoginForm() {
                 : "Sign in to your account"}
           </CardDescription>
         </CardHeader>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <CardContent className="space-y-4">
+        <form onSubmit={handleSubmit} className="flex flex-col">
+          <CardContent className="space-y-4 pb-4">
             {(message || displayError) && (
               <div
                 data-testid="login-message"
@@ -128,7 +128,7 @@ function LoginForm() {
               />
             </div>
           </CardContent>
-          <CardFooter className="flex flex-col gap-4">
+          <CardFooter className="mt-4 flex flex-col gap-4 pt-5">
             <Button
               type="submit"
               disabled={loading}

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -12,8 +13,42 @@ const DESTINATIONS = [
   { href: "/my-plan", label: "My Plan" },
 ] as const;
 
+function submitPostForm(action: string) {
+  const form = document.createElement("form");
+  form.method = "POST";
+  form.action = action;
+  document.body.appendChild(form);
+  form.submit();
+}
+
 export function AppNav({ title = "Venue by Design" }: { title?: string }) {
   const pathname = usePathname();
+  const [billingLoading, setBillingLoading] = useState(false);
+
+  async function openBillingPortal() {
+    setBillingLoading(true);
+    try {
+      const res = await fetch("/api/billing/portal", {
+        method: "POST",
+        redirect: "manual",
+        credentials: "same-origin",
+      });
+      const location = res.headers.get("Location");
+      if (location) {
+        window.location.assign(location);
+        return;
+      }
+      if (res.status === 401) {
+        window.location.assign(`/login?redirectTo=${encodeURIComponent(pathname)}`);
+        return;
+      }
+      if (!res.ok) {
+        window.location.assign("/pricing");
+      }
+    } finally {
+      setBillingLoading(false);
+    }
+  }
 
   return (
     <header className="vbd-header-bar sticky top-0 z-10">
@@ -37,16 +72,25 @@ export function AppNav({ title = "Venue by Design" }: { title?: string }) {
               </Link>
             );
           })}
-          <form action="/api/billing/portal" method="post">
-            <Button type="submit" variant="outline" size="sm" className="text-xs">
-              Billing &amp; plans
-            </Button>
-          </form>
-          <form action="/api/auth/signout" method="post">
-            <Button type="submit" variant="ghost" size="sm" className="text-xs">
-              Sign out
-            </Button>
-          </form>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="text-xs"
+            disabled={billingLoading}
+            onClick={() => void openBillingPortal()}
+          >
+            {billingLoading ? "Opening…" : "Billing & plans"}
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="text-xs"
+            onClick={() => submitPostForm("/api/auth/signout")}
+          >
+            Sign out
+          </Button>
         </div>
       </div>
     </header>

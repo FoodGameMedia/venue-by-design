@@ -8,6 +8,7 @@ import {
   DOMAIN_DEFINITIONS,
   DOMAIN_GROUPS,
   DOMAIN_LABELS,
+  DOMAIN_REFERENCE_DETAILS,
   CALM_BANDS,
   getCalmBand,
   getGroupForDomain,
@@ -100,6 +101,7 @@ describe("canonical domains", () => {
     for (const d of DOMAINS) {
       expect(DOMAIN_LABELS[d]).toBeTruthy();
       expect(DOMAIN_DEFINITIONS[d].trim().length).toBeGreaterThan(0);
+      expect(DOMAIN_REFERENCE_DETAILS[d].trim().length).toBeGreaterThan(50);
     }
   });
 

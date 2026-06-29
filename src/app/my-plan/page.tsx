@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { AppNav } from "@/components/app-nav";
+import { AppShell } from "@/components/app-shell";
 import { CalmThermostat } from "@/components/calm-thermostat";
 import { PrescriptionCard } from "@/app/dashboard/prescription-card";
 import {
@@ -124,8 +124,7 @@ export default async function MyPlanPage() {
 
   if (!diagnostic) {
     return (
-      <div className="min-h-screen bg-transparent">
-        <AppNav />
+      <AppShell>
         <main className="w-full px-4 py-6 pb-12 sm:px-6 lg:px-8">
           <section className="border-l-4 border-primary bg-card p-6 sm:p-8">
             <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
@@ -144,7 +143,7 @@ export default async function MyPlanPage() {
             </Link>
           </section>
         </main>
-      </div>
+      </AppShell>
     );
   }
 
@@ -158,8 +157,7 @@ export default async function MyPlanPage() {
   const ninetyDayDate = addDays(diagnostic.created_at, 90);
 
   return (
-    <div className="min-h-screen bg-transparent">
-      <AppNav />
+    <AppShell>
       <main className="w-full px-4 py-6 pb-12 sm:px-6 lg:px-8">
         <div className="mb-6">
           <h1 className="font-serif text-2xl text-foreground">My Plan</h1>
@@ -311,6 +309,6 @@ export default async function MyPlanPage() {
           </section>
         </div>
       </main>
-    </div>
+    </AppShell>
   );
 }

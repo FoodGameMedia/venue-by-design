@@ -38,9 +38,10 @@ export async function updateSession(request: NextRequest) {
   const path = request.nextUrl.pathname;
   const isLogin = path === "/login";
   const isPricing = path === "/pricing";
+  const isLegal = path === "/terms" || path === "/privacy";
   const isAuthCallback = path.startsWith("/auth/");
   const isPublic =
-    isLogin || isPricing || isAuthCallback || path === "/" || isAuthExemptPath(path);
+    isLogin || isPricing || isLegal || isAuthCallback || path === "/" || isAuthExemptPath(path);
 
   if (user && isLogin) {
     const url = request.nextUrl.clone();
