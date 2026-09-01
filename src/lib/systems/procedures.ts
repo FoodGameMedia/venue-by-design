@@ -163,12 +163,18 @@ export async function runProcedureAudit(
     })
     .returning();
 
+  // A procedure we wrote already knows its name and the breakpoint it exists
+  // for. Re-classifying an upload is the job; renaming our own draft thirty
+  // seconds after writing it is not, and letting the model re-pick the
+  // breakpoint let it choose a near-duplicate over the one the tick created.
+  const isGenerated = procedure.provenance === "generated";
+
   await db
     .update(procedures)
     .set({
-      title: audit.title,
-      domain: audit.domain,
-      breakpointId: audit.breakpointId,
+      title: isGenerated ? procedure.title : audit.title,
+      domain: isGenerated && procedure.domain ? procedure.domain : audit.domain,
+      breakpointId: procedure.breakpointId ?? audit.breakpointId,
       theDefault: audit.fields.theDefault,
       cue: audit.fields.cue,
       routine: audit.fields.routine,

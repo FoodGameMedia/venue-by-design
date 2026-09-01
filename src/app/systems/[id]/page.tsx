@@ -138,8 +138,9 @@ export default async function ProcedurePage({
         <section className="mt-8">
           <p className="vbd-section-label">As a default</p>
           <p className="mt-2 text-xs text-muted-foreground">
-            Cue, routine, reinforcement and owner. Blanks are not an oversight, they are what the
-            source did not say.
+            {procedure.provenance === "generated"
+              ? "Cue, routine, reinforcement and owner. We wrote this from your answers, so edit anything that does not match how your venue runs."
+              : "Cue, routine, reinforcement and owner. Blanks are not an oversight, they are what the source did not say."}
           </p>
           <div className="mt-3">
             <HabitField label="The default it installs" value={procedure.theDefault} />

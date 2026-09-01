@@ -39,6 +39,20 @@ export default async function NewProcedurePage() {
         )}
 
         <IngestForm venueId={venueId} />
+
+        <div className="mt-10 border-t border-border/60 pt-6">
+          <p className="vbd-section-label">Nothing written down?</p>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+            Start from the moments every venue has to get right. Tick the ones you do not have,
+            or have but are not working, and we will write the defaults with you.
+          </p>
+          <Link
+            href="/systems/catalogue"
+            className="vbd-cta vbd-cta-lg vbd-cta-outline mt-4 inline-flex"
+          >
+            Start from the moments
+          </Link>
+        </div>
       </main>
     </AppShell>
   );

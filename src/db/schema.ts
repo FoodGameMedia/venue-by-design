@@ -44,6 +44,9 @@ export const venueTypeEnum = pgEnum("venue_type", [
   "pub",
   "hotel_fb",
   "large_format",
+  // Not everyone fits the five. "Other" is a real answer, and it differs from
+  // unset: unset means we have not asked, other means none of ours fit.
+  "other",
 ]);
 
 export const domainEnum = pgEnum("domain", [
@@ -103,6 +106,25 @@ export const procedureAuthorEnum = pgEnum("procedure_author", [
   "operator",
   "ai_draft",
   "ingest",
+]);
+
+/**
+ * What the operator said about a catalogue item. Both answers are diagnostic:
+ * `not_working` is a candidate breakpoint, not just a gap.
+ */
+export const catalogueSelectionStateEnum = pgEnum("catalogue_selection_state", [
+  "missing",
+  "not_working",
+]);
+
+/**
+ * Obligations outside our remit. `sourced` means the operator has obtained it
+ * from the authority; we never write it and never audit it.
+ */
+export const obligationStatusEnum = pgEnum("obligation_status", [
+  "have",
+  "missing",
+  "sourced",
 ]);
 
 // ── Users ──────────────────────────────────────────────────────────────────────
@@ -438,6 +460,79 @@ export const procedureValidations = pgTable("procedure_validations", {
 });
 
 // ── Procedure Exports ──────────────────────────────────────────────────────────
+
+// ── Catalogue selections (what the operator ticked) ────────────────────────────
+
+/**
+ * One row per catalogue item the operator ticked, per venue.
+ *
+ * `itemId` is a catalogue item id or a venue-type addition id, both of which are
+ * code constants rather than rows, so there is no foreign key. The unique index
+ * means a re-tick updates rather than duplicating.
+ *
+ * A `not_working` tick is diagnostic. `breakpointId` records the breakpoint it
+ * was promoted into, so the catalogue feeds the fragility map rather than
+ * bypassing it.
+ */
+export const catalogueSelections = pgTable(
+  "catalogue_selections",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    venueId: uuid("venue_id")
+      .references(() => venues.id, { onDelete: "cascade" })
+      .notNull(),
+    userId: uuid("user_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    itemId: text("item_id").notNull(),
+    state: catalogueSelectionStateEnum("state").notNull(),
+    /** Set when a not_working tick has been promoted onto the fragility map. */
+    breakpointId: uuid("breakpoint_id").references(() => breakpoints.id, {
+      onDelete: "set null",
+    }),
+    /** Set once this tick has produced a procedure. */
+    procedureId: uuid("procedure_id").references(() => procedures.id, {
+      onDelete: "set null",
+    }),
+    /** The operator's chosen order when more than the minimum set is ticked. */
+    installOrder: integer("install_order"),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => [
+    uniqueIndex("catalogue_selections_venue_item_idx").on(table.venueId, table.itemId),
+  ]
+);
+
+// ── Venue obligations (outside our remit) ──────────────────────────────────────
+
+/**
+ * The payroll, safety and licensing headings. We list them, we point at the
+ * authority, we never write them and never audit them.
+ */
+export const venueObligations = pgTable(
+  "venue_obligations",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    venueId: uuid("venue_id")
+      .references(() => venues.id, { onDelete: "cascade" })
+      .notNull(),
+    userId: uuid("user_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    obligationId: text("obligation_id").notNull(),
+    status: obligationStatusEnum("status").notNull(),
+    notes: text("notes"),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => [
+    uniqueIndex("venue_obligations_venue_obligation_idx").on(
+      table.venueId,
+      table.obligationId
+    ),
+  ]
+);
 
 export const procedureExports = pgTable("procedure_exports", {
   id: uuid("id").primaryKey().defaultRandom(),

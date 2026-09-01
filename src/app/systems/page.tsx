@@ -77,13 +77,19 @@ export default async function SystemsPage() {
                 Start with what is already on the wall
               </p>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                Upload the procedures you have, as a document, a PDF, or a photo of the binder.
-                We will tell you which few are load-bearing and which you can retire today. If
-                nothing is written down, describe how a normal shift runs and we will start there.
+                If nothing is written down, start from the moments every venue has to get right
+                and we will write the defaults with you. If you already have procedures, bring
+                them in and we will tell you which few are load-bearing and which you can retire
+                today.
               </p>
-              <Link href="/systems/new" className="vbd-cta vbd-cta-lg vbd-cta-primary mt-4 inline-flex">
-                Add your first procedure
-              </Link>
+              <div className="mt-4 flex flex-wrap gap-2">
+                <Link href="/systems/catalogue" className="vbd-cta vbd-cta-lg vbd-cta-primary">
+                  Start from the moments
+                </Link>
+                <Link href="/systems/new" className="vbd-cta vbd-cta-lg vbd-cta-outline">
+                  I have procedures already
+                </Link>
+              </div>
             </div>
           ) : (
             procedures.map((procedure) => (

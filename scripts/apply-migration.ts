@@ -1,26 +1,24 @@
 /**
- * Apply migration 0007 (Systems module) directly.
+ * Apply one Drizzle migration file directly.
  *
  * Why this exists rather than `npm run db:migrate`: drizzle's
  * `__drizzle_migrations` table is empty while the database is fully built, so
  * drizzle-kit replays from 0000 and aborts on the first object that already
- * exists. The repo already handles this with per-migration apply scripts
- * (advisor, diagnostic, book chunks). This is the same pattern.
+ * exists. The repo already handles this with per-migration apply scripts. This
+ * is the generic version of that, so each new migration does not need its own.
  *
  * Safe to run more than once: "already exists" errors are treated as success.
  *
- * Run: npx tsx scripts/apply-systems-migration.ts
+ * Run: npx tsx scripts/apply-migration.ts 0008_catalogue_and_obligations.sql
  */
 import "dotenv/config";
 import { config } from "dotenv";
 
 config({ path: ".env.local", override: true });
 
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import postgres from "postgres";
-
-const MIGRATION = "0007_systems_module.sql";
 
 /** Postgres codes that mean "this object is already there". */
 const ALREADY_EXISTS = new Set([
@@ -30,6 +28,32 @@ const ALREADY_EXISTS = new Set([
   "42701", // duplicate_column
 ]);
 
+function resolveMigration(arg: string | undefined): string {
+  const dir = join(process.cwd(), "drizzle");
+
+  if (arg) {
+    const name = arg.endsWith(".sql") ? arg : `${arg}.sql`;
+    if (!existsSync(join(dir, name))) {
+      console.error(`No such migration: drizzle/${name}`);
+      process.exit(1);
+    }
+    return name;
+  }
+
+  const latest = readdirSync(dir)
+    .filter((f) => f.endsWith(".sql"))
+    .sort()
+    .at(-1);
+
+  if (!latest) {
+    console.error("No migrations found in drizzle/");
+    process.exit(1);
+  }
+
+  console.log(`No migration named, using the latest: ${latest}\n`);
+  return latest;
+}
+
 async function main() {
   const url = process.env.DATABASE_URL;
   if (!url) {
@@ -37,13 +61,13 @@ async function main() {
     process.exit(1);
   }
 
-  const path = join(process.cwd(), "drizzle", MIGRATION);
-  const statements = readFileSync(path, "utf8")
+  const name = resolveMigration(process.argv[2]);
+  const statements = readFileSync(join(process.cwd(), "drizzle", name), "utf8")
     .split("--> statement-breakpoint")
     .map((s) => s.trim())
     .filter(Boolean);
 
-  console.log(`Applying ${MIGRATION}: ${statements.length} statements.\n`);
+  console.log(`Applying ${name}: ${statements.length} statements.\n`);
 
   const sql = postgres(url, { onnotice: () => {} });
   let applied = 0;

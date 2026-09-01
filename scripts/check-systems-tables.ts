@@ -1,5 +1,5 @@
 /**
- * Confirm migration 0007 landed: the Systems module tables and enums exist.
+ * Confirm the Systems module tables and enums exist, migrations 0007 and 0008.
  * Read-only. Run: npx tsx scripts/check-systems-tables.ts
  */
 import "dotenv/config";
@@ -16,6 +16,8 @@ const TABLES = [
   "procedure_audits",
   "procedure_validations",
   "procedure_exports",
+  "catalogue_selections",
+  "venue_obligations",
 ];
 
 const ENUMS = [
@@ -24,6 +26,8 @@ const ENUMS = [
   "procedure_provenance",
   "procedure_export_format",
   "procedure_author",
+  "catalogue_selection_state",
+  "obligation_status",
 ];
 
 async function main() {
@@ -71,10 +75,10 @@ async function main() {
   }
 
   if (failed) {
-    console.error("\nMigration 0007 has NOT fully applied.");
+    console.error("\nThe Systems schema has NOT fully applied.");
     process.exit(1);
   }
-  console.log("\nMigration 0007 applied. All Systems tables and enums present.");
+  console.log("\nAll Systems tables and enums present.");
 }
 
 main();
