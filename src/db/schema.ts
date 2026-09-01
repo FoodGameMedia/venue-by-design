@@ -62,6 +62,49 @@ export const advisorStatusEnum = pgEnum("advisor_status", [
   "rejected",
 ]);
 
+// ── Systems Module enums ───────────────────────────────────────────────────────
+
+/**
+ * Lifecycle of a procedure. Separate axis from the audit verdict.
+ * `installed` is reachable only via a rostered-off validation record (v1.1).
+ */
+export const procedureStatusEnum = pgEnum("procedure_status", [
+  "draft",
+  "live",
+  "installed",
+]);
+
+/** Audit outcome for a procedure. Keep, rewrite as a default, or retire. */
+export const procedureVerdictEnum = pgEnum("procedure_verdict", [
+  "keep",
+  "rewrite",
+  "retire",
+]);
+
+/** Where the procedure came from. */
+export const procedureProvenanceEnum = pgEnum("procedure_provenance", [
+  "generated",
+  "audited_keep",
+  "audited_rewrite",
+  "imported",
+]);
+
+/** Export routes. Only pdf and text are used at Stage 1. */
+export const procedureExportFormatEnum = pgEnum("procedure_export_format", [
+  "pdf",
+  "text",
+  "csv",
+  "json",
+  "api",
+]);
+
+/** Who wrote a given procedure version. */
+export const procedureAuthorEnum = pgEnum("procedure_author", [
+  "operator",
+  "ai_draft",
+  "ingest",
+]);
+
 // ── Users ──────────────────────────────────────────────────────────────────────
 
 export const users = pgTable("users", {
@@ -263,3 +306,150 @@ export const bookChunks = pgTable(
     uniqueIndex("book_chunks_source_chunk_idx").on(table.sourcePath, table.chunkIndex),
   ]
 );
+
+// ── Breakpoints (the fragility map) ────────────────────────────────────────────
+
+/**
+ * The venue's fragility map: the handful of moments it reliably breaks, each
+ * with the small thing that triggers it. Canonical from The Calm Venue ch.05.
+ *
+ * Decision D9: the spec treats the fragility map as an existing asset, but the
+ * app has never collected it. Method question 2 and the "breakpoints with no
+ * procedure" line of the audit verdict both depend on these rows existing.
+ */
+export const breakpoints = pgTable("breakpoints", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  venueId: uuid("venue_id")
+    .references(() => venues.id, { onDelete: "cascade" })
+    .notNull(),
+  userId: uuid("user_id")
+    .references(() => users.id, { onDelete: "cascade" })
+    .notNull(),
+  description: text("description").notNull(), // what reliably goes wrong
+  trigger: text("trigger").notNull(), // the small thing that starts it
+  domain: domainEnum("domain"),
+  resolvedAt: timestamp("resolved_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+// ── Procedures (the core artifact of the Systems module) ───────────────────────
+
+/**
+ * One procedure in the book's cue / routine / reinforcement / owner format.
+ * At Stage 1 the audit fills title, domain, breakpoint link and provenance;
+ * the habit-format fields are populated where the source contains them and
+ * left null where it does not, which is itself audit signal.
+ */
+export const procedures = pgTable("procedures", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  venueId: uuid("venue_id")
+    .references(() => venues.id, { onDelete: "cascade" })
+    .notNull(),
+  userId: uuid("user_id")
+    .references(() => users.id, { onDelete: "cascade" })
+    .notNull(),
+  title: text("title").notNull(),
+  domain: domainEnum("domain"),
+  breakpointId: uuid("breakpoint_id").references(() => breakpoints.id, {
+    onDelete: "set null",
+  }),
+  theDefault: text("the_default"), // the decision, rule or buffer it installs
+  cue: text("cue"), // the fixed point in the day it attaches to
+  routine: jsonb("routine"), // string[] of ordered steps
+  reinforcement: text("reinforcement"), // what visibly improves when it holds
+  ownerRole: text("owner_role"), // a named role, never "everyone"
+  reviewCadence: text("review_cadence"),
+  status: procedureStatusEnum("status").default("draft").notNull(),
+  provenance: procedureProvenanceEnum("provenance").notNull(),
+  sourcePath: text("source_path"), // Supabase Storage path for the original
+  currentVersionId: uuid("current_version_id"),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+// ── Procedure Versions (the audit trail) ───────────────────────────────────────
+
+export const procedureVersions = pgTable(
+  "procedure_versions",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    procedureId: uuid("procedure_id")
+      .references(() => procedures.id, { onDelete: "cascade" })
+      .notNull(),
+    versionNumber: integer("version_number").notNull(),
+    body: text("body").notNull(), // extracted, normalised procedure text
+    fields: jsonb("fields"), // habit-format field snapshot at this version
+    extractedFrom: jsonb("extracted_from"), // ingest method, filename, mime, counts
+    authoredBy: procedureAuthorEnum("authored_by").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => [
+    uniqueIndex("procedure_versions_procedure_version_idx").on(
+      table.procedureId,
+      table.versionNumber
+    ),
+  ]
+);
+
+// ── Procedure Audits (the three method questions and the verdict) ──────────────
+
+/**
+ * Decision D10: kept separate from procedure_validations, which the spec
+ * reserves for the rostered-off record. Different questions, different moment.
+ */
+export const procedureAudits = pgTable("procedure_audits", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  procedureId: uuid("procedure_id")
+    .references(() => procedures.id, { onDelete: "cascade" })
+    .notNull(),
+  versionId: uuid("version_id")
+    .references(() => procedureVersions.id, { onDelete: "cascade" })
+    .notNull(),
+  verdict: procedureVerdictEnum("verdict").notNull(),
+  questionResults: jsonb("question_results").notNull(), // 3 entries: result + rationale
+  fragilitySnapshot: jsonb("fragility_snapshot"), // calm index, band, domain scores, breakpoints
+  summary: text("summary").notNull(),
+  rewriteNotes: text("rewrite_notes"),
+  rawResponse: jsonb("raw_response"),
+  model: text("model").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+// ── Procedure Validations (the rostered-off records) ───────────────────────────
+
+/**
+ * The gate between `live` and `installed`. Written from v1.1.
+ * A procedure that needs its author in the building is not yet a design.
+ */
+export const procedureValidations = pgTable("procedure_validations", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  procedureId: uuid("procedure_id")
+    .references(() => procedures.id, { onDelete: "cascade" })
+    .notNull(),
+  versionId: uuid("version_id")
+    .references(() => procedureVersions.id, { onDelete: "cascade" })
+    .notNull(),
+  validatedOn: timestamp("validated_on", { withTimezone: true }).notNull(),
+  authorAway: text("author_away").notNull(), // who was rostered off
+  held: boolean("held").notNull(),
+  notes: text("notes"),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+// ── Procedure Exports ──────────────────────────────────────────────────────────
+
+export const procedureExports = pgTable("procedure_exports", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  venueId: uuid("venue_id")
+    .references(() => venues.id, { onDelete: "cascade" })
+    .notNull(),
+  userId: uuid("user_id")
+    .references(() => users.id, { onDelete: "cascade" })
+    .notNull(),
+  format: procedureExportFormatEnum("format").notNull(),
+  procedureIds: jsonb("procedure_ids").notNull(), // uuid[]
+  storagePath: text("storage_path"),
+  target: text("target"), // jolt | trail | xenia | restoke | generic
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});

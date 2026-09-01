@@ -50,6 +50,13 @@
       "when": 1781080000000,
       "tag": "0006_book_chunks",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1787611944538,
+      "tag": "0007_systems_module",
+      "breakpoints": true
     }
   ]
 }

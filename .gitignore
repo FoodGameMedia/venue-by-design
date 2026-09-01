@@ -44,6 +44,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# Local assistant and editor state
+/.claude/
+/.cursor/
+
 # Book manuscripts (copyright — do not commit)
 content/books/**/*.md
 content/books/**/*.txt
