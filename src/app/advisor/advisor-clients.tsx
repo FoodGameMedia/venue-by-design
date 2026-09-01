@@ -97,7 +97,7 @@ export function AdvisorClients({ clients }: { clients: AdvisorClientSummary[] })
         <div className="border-l-[3px] border-primary bg-card p-6">
           <p className="font-serif text-lg text-foreground">No linked clients yet</p>
           <p className="mt-2 text-sm text-muted-foreground">
-            Once client venues are linked to your account, they'll appear here with their latest
+            Once client venues are linked to your account, they will appear here with their latest
             Calm Index, domain scores, and prescription.
           </p>
         </div>

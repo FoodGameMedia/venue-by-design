@@ -255,13 +255,12 @@ async function createBetaPromo() {
     metadata: { venue_by_design: "beta" },
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const promotionCode = await stripe.promotionCodes.create({
     coupon: coupon.id,
     code,
     max_redemptions: 100,
     metadata: { venue_by_design: "beta" },
-  } as any);
+  } as unknown as Stripe.PromotionCodeCreateParams);
 
   console.log(`✓ Created 100% off coupon and promotion code: ${code}`);
   console.log(`  Coupon: ${coupon.id}`);

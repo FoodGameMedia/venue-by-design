@@ -153,7 +153,6 @@ export async function POST(request: Request) {
     }
 
     // Stripe 2026 API types differ; customer param is valid per Stripe docs
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sessionParams: Record<string, unknown> = {
       customer: customerId,
       client_reference_id: authUser.id,
@@ -174,7 +173,9 @@ export async function POST(request: Request) {
       sessionParams.discounts = [{ promotion_code: promotionCodeId }];
     }
 
-    const session = await stripe.checkout.sessions.create(sessionParams as any);
+    const session = await stripe.checkout.sessions.create(
+      sessionParams as unknown as Stripe.Checkout.SessionCreateParams
+    );
 
     if (!session.url) {
       console.error("[checkout/create-session] Stripe session created without url", {

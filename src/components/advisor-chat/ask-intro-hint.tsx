@@ -1,11 +1,33 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useState, useSyncExternalStore } from "react";
 import { MessageCircle, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export const ASK_INTRO_DISMISSED_KEY = "vbd-ask-intro-dismissed";
+
+/**
+ * Read the stored dismissal through useSyncExternalStore rather than an effect.
+ * Nothing else writes the key, so the subscribe callback has nothing to listen
+ * for. On the server the hint is treated as dismissed, so it never flashes in
+ * before hydration.
+ */
+function subscribeToDismissal() {
+  return () => {};
+}
+
+function readDismissal(): boolean {
+  try {
+    return Boolean(localStorage.getItem(ASK_INTRO_DISMISSED_KEY));
+  } catch {
+    return true;
+  }
+}
+
+function readDismissalOnServer(): boolean {
+  return true;
+}
 
 export function AskIntroHint({
   visible,
@@ -14,29 +36,23 @@ export function AskIntroHint({
   visible: boolean;
   onTry: () => void;
 }) {
-  const [show, setShow] = useState(false);
+  const storedDismissal = useSyncExternalStore(
+    subscribeToDismissal,
+    readDismissal,
+    readDismissalOnServer
+  );
+  const [dismissedNow, setDismissedNow] = useState(false);
 
-  useEffect(() => {
-    if (!visible) {
-      setShow(false);
-      return;
-    }
-    try {
-      if (localStorage.getItem(ASK_INTRO_DISMISSED_KEY)) return;
-      setShow(true);
-    } catch {
-      setShow(false);
-    }
-  }, [visible]);
+  const show = visible && !storedDismissal && !dismissedNow;
 
-  function dismiss() {
+  const dismiss = useCallback(() => {
     try {
       localStorage.setItem(ASK_INTRO_DISMISSED_KEY, "1");
     } catch {
       // localStorage may be unavailable
     }
-    setShow(false);
-  }
+    setDismissedNow(true);
+  }, []);
 
   function handleTry() {
     dismiss();

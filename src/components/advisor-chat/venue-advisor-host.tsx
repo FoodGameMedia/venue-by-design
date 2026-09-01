@@ -20,11 +20,12 @@ export function VenueAdvisorHost() {
   const pathname = usePathname();
   const [venue, setVenue] = useState<VenueSummary | null>(null);
 
+  // Derived, not stored. Clearing the venue with a synchronous setState inside
+  // the effect caused a cascading render on every public route.
+  const hidden = isPublicPath(pathname) || pathname.startsWith("/advisor");
+
   useEffect(() => {
-    if (isPublicPath(pathname) || pathname.startsWith("/advisor")) {
-      setVenue(null);
-      return;
-    }
+    if (hidden) return;
 
     let cancelled = false;
 
@@ -50,9 +51,9 @@ export function VenueAdvisorHost() {
     return () => {
       cancelled = true;
     };
-  }, [pathname]);
+  }, [pathname, hidden]);
 
-  if (!venue) return null;
+  if (hidden || !venue) return null;
 
   return (
     <VenueAdvisorPanel
