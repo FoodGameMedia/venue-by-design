@@ -56,12 +56,29 @@ describe("formatProcedureText", () => {
     }
   });
 
-  it("uses each tool's own field names", () => {
-    expect(formatProcedureText(FULL, "jolt")).toContain("Schedule: Shift change, 4pm");
-    expect(formatProcedureText(FULL, "jolt")).toContain("Assigned to: Night lead");
-    expect(formatProcedureText(FULL, "trail")).toContain("When: Shift change, 4pm");
-    expect(formatProcedureText(FULL, "restoke")).toContain("Responsible: Night lead");
-    expect(formatProcedureText(FULL, "xenia")).toContain("Assignee: Night lead");
+  // Read from Restoke's own help centre on 2 September 2026, not from memory.
+  // If Restoke renames a field this breaks, which is the point. Jolt, Trail and
+  // Xenia are deliberately not shipped: their labels were never read first hand.
+  it("uses Restoke's own field names", () => {
+    const text = formatProcedureText(FULL, "restoke");
+    expect(text).toContain("Departments, then delegate to a person from MyDay: Night lead");
+    expect(text).toContain("Instructions:");
+    expect(text).toContain("MyDay");
+  });
+
+
+  it("gives Restoke bare lines, because Create from text makes every line an item", () => {
+    const text = formatProcedureText(FULL, "restoke");
+    expect(text).toContain("Steps to paste, one per line:");
+    expect(text).toContain("Walk the pass\nRead the book\nName the three risks");
+  });
+
+  it("does not add a bulk-paste block for the generic target", () => {
+    expect(formatProcedureText(FULL, "generic")).not.toContain("Steps to paste");
+  });
+
+  it("omits the bulk-paste block when there are no steps", () => {
+    expect(formatProcedureText(BARE, "restoke")).not.toContain("Steps to paste");
   });
 
   it("says Not set rather than inventing a value", () => {
@@ -104,6 +121,14 @@ describe("formatExportPack", () => {
 
   it("names the target in the header", () => {
     expect(formatExportPack([FULL], "restoke")).toContain("Restoke export");
+  });
+
+  it("tells the operator which screen to paste into", () => {
+    expect(formatExportPack([FULL], "restoke")).toContain("Operations, then Procedures");
+  });
+
+  it("ships only targets whose labels were read from the product's own docs", () => {
+    expect([...EXPORT_TARGETS]).toEqual(["generic", "restoke"]);
   });
 
   it("says so plainly when nothing is selected", () => {
