@@ -9,11 +9,33 @@ import {
   ingestFiles,
   ingestText,
   methodForMimeType,
+  sniffMimeType,
   type IngestFile,
 } from "@/lib/systems/procedure-ingest";
 
+/** The leading bytes each accepted type has to actually start with. */
+const SIGNATURES: Record<string, number[]> = {
+  "application/pdf": [0x25, 0x50, 0x44, 0x46, 0x2d],
+  "image/png": [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a],
+  "image/jpeg": [0xff, 0xd8, 0xff],
+  "image/webp": [0x52, 0x49, 0x46, 0x46, 0, 0, 0, 0, 0x57, 0x45, 0x42, 0x50],
+  [DOCX_MIME]: [0x50, 0x4b, 0x03, 0x04],
+};
+
+/** A file whose bytes match what it claims to be. */
 function file(name: string, mimeType: string, size = 1024): IngestFile {
-  return { name, mimeType, bytes: new Uint8Array(size).fill(65) };
+  const bytes = new Uint8Array(size).fill(65);
+  const signature = SIGNATURES[mimeType];
+  if (signature) bytes.set(signature.slice(0, size), 0);
+  return { name, mimeType, bytes };
+}
+
+/** A file that lies: it claims one type and carries another type's bytes. */
+function spoofed(name: string, claimedMime: string, actualMime: string | null): IngestFile {
+  const bytes = new Uint8Array(1024).fill(65);
+  const signature = actualMime ? SIGNATURES[actualMime] : null;
+  if (signature) bytes.set(signature, 0);
+  return { name, mimeType: claimedMime, bytes };
 }
 
 describe("methodForMimeType", () => {
@@ -29,6 +51,70 @@ describe("methodForMimeType", () => {
   it("rejects anything else", () => {
     expect(methodForMimeType("application/zip")).toBeNull();
     expect(methodForMimeType("image/heic")).toBeNull();
+  });
+});
+
+describe("sniffMimeType", () => {
+  it("reads each accepted type from its leading bytes", () => {
+    for (const mime of Object.keys(SIGNATURES)) {
+      expect(sniffMimeType(file("x", mime).bytes)).toBe(mime);
+    }
+  });
+
+  it("returns null for bytes matching nothing we accept", () => {
+    expect(sniffMimeType(new Uint8Array(64).fill(65))).toBeNull();
+  });
+
+  it("is not fooled by a short file", () => {
+    expect(sniffMimeType(new Uint8Array([0x89, 0x50]))).toBeNull();
+  });
+});
+
+describe("assertIngestable, content checks", () => {
+  // The declared type comes from the browser and anyone driving the endpoint
+  // directly can set it to whatever they like. These are the cases that used
+  // to pass.
+  it("rejects an executable claiming to be a photo", () => {
+    // ELF header: the shape of a Linux binary named roster.png.
+    const elf = new Uint8Array(1024).fill(65);
+    elf.set([0x7f, 0x45, 0x4c, 0x46], 0);
+    expect(() =>
+      assertIngestable([{ name: "roster.png", mimeType: "image/png", bytes: elf }])
+    ).toThrow(IngestError);
+  });
+
+  it("rejects a PDF claiming to be a Word document", () => {
+    expect(() =>
+      assertIngestable([spoofed("sop.docx", DOCX_MIME, "application/pdf")])
+    ).toThrow(IngestError);
+  });
+
+  it("rejects bytes that match nothing, however they are labelled", () => {
+    expect(() => assertIngestable([spoofed("sop.pdf", "application/pdf", null)])).toThrow(
+      IngestError
+    );
+  });
+
+  it("rejects binary content declared as text", () => {
+    const withNul = new Uint8Array(1024).fill(65);
+    withNul[10] = 0x00;
+    expect(() =>
+      assertIngestable([{ name: "sop.txt", mimeType: "text/plain", bytes: withNul }])
+    ).toThrow(IngestError);
+  });
+
+  it("accepts real text", () => {
+    const text = new TextEncoder().encode("At 3.55pm the outgoing lead writes the book.");
+    expect(
+      assertIngestable([{ name: "sop.txt", mimeType: "text/plain", bytes: text }])
+    ).toBe("text");
+  });
+
+  it("gives the same message whether the file is wrong or lying", () => {
+    const wrong = () => assertIngestable([file("sop.pages", "application/zip")]);
+    const lying = () => assertIngestable([spoofed("sop.pdf", "application/pdf", "image/png")]);
+    expect(wrong).toThrow(/not a file type we can read/);
+    expect(lying).toThrow(/not a file type we can read/);
   });
 });
 

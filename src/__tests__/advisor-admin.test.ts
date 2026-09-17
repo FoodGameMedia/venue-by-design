@@ -5,7 +5,7 @@ vi.stubEnv("DATABASE_URL", "postgresql://fake:fake@localhost:5432/fake");
 const mockReturning = vi.fn();
 const mockWhere = vi.fn(() => ({ returning: mockReturning }));
 const mockSet = vi.fn(() => ({ where: mockWhere }));
-const mockUpdate = vi.fn(() => ({ set: mockSet }));
+const mockUpdate = vi.fn<(...args: unknown[]) => unknown>(() => ({ set: mockSet }));
 
 vi.mock("@/db", () => ({
   db: {

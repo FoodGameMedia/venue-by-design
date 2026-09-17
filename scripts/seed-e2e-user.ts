@@ -108,7 +108,18 @@ async function main() {
 
   if (live) {
     if (live.plan !== "group") {
-      await supabase.from("subscriptions").update({ plan: "group" }).eq("id", live.id);
+      await supabase
+        .from("subscriptions")
+        .update({
+          plan: "group",
+          metadata: {
+            synthetic: true,
+            reason:
+              "Seeded so the e2e test account can reach gated features. Not a customer. Exclude from every revenue and customer count.",
+            stamped_at: new Date().toISOString(),
+          },
+        })
+        .eq("id", live.id);
       console.log(`Raised the e2e subscription from ${live.plan} to group`);
     }
   } else {
@@ -119,6 +130,15 @@ async function main() {
       stripe_price_id: "price_e2e_group",
       plan: "group",
       status: "active",
+      // Stamped at birth. Stripe has never heard of this row, and anything that
+      // counts customers or revenue must exclude it. See
+      // scripts/flag-synthetic-subscriptions.ts.
+      metadata: {
+        synthetic: true,
+        reason:
+          "Seeded so the e2e test account can reach gated features. Not a customer. Exclude from every revenue and customer count.",
+        stamped_at: new Date().toISOString(),
+      },
     });
     if (error) {
       console.error("Failed to insert subscription:", error);

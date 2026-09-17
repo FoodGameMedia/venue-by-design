@@ -335,8 +335,8 @@ describe("POST /api/billing/portal", () => {
   it("returns 401 when not authenticated", async () => {
     mockGetUser.mockResolvedValueOnce({ data: { user: null } });
     const POST = await getPortalPost();
-    const req = new Request("http://localhost/api/billing/portal", { method: "POST" });
-    const res = await POST(req);
+    // The route reads the session from cookies and takes no argument.
+    const res = await POST();
     expect(res.status).toBe(401);
   });
 
@@ -346,16 +346,16 @@ describe("POST /api/billing/portal", () => {
       stripeCustomerId: null,
     });
     const POST = await getPortalPost();
-    const req = new Request("http://localhost/api/billing/portal", { method: "POST" });
-    const res = await POST(req);
+    // The route reads the session from cookies and takes no argument.
+    const res = await POST();
     expect(res.status).toBe(303);
     expect(res.headers.get("location")).toBe("http://localhost:3000/pricing");
   });
 
   it("redirects to Stripe portal url when user has customer", async () => {
     const POST = await getPortalPost();
-    const req = new Request("http://localhost/api/billing/portal", { method: "POST" });
-    const res = await POST(req);
+    // The route reads the session from cookies and takes no argument.
+    const res = await POST();
     expect(res.status).toBe(307);
     expect(res.headers.get("location")).toBe("https://billing.stripe.com/portal_123");
     expect(mockBillingPortalSessionsCreate).toHaveBeenCalledWith(
@@ -371,8 +371,8 @@ describe("POST /api/billing/portal", () => {
       Object.assign(new Error("No such customer"), { code: "resource_missing" })
     );
     const POST = await getPortalPost();
-    const req = new Request("http://localhost/api/billing/portal", { method: "POST" });
-    const res = await POST(req);
+    // The route reads the session from cookies and takes no argument.
+    const res = await POST();
     expect(res.status).toBe(303);
     expect(res.headers.get("location")).toBe("http://localhost:3000/pricing");
   });

@@ -54,6 +54,64 @@ export function methodForMimeType(mimeType: string): IngestMethod | null {
   return null;
 }
 
+/**
+ * What the bytes actually are.
+ *
+ * `mimeType` arrives from the browser's `File.type`, which the browser takes
+ * from the file extension and which anyone driving the endpoint directly can
+ * set to whatever they like. Allow-listing it is necessary and not sufficient:
+ * a shell script named `roster.png` announces itself as `image/png` and would
+ * have passed. These files are stored and then handed to a model, so the
+ * declared type is checked against the leading bytes before either happens.
+ *
+ * Returns null when the bytes match none of the types we accept.
+ */
+export function sniffMimeType(bytes: Uint8Array): string | null {
+  const startsWith = (...sig: number[]) =>
+    sig.length <= bytes.length && sig.every((b, i) => bytes[i] === b);
+
+  // PNG: the eight-byte signature, including the CRLF pair that catches
+  // corruption by text-mode transfer.
+  if (startsWith(0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a)) return "image/png";
+
+  // JPEG: start of image, then any marker.
+  if (startsWith(0xff, 0xd8, 0xff)) return "image/jpeg";
+
+  // WEBP is a RIFF container with "WEBP" at offset 8.
+  if (
+    startsWith(0x52, 0x49, 0x46, 0x46) &&
+    bytes.length >= 12 &&
+    bytes[8] === 0x57 &&
+    bytes[9] === 0x45 &&
+    bytes[10] === 0x42 &&
+    bytes[11] === 0x50
+  ) {
+    return "image/webp";
+  }
+
+  if (startsWith(0x25, 0x50, 0x44, 0x46, 0x2d)) return "application/pdf";
+
+  // .docx is a zip. "PK\x03\x04" is a local file header; the other two are an
+  // empty and a spanned archive, neither of which is a usable document.
+  if (startsWith(0x50, 0x4b, 0x03, 0x04)) return DOCX_MIME;
+
+  return null;
+}
+
+/** Text has no signature, so the test is that it is text and nothing else. */
+function looksLikeText(bytes: Uint8Array): boolean {
+  // A NUL byte in the first kilobyte is the standard tell for a binary file,
+  // and is what stops an executable being uploaded as text/plain.
+  const window = bytes.subarray(0, Math.min(bytes.length, 1024));
+  if (window.includes(0x00)) return false;
+  try {
+    new TextDecoder("utf-8", { fatal: true }).decode(window);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 /** Guards run before anything is stored or sent anywhere. */
 export function assertIngestable(files: readonly IngestFile[]): IngestMethod {
   if (files.length === 0) {
@@ -74,6 +132,33 @@ export function assertIngestable(files: readonly IngestFile[]): IngestMethod {
         `${file.name} is not a file type we can read. Use Word, PDF, or a photo.`
       );
     }
+
+    // The declared type has to match the bytes. The message stays the same
+    // whether the file is the wrong type or is lying about it, because the
+    // operator with a mislabelled photo and the person probing the endpoint
+    // need the same answer.
+    if (method === "text") {
+      if (!looksLikeText(file.bytes)) {
+        throw new IngestError(
+          `${file.name} is not a file type we can read. Use Word, PDF, or a photo.`
+        );
+      }
+    } else {
+      const actual = sniffMimeType(file.bytes);
+      const matches =
+        actual === file.mimeType ||
+        // A .docx and any other zip share a signature, so the sniff can only
+        // confirm the container. mammoth fails loudly on a zip that is not a
+        // Word document, which is the second half of this check.
+        (method === "docx" && actual === DOCX_MIME);
+
+      if (!matches) {
+        throw new IngestError(
+          `${file.name} is not a file type we can read. Use Word, PDF, or a photo.`
+        );
+      }
+    }
+
     methods.add(method);
   }
 

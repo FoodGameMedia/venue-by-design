@@ -51,6 +51,11 @@ async function main() {
       where exists (select 1 from venues v where v.user_id = u.id)
     `;
 
+    const [{ count: syntheticCount }] = await sql<{ count: string }[]>`
+      select count(*)::text as count from subscriptions
+      where metadata->>'synthetic' = 'true'
+    `;
+
     const [{ count: venuesWithProcedures }] = await sql<{ count: string }[]>`
       select count(distinct venue_id)::text as count from procedures
     `;
@@ -68,6 +73,11 @@ async function main() {
 
     console.log("");
     console.log(`Venues holding at least one procedure: ${venuesWithProcedures}`);
+    if (Number(syntheticCount) > 0) {
+      console.log(
+        `Seeded, non-customer subscriptions counted above: ${syntheticCount}. These are not revenue.`
+      );
+    }
     console.log("");
     console.log("After the split:");
     console.log(`  lose Systems entirely (no live plan): ${buckets.free.length}`);

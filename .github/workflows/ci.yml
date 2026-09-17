@@ -1,0 +1,96 @@
+name: CI
+
+# The gate that used to live only in Julian's terminal. A push that fails any
+# job below is a push that should not have reached production, and Netlify
+# deploys from `develop` automatically, so this runs on every push to it and on
+# every pull request into it.
+on:
+  push:
+    branches: [develop, main]
+  pull_request:
+    branches: [develop, main]
+
+# Read-only by default. Nothing here needs to write to the repository.
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  secrets:
+    name: Secret scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Gitleaks needs history to scan what was committed, not just the tip.
+          fetch-depth: 0
+
+      - name: Scan the repository and its history for secrets
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  dependencies:
+    name: Dependency audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      # High and critical block the build. Moderate and low are reported and
+      # do not, because a transitive moderate in a dev-only tool should not
+      # stop a fix reaching production.
+      - name: Fail on a known high or critical vulnerability
+        run: npm audit --audit-level=high
+
+      - name: Report everything else
+        if: always()
+        run: npm audit || true
+
+  gate:
+    name: Typecheck, lint, test, build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      # Runs first because it is the fastest way to catch a broken change.
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+      # Eleven warnings today, all unused imports and parameters. The ceiling
+      # sits at the current count so it can only come down, never drift up.
+      - name: Lint
+        run: npx eslint src scripts --ext .ts,.tsx --max-warnings 11
+
+      - name: Test
+        run: npm test
+
+      # The app is built with fake values because nothing here should hold a
+      # real secret. This proves the build compiles; the real build runs on
+      # Netlify with the real environment.
+      - name: Build
+        run: npm run build
+        env:
+          DATABASE_URL: postgresql://ci:ci@localhost:5432/ci
+          NEXT_PUBLIC_SUPABASE_URL: https://ci.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-anon-key
+          SUPABASE_SERVICE_ROLE_KEY: ci-service-key
+          ANTHROPIC_API_KEY: ci-anthropic-key
+          STRIPE_SECRET_KEY: sk_test_ci
+          STRIPE_WEBHOOK_SECRET: whsec_ci

@@ -11,6 +11,7 @@ import {
   promoteToBreakpoint,
 } from "@/lib/systems/catalogue-generate";
 import { BreakpointError } from "@/lib/systems/breakpoints";
+import { assertWithinSpendLimit, SpendLimitError } from "@/lib/systems/spend-limits";
 import { VENUE_TYPES, type VenueType } from "@/lib/systems/venue-types";
 
 async function venueTypeOf(venueId: string): Promise<VenueType | null> {
@@ -59,6 +60,8 @@ export async function POST(request: Request) {
       return NextResponse.json(chatApiErrorPayload(), { status: 503 });
     }
 
+    await assertWithinSpendLimit("generate", access.actor.venueId);
+
     const answers: Record<string, string> =
       body.answers && typeof body.answers === "object"
         ? Object.fromEntries(
@@ -79,6 +82,9 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ procedure }, { status: 201 });
   } catch (error) {
+    if (error instanceof SpendLimitError) {
+      return NextResponse.json({ error: error.message }, { status: 429 });
+    }
     if (error instanceof CatalogueError || error instanceof BreakpointError) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }

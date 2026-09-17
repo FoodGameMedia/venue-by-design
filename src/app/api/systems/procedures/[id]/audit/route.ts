@@ -3,6 +3,7 @@ import { captureException } from "@/lib/sentry";
 import { chatApiErrorPayload, isAnthropicApiKeyConfigured } from "@/lib/anthropic-models";
 import { resolveVenueAccess } from "@/lib/systems/access";
 import { ProcedureError, runProcedureAudit } from "@/lib/systems/procedures";
+import { assertWithinSpendLimit, SpendLimitError } from "@/lib/systems/spend-limits";
 
 export async function POST(
   request: Request,
@@ -25,6 +26,8 @@ export async function POST(
   }
 
   try {
+    await assertWithinSpendLimit("audit", access.actor.venueId);
+
     const { audit } = await runProcedureAudit(
       id,
       access.actor.venueId,
@@ -32,6 +35,9 @@ export async function POST(
     );
     return NextResponse.json({ audit });
   } catch (error) {
+    if (error instanceof SpendLimitError) {
+      return NextResponse.json({ error: error.message }, { status: 429 });
+    }
     if (error instanceof ProcedureError) {
       const status = error.message === "Procedure not found." ? 404 : 400;
       return NextResponse.json({ error: error.message }, { status });

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { captureException } from "@/lib/sentry";
 import { resolveVenueAccess } from "@/lib/systems/access";
+import { assertWithinSpendLimit, SpendLimitError } from "@/lib/systems/spend-limits";
 import { createProcedure, listProcedures, ProcedureError } from "@/lib/systems/procedures";
 import {
   IngestError,
@@ -77,6 +78,17 @@ export async function POST(request: Request) {
       { error: "Upload a procedure or describe how the shift runs." },
       { status: 400 }
     );
+  }
+
+  // Checked before the upload, so a venue over its hour does not put bytes in
+  // storage it will never get a procedure out of.
+  try {
+    await assertWithinSpendLimit("ingest", access.actor.venueId);
+  } catch (error) {
+    if (error instanceof SpendLimitError) {
+      return NextResponse.json({ error: error.message }, { status: 429 });
+    }
+    throw error;
   }
 
   let sourcePath: string | null = null;

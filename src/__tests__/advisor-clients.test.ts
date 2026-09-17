@@ -10,7 +10,7 @@ const mockAdvisorClientsFindMany = vi.fn();
 const mockAdvisorClientsFindFirst = vi.fn();
 const mockUsersFindFirst = vi.fn();
 const mockInsertValues = vi.fn().mockResolvedValue(undefined);
-const mockInsert = vi.fn(() => ({ values: mockInsertValues }));
+const mockInsert = vi.fn<(...args: unknown[]) => unknown>(() => ({ values: mockInsertValues }));
 
 vi.mock("@/db", () => ({
   db: {
