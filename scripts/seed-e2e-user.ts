@@ -90,6 +90,43 @@ async function main() {
     console.log("Created venue");
   }
 
+  // 4. Give it a live plan.
+  //
+  // Systems is gated on the subscription from D24, and without a row here the
+  // test account resolves to `free` and loses the whole module, which makes it
+  // useless for walking anything. Group rather than Pro, so one account can
+  // reach every tier's features. The Stripe ids are obvious fakes: nothing
+  // reads them, the gate reads `plan` and `status`.
+  const { data: existingSubs } = await supabase
+    .from("subscriptions")
+    .select("id, plan, status")
+    .eq("user_id", userId);
+
+  const live = existingSubs?.find((s) =>
+    ["trialing", "active", "past_due"].includes(s.status as string)
+  );
+
+  if (live) {
+    if (live.plan !== "group") {
+      await supabase.from("subscriptions").update({ plan: "group" }).eq("id", live.id);
+      console.log(`Raised the e2e subscription from ${live.plan} to group`);
+    }
+  } else {
+    const { error } = await supabase.from("subscriptions").insert({
+      user_id: userId,
+      stripe_subscription_id: `sub_e2e_${userId}`,
+      stripe_customer_id: `cus_e2e_${userId}`,
+      stripe_price_id: "price_e2e_group",
+      plan: "group",
+      status: "active",
+    });
+    if (error) {
+      console.error("Failed to insert subscription:", error);
+      process.exit(1);
+    }
+    console.log("Created a Group subscription so the e2e account can reach Systems");
+  }
+
   console.log("E2E setup complete. Email:", email);
 }
 

@@ -1,71 +1,86 @@
 /**
  * Who does the Systems gate lock out?
  *
- * Run this before deploying the entitlement split. Gating a module that has
- * been open to everyone since it shipped will take it away from somebody, and
- * it is better to know the number now than to hear it from them.
+ * Run before deploying the entitlement split. Gating a module that has been
+ * open to everyone since it shipped will take it away from somebody, and it is
+ * better to know the number now than to hear it from them.
  *
  *   npx tsx scripts/check-systems-entitlement-impact.ts
  *
  * Reads only. Writes nothing.
+ *
+ * Uses `postgres` directly rather than Drizzle. ES module imports are hoisted,
+ * so `import { db } from "../src/db"` runs before the dotenv call below it and
+ * the pool is built with no DATABASE_URL, which fails against whatever local
+ * default Postgres picks. The same reason `check-systems-tables.ts` does this.
  */
 import "dotenv/config";
 import { config } from "dotenv";
 
 config({ path: ".env.local", override: true });
 
-import { db } from "../src/db";
-import { users, venues, subscriptions, procedures } from "../src/db/schema";
-import { eq, inArray } from "drizzle-orm";
+import postgres from "postgres";
 
-const LIVE = ["trialing", "active", "past_due"] as const;
-const RANK = { free: 0, essentials: 1, pro: 2, group: 3 } as const;
-type Plan = keyof typeof RANK;
+const LIVE = ["trialing", "active", "past_due"];
+const RANK: Record<string, number> = { free: 0, essentials: 1, pro: 2, group: 3 };
 
 async function main() {
-  const allUsers = await db.select({ id: users.id, email: users.email }).from(users);
-  const allVenues = await db.select({ userId: venues.userId }).from(venues);
-  const live = await db
-    .select({ userId: subscriptions.userId, plan: subscriptions.plan })
-    .from(subscriptions)
-    .where(inArray(subscriptions.status, [...LIVE]));
-
-  const hasVenue = new Set(allVenues.map((v) => v.userId));
-  const planOf = new Map<string, Plan>();
-  for (const row of live) {
-    const plan = row.plan as Plan;
-    const best = planOf.get(row.userId) ?? "free";
-    if (RANK[plan] > RANK[best]) planOf.set(row.userId, plan);
+  const url = process.env.DATABASE_URL;
+  if (!url) {
+    console.error("DATABASE_URL is not set. Check .env.local.");
+    process.exit(1);
   }
 
-  const buckets: Record<Plan, string[]> = { free: [], essentials: [], pro: [], group: [] };
-  for (const u of allUsers) {
-    if (!hasVenue.has(u.id)) continue;
-    buckets[planOf.get(u.id) ?? "free"].push(u.email ?? u.id);
-  }
+  const sql = postgres(url, { prepare: false });
 
-  const withProcedures = await db
-    .select({ venueId: procedures.venueId })
-    .from(procedures);
-  const venuesWithProcedures = new Set(withProcedures.map((p) => p.venueId));
+  try {
+    const rows = await sql<{ email: string; plan: string | null }[]>`
+      select
+        u.email,
+        (
+          select s.plan
+          from subscriptions s
+          where s.user_id = u.id
+            and s.status = any(${LIVE})
+          order by case s.plan
+            when 'group' then 3 when 'pro' then 2 when 'essentials' then 1 else 0
+          end desc
+          limit 1
+        ) as plan
+      from users u
+      where exists (select 1 from venues v where v.user_id = u.id)
+    `;
 
-  console.log("Operators with a venue, by live plan:");
-  for (const plan of ["free", "essentials", "pro", "group"] as const) {
-    console.log(`  ${plan.padEnd(11)} ${buckets[plan].length}`);
-  }
+    const [{ count: venuesWithProcedures }] = await sql<{ count: string }[]>`
+      select count(distinct venue_id)::text as count from procedures
+    `;
 
-  console.log("");
-  console.log(`Venues holding at least one procedure: ${venuesWithProcedures.size}`);
-  console.log("");
-  console.log("After the split:");
-  console.log(`  lose Systems entirely (no live plan): ${buckets.free.length}`);
-  console.log(`  keep the catalogue, lose the audit:   ${buckets.essentials.length}`);
-  console.log(`  unaffected (Pro or Group):            ${buckets.pro.length + buckets.group.length}`);
+    const buckets: Record<string, string[]> = { free: [], essentials: [], pro: [], group: [] };
+    for (const row of rows) {
+      const plan = row.plan && row.plan in RANK ? row.plan : "free";
+      buckets[plan].push(row.email);
+    }
 
-  if (buckets.free.length > 0) {
+    console.log("Operators with a venue, by live plan:");
+    for (const plan of ["free", "essentials", "pro", "group"]) {
+      console.log(`  ${plan.padEnd(11)} ${buckets[plan].length}`);
+    }
+
     console.log("");
-    console.log("No live plan, but has a venue:");
-    for (const who of buckets.free) console.log(`  ${who}`);
+    console.log(`Venues holding at least one procedure: ${venuesWithProcedures}`);
+    console.log("");
+    console.log("After the split:");
+    console.log(`  lose Systems entirely (no live plan): ${buckets.free.length}`);
+    console.log(`  keep the catalogue, lose the audit:   ${buckets.essentials.length}`);
+    console.log(`  unaffected (Pro or Group):            ${buckets.pro.length + buckets.group.length}`);
+
+    if (buckets.free.length > 0) {
+      console.log("");
+      console.log("Has a venue, no live plan:");
+      for (const who of buckets.free) console.log(`  ${who}`);
+    }
+  } finally {
+    await sql.end({ timeout: 5 });
   }
 
   process.exit(0);

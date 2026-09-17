@@ -3,25 +3,25 @@
 **Version:** 1.5
 **Started:** 25 August 2026, 08:05 AEST
 **This version:** 17 September 2026, 14:29 AEST
-**Supersedes:** `SystemsModule_DecisionsRecord_v1_4_202609171030.md`
+**Supersedes:** `SystemsModule_DecisionsRecord_v1_4_202609020815.md`
 **Authority:** This record plus the Systems Module build specification, July 2026. Nothing here is re-opened without an explicit unlock from Julian.
 
 ## Changelog
 
-- **v1.5 (17 Sep 2026, 14:29 AEST):** O1 closed after three weeks blocking launch: Systems splits across Venue Pulse tiers. D24 to D28 recorded. The O5 shell and flow work built. A date fault corrected, see below.
-- **v1.4 (17 Sep 2026, 10:30 AEST):** SOP catalogue approved and shipped, commit `a939b38`. O6 closed, O4 narrowed. D22 and D23 recorded. Six defects found in the production walk, all fixed before the push.
+- **v1.5 (17 Sep 2026, 14:29 AEST):** O1 closed after three weeks blocking launch: Systems splits across Venue Pulse tiers. D24 to D28 recorded. The O5 shell and flow work built.
+- **v1.4 (2 Sep 2026, 08:15 AEST):** SOP catalogue approved and shipped, commit `a939b38`. O6 closed, O4 narrowed. D22 and D23 recorded. Six defects found in the production walk, all fixed before the push.
 - **v1.3 (1 Sep 2026, 23:28 AEST):** Shipped to production. D19 and D20 recorded. SOP catalogue drafted at v0.1. O6 opened.
 - **v1.2 (1 Sep 2026, 15:41 AEST):** S1 to S5 built and verified locally. D13 to D18 recorded.
 - **v1.1 (25 Aug 2026, 08:54 AEST):** O2 closed. D5, D9, D10 settled.
 - **v1.0 (25 Aug 2026, 08:05 AEST):** D1 to D4 settled.
 
-## A correction on dates
+## A correction, withdrawn
 
-v1.4 was issued as `SystemsModule_DecisionsRecord_v1_4_202609020815.md` and dated 2 September. Both were wrong. It has been renamed to `_202609171030` and its internal dates corrected to 17 September.
+v1.5 was first issued claiming the machine clock was roughly fifteen days slow and that every commit in this repository was misdated. **That was wrong**, and v1.4 was wrongly renamed and redated on the strength of it. Both have been reverted: v1.4 keeps its original name and its original date of 2 September, which were correct all along.
 
-**Why it happened.** The machine's `git` stamps commits made on 17 September as `2026-09-02`, and Netlify, reading the same clock through the browser, rendered those commits as "Today". Two independent-looking signals agreed on the wrong date, so it was taken rather than checked. The standing instruction is to check the date in real time rather than infer it, and it was not followed.
+**What actually happened.** This build ran across two sittings, 1 to 2 September and 17 September. Commits `e996314` through `325f5e1` really were made on 1 and 2 September. Reading them inside a session resumed on the 17th, they looked like today's commits carrying yesterday's dates, and Netlify's deploy list, which shows when a deploy *ran* rather than when a commit was *made*, appeared to confirm it. Two weak signals were treated as corroboration when neither had been checked.
 
-**What it affects.** Every commit in this repository carries a date roughly fifteen days behind the real one, `e996314` onward at least. The commit contents and order are correct; only the timestamps are wrong. **This is not fixed** and will keep happening until the machine clock is corrected. Recorded here so that nobody later reads the git history as a timeline.
+**The rule this breaks.** Ambiguities are to be flagged, not silently resolved, and the standing instruction is to check rather than assume. The date was flagged, which was right, but a conclusion was stated alongside the question and then repeated after Julian had corrected it twice. Stating a conclusion while asking whether it is true is not flagging an ambiguity.
 
 ## Settled decisions
 
@@ -42,12 +42,14 @@ D1 to D23 as recorded in v1.4 and unchanged. New since:
 | O3 | 2026-09-01 | Baseline drizzle's migration history. `npm run db:migrate` still cannot run; every migration goes through `scripts/apply-migration.ts`. | Compounds with every migration. |
 | O4 | 2026-09-01 | Jolt, Trail and Xenia export labels need first-hand verification before those targets return. Generic and Restoke are shipped. | Not blocking. |
 | O7 | 2026-09-17 | `catalogue-generate.ts` has no unit tests. | Not blocking. Verified by hand end to end on production. |
-| O8 | 2026-09-17 | **Who loses Systems when D24 deploys.** The module has been open to every signed-in user since it shipped. `scripts/check-systems-entitlement-impact.ts` counts the operators with a venue and no live plan. **Run it before pushing D24** and decide what those operators get. | **Blocks the D24 deploy.** |
-| O9 | 2026-09-17 | **The machine clock is wrong**, see the correction above. Until it is fixed every commit is misdated. | Not blocking work. Corrupts the history. |
 | O10 | 2026-09-17 | **The band names collide across two scales.** The Food Game Diagnostic Test scores out of 21 and bands it Structural Risk 0 to 10, Functional but Fragile 11 to 16, Designed for Calm 17 to 21. Venue by Design scores out of 10 and uses the same three names at 0 to 4, 5 to 7, 8 to 10. A prospect scoring 8 is told Structural Risk on one site and Designed for Calm on the other, inside one funnel. The `/10` version is the Calm Index as the book defines it. | **Blocks nothing technically, damages the funnel now.** Food Game Media's side to change. |
 | O11 | 2026-09-17 | Phone width on the authenticated pages is unverified. `resize_window` reports success but the viewport does not change, and the in-app browser has no session. Ten seconds in Chrome DevTools settles it. | Not blocking. |
 
-O1, O2, O5 and O6 are closed.
+O1, O2, O5, O6, O8 and O9 are closed. O9 was opened and withdrawn in the same version, see the correction above.
+
+**O8, closed.** `scripts/check-systems-entitlement-impact.ts` run against production on 17 September: one operator holds a venue, `e2e@venuebydesign.test`, and it has no live plan. No paying customer loses anything, because there are none yet. The one real consequence is that the test account itself would have lost Systems, so `scripts/seed-e2e-user.ts` now gives it a Group subscription. Re-run the seed before walking production after this deploys.
+
+**A number worth sitting with.** Zero live subscriptions, one venue, and that venue is the test account. Every decision on this record about what a plan carries is, as of today, a decision about a hypothetical customer. That does not make the decisions wrong, but it does mean D24's pricing split has never met a real operator.
 
 ## O5, closed: the shell and flow work
 
