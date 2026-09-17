@@ -8,7 +8,8 @@ import { getAuditSummary, listProcedures } from "@/lib/systems/procedures";
 import { requireSystemsContext } from "@/lib/systems/venue-context";
 
 export default async function SystemsPage() {
-  const { venueId } = await requireSystemsContext("/systems");
+  const { venueId, carries } = await requireSystemsContext("/systems");
+  const canAudit = carries("audit");
 
   const [procedures, breakpoints, summary] = await Promise.all([
     listProcedures(venueId),
@@ -36,11 +37,36 @@ export default async function SystemsPage() {
             <Link href="/systems/breakpoints" className="vbd-cta vbd-cta-lg vbd-cta-outline">
               Your breakpoints ({breakpoints.length})
             </Link>
-            <Link href="/systems/new" className="vbd-cta vbd-cta-lg vbd-cta-primary">
-              Audit what you have
-            </Link>
+            {canAudit ? (
+              <Link href="/systems/new" className="vbd-cta vbd-cta-lg vbd-cta-primary">
+                Audit what you have
+              </Link>
+            ) : (
+              <Link href="/systems/catalogue" className="vbd-cta vbd-cta-lg vbd-cta-primary">
+                Build your starting set
+              </Link>
+            )}
           </div>
         </div>
+
+        {!canAudit && (
+          <div className="mt-6 border-l-[3px] border-champagne bg-card p-5">
+            <p className="text-sm leading-relaxed text-foreground">
+              Already have procedures written down?
+            </p>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              Auditing a binder you already keep, and getting a keep, rewrite or retire verdict on
+              every page of it, is part of Venue Pulse Pro. Essentials writes you a starting set
+              from the catalogue.
+            </p>
+            <Link
+              href="/pricing?systems=audit"
+              className="vbd-cta vbd-cta-lg vbd-cta-outline mt-4 inline-flex"
+            >
+              See Pro
+            </Link>
+          </div>
+        )}
 
         {procedures.length > 0 && (
           <Link

@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { AppShell } from "@/components/app-shell";
 import { listBreakpoints } from "@/lib/systems/breakpoints";
-import { requireSystemsContext } from "@/lib/systems/venue-context";
+import { requireSystemsCapability } from "@/lib/systems/venue-context";
 import { IngestForm } from "./ingest-form";
 
 export default async function NewProcedurePage() {
-  const { venueId } = await requireSystemsContext("/systems/new");
+  const { venueId } = await requireSystemsCapability("/systems/new", "audit");
   const breakpoints = await listBreakpoints(venueId);
 
   return (

@@ -15,7 +15,7 @@ export async function POST(
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 
-  const access = await resolveVenueAccess(body.venueId);
+  const access = await resolveVenueAccess(body.venueId, "audit");
   if (!access.ok) {
     return NextResponse.json({ error: access.error }, { status: access.status });
   }

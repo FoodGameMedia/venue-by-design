@@ -11,17 +11,26 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { users, venues } from "@/db/schema";
 import { createClient } from "@/lib/supabase/server";
+import {
+  planForUser,
+  planCarries,
+  upgradeMessageFor,
+  type PricingPlan,
+  type SystemsCapability,
+} from "./entitlements";
 
 export interface SystemsActor {
   userId: string;
   venueId: string;
   venueName: string;
+  plan: PricingPlan;
 }
 
 export type AccessFailure =
   | { ok: false; status: 401; error: "Unauthorized" }
   | { ok: false; status: 404; error: "User not found" | "Venue not found" }
-  | { ok: false; status: 400; error: "venueId is required" };
+  | { ok: false; status: 400; error: "venueId is required" }
+  | { ok: false; status: 403; error: string };
 
 export type AccessResult = { ok: true; actor: SystemsActor } | AccessFailure;
 
@@ -31,7 +40,14 @@ export type AccessResult = { ok: true; actor: SystemsActor } | AccessFailure;
  * A venue that exists but belongs to someone else returns 404, not 403, so the
  * endpoint does not confirm the existence of other people's venues.
  */
-export async function resolveVenueAccess(venueId: unknown): Promise<AccessResult> {
+export async function resolveVenueAccess(
+  venueId: unknown,
+  /**
+   * The half of the module this endpoint belongs to. Omitted means the endpoint
+   * only reads what the operator already owns, which every paying plan carries.
+   */
+  capability?: SystemsCapability
+): Promise<AccessResult> {
   if (typeof venueId !== "string" || !venueId.trim()) {
     return { ok: false, status: 400, error: "venueId is required" };
   }
@@ -63,8 +79,16 @@ export async function resolveVenueAccess(venueId: unknown): Promise<AccessResult
     return { ok: false, status: 404, error: "Venue not found" };
   }
 
+  // Ownership first, plan second. A venue that is not yours is not found,
+  // whatever you pay, and we never tell you the plan would have let you in.
+  const plan = await planForUser(dbUser.id);
+
+  if (capability && !planCarries(plan, capability)) {
+    return { ok: false, status: 403, error: upgradeMessageFor(capability) };
+  }
+
   return {
     ok: true,
-    actor: { userId: dbUser.id, venueId: venue.id, venueName: venue.name },
+    actor: { userId: dbUser.id, venueId: venue.id, venueName: venue.name, plan },
   };
 }

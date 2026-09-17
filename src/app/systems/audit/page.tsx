@@ -3,11 +3,11 @@ import { AppShell } from "@/components/app-shell";
 import { DOMAIN_LABELS } from "@/lib/domains";
 import type { ProcedureVerdict } from "@/lib/systems/method-questions";
 import { getAuditSummary, listProcedures } from "@/lib/systems/procedures";
-import { requireSystemsContext } from "@/lib/systems/venue-context";
+import { requireSystemsCapability } from "@/lib/systems/venue-context";
 import { ExportQueue, type QueueItem } from "./export-queue";
 
 export default async function AuditVerdictPage() {
-  const { venueId } = await requireSystemsContext("/systems/audit");
+  const { venueId } = await requireSystemsCapability("/systems/audit", "audit");
 
   const [procedures, summary] = await Promise.all([
     listProcedures(venueId),

@@ -2,13 +2,14 @@
 
 **Version:** 1.4
 **Started:** 25 August 2026, 08:05 AEST
-**This version:** 2 September 2026, 08:15 AEST
+**This version:** 17 September 2026, 10:30 AEST
+**Correction:** originally issued as `_202609020815` and dated 2 September. Both were wrong. See the note on dates in v1.5.
 **Supersedes:** `SystemsModule_DecisionsRecord_v1_3_202609012328.md`
 **Authority:** This record plus the Systems Module build specification, July 2026. Nothing here is re-opened without an explicit unlock from Julian.
 
 ## Changelog
 
-- **v1.4 (2 Sep 2026, 08:15 AEST):** SOP catalogue approved and shipped, commit `a939b38`, deploy Published in 56s and live-verified. O6 closed. O4 narrowed to three named targets. D22 and D23 recorded. Six defects found in the production walk, all fixed before the push. Production incident of 1 September closed.
+- **v1.4 (17 Sep 2026, 10:30 AEST):** SOP catalogue approved and shipped, commit `a939b38`, deploy Published in 56s and live-verified. O6 closed. O4 narrowed to three named targets. D22 and D23 recorded. Six defects found in the production walk, all fixed before the push. Production incident of 1 September closed.
 - **v1.3 (1 Sep 2026, 23:28 AEST):** Shipped to production, commits `e996314` and `a2906d1`. Production 500 traced to a wrong database password in Netlify, not to this build. D19 and D20 recorded. SOP catalogue drafted at v0.1. O6 opened.
 - **v1.2 (1 Sep 2026, 15:41 AEST):** S1 to S5 built and verified locally. D13 to D18 recorded.
 - **v1.1 (25 Aug 2026, 08:54 AEST):** O2 closed. D5, D9, D10 settled. Record moved into the repo.
@@ -20,8 +21,8 @@ D1 to D21 as recorded in v1.3 and unchanged. New since:
 
 | # | Date | Decision | Reason / notes |
 |---|------|----------|----------------|
-| D22 | 2026-09-02 | **"Other" is a venue type.** Added to `venue_type` alongside the five trading types and `hotel_fb`. An operator who picks it gets the full catalogue in its default order and all seventeen outside-remit headings. | Julian, 1 Sep: someone may not classify as any of the five, and forcing a wrong pick corrupts the ordering and the obligation filter. **Unset and "other" are now different answers.** Unset means we have not asked, so we show only the fifteen universal obligations. "Other" means none of ours fit, so we show all seventeen and let them decide. `ALTER TYPE ADD VALUE` is not reversible in Postgres, so this is a one-way door and was taken deliberately. |
-| D23 | 2026-09-02 | **Catalogue approved at nineteen items, with the bookends leading for everyone.** Nineteen core moments, plus A22 promoted out of the list to become the catalogue's leading statement. The welcome and the ending lead for every venue regardless of Calm Index; the venue-type lead and the two weakest domains follow. | Julian, 1 Sep: "Endings is a key in the book and all need them as well as the welcome." A7 cut, A11 rolled into A13, A21 cut, A14 kept but loose. A22 is the book's thesis and reads as a promise rather than a task, so it heads the page rather than sitting inside operational memory. |
+| D22 | 2026-09-17 | **"Other" is a venue type.** Added to `venue_type` alongside the five trading types and `hotel_fb`. An operator who picks it gets the full catalogue in its default order and all seventeen outside-remit headings. | Julian, 1 Sep: someone may not classify as any of the five, and forcing a wrong pick corrupts the ordering and the obligation filter. **Unset and "other" are now different answers.** Unset means we have not asked, so we show only the fifteen universal obligations. "Other" means none of ours fit, so we show all seventeen and let them decide. `ALTER TYPE ADD VALUE` is not reversible in Postgres, so this is a one-way door and was taken deliberately. |
+| D23 | 2026-09-17 | **Catalogue approved at nineteen items, with the bookends leading for everyone.** Nineteen core moments, plus A22 promoted out of the list to become the catalogue's leading statement. The welcome and the ending lead for every venue regardless of Calm Index; the venue-type lead and the two weakest domains follow. | Julian, 1 Sep: "Endings is a key in the book and all need them as well as the welcome." A7 cut, A11 rolled into A13, A21 cut, A14 kept but loose. A22 is the book's thesis and reads as a promise rather than a task, so it heads the page rather than sitting inside operational memory. |
 
 ## Open decisions
 
@@ -31,9 +32,9 @@ D1 to D21 as recorded in v1.3 and unchanged. New since:
 | O3 | 2026-09-01 | Baseline drizzle's migration history. `npm run db:migrate` still cannot run on this database; every migration is applied by `scripts/apply-migration.ts` instead. | Compounds with every migration. |
 | O4 | 2026-09-01 | **Narrowed.** Generic and Restoke are shipped, Restoke's labels read from its live documentation. Jolt, Trail and Xenia are removed until their field names are read first hand. | Not blocking. Those three return only when verified. |
 | O5 | 2026-09-01 | Page and shell work, parked: rails, the explainer eating the fold, nav missing on `/score` and `/diagnostic`, the "Ask draws on your scores" naming defect, advisor versus Ask in the internals, and a public home page naming the method. | Parked at Julian's instruction. |
-| O7 | 2026-09-02 | `catalogue-generate.ts` has no unit tests. Every other module in `src/lib/systems/` does. | Not blocking. Verified by hand end to end on production. |
+| O7 | 2026-09-17 | `catalogue-generate.ts` has no unit tests. Every other module in `src/lib/systems/` does. | Not blocking. Verified by hand end to end on production. |
 
-## Defects found in the production walk, 2 September
+## Defects found in the production walk, 17 September
 
 All six were found by walking the live catalogue, and all six were fixed before the push.
 

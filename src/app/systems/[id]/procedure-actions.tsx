@@ -9,11 +9,14 @@ export function ProcedureActions({
   venueId,
   procedureId,
   audited,
+  canAudit,
   status,
 }: {
   venueId: string;
   procedureId: string;
   audited: boolean;
+  /** Auditing is the Pro half. Essentials can still put a procedure in use. */
+  canAudit: boolean;
   status: "draft" | "live" | "installed";
 }) {
   const router = useRouter();
@@ -73,9 +76,11 @@ export function ProcedureActions({
   return (
     <div className="mt-8 space-y-4">
       <div className="flex flex-wrap gap-2">
-        <Button type="button" onClick={() => void runAudit()} disabled={busy}>
-          {busy ? "Working…" : audited ? "Run the audit again" : "Run the audit"}
-        </Button>
+        {canAudit && (
+          <Button type="button" onClick={() => void runAudit()} disabled={busy}>
+            {busy ? "Working…" : audited ? "Run the audit again" : "Run the audit"}
+          </Button>
+        )}
 
         {status === "draft" && (
           <Button

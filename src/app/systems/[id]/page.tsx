@@ -31,7 +31,7 @@ export default async function ProcedurePage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const { venueId } = await requireSystemsContext(`/systems/${id}`);
+  const { venueId, carries } = await requireSystemsContext(`/systems/${id}`);
 
   const detail = await getProcedureDetail(id, venueId);
   if (!detail) notFound();
@@ -170,6 +170,7 @@ export default async function ProcedurePage({
           procedureId={procedure.id}
           audited={Boolean(audit)}
           status={procedure.status}
+          canAudit={carries("audit")}
         />
 
         {version && (

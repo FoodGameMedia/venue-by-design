@@ -6,10 +6,12 @@ import { PricingCards } from "./pricing-cards";
 export default async function PricingPage({
   searchParams,
 }: {
-  searchParams: Promise<{ diagnostic?: string }>;
+  searchParams: Promise<{ diagnostic?: string; systems?: string }>;
 }) {
   const params = await searchParams;
   const showDiagnosticBanner = params.diagnostic === "required";
+  // Sent here from the Systems module when the plan does not reach the audit.
+  const showSystemsBanner = params.systems === "audit";
 
   return (
     <div className="relative min-h-screen w-full bg-transparent">
@@ -19,6 +21,12 @@ export default async function PricingPage({
         {showDiagnosticBanner && (
           <div className="mx-auto mb-8 max-w-2xl border-l-[3px] border-primary bg-primary/10 p-4 text-sm text-foreground">
             Deep Diagnostic requires a one-time purchase. Choose Solo or Staff Pulse below.
+          </div>
+        )}
+        {showSystemsBanner && (
+          <div className="mx-auto mb-8 max-w-2xl border-l-[3px] border-champagne bg-card p-4 text-sm leading-relaxed text-foreground">
+            Auditing procedures you already have is part of Venue Pulse Pro. Essentials writes you
+            a starting set from the catalogue; Pro judges the binder you already keep.
           </div>
         )}
         <div className="mb-12 text-center">

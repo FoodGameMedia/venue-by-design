@@ -25,7 +25,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 
-  const access = await resolveVenueAccess(body.venueId);
+  const access = await resolveVenueAccess(body.venueId, "catalogue");
   if (!access.ok) {
     return NextResponse.json({ error: access.error }, { status: access.status });
   }
@@ -52,7 +52,7 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 
-  const access = await resolveVenueAccess(body.venueId);
+  const access = await resolveVenueAccess(body.venueId, "catalogue");
   if (!access.ok) {
     return NextResponse.json({ error: access.error }, { status: access.status });
   }

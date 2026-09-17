@@ -199,6 +199,11 @@ export default function Home() {
                 subtitle="Monthly"
                 body="The weekly check-in, Calm Index tracking, domain health over time, and an AI prescription brief that keeps the next change in front of you."
               />
+              <ProductCard
+                title="Systems"
+                subtitle="In Venue Pulse"
+                body="A starting set of nineteen procedures drawn from the books and written to your venue by interview, from Essentials. From Pro, an audit that judges the procedures you already have against three questions and tells you which to retire."
+              />
             </div>
           </div>
         </section>

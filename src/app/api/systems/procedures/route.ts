@@ -67,7 +67,7 @@ export async function POST(request: Request) {
     pastedBody = typeof body.body === "string" ? body.body : null;
   }
 
-  const access = await resolveVenueAccess(venueId);
+  const access = await resolveVenueAccess(venueId, "audit");
   if (!access.ok) {
     return NextResponse.json({ error: access.error }, { status: access.status });
   }
