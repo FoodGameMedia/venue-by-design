@@ -43,7 +43,7 @@ export default function PrivacyPage() {
             prescription brief content.
           </li>
           <li>
-            <strong className="text-foreground">Ask chat</strong> — messages you send to the in-app
+            <strong className="text-foreground">Sebastian</strong> — messages you send to the in-app
             assistant and related context needed to respond.
           </li>
           <li>
@@ -95,7 +95,7 @@ export default function PrivacyPage() {
           </li>
           <li>
             <strong className="text-foreground">Anthropic</strong> — AI inference for diagnostics,
-            prescriptions, and Ask chat;
+            prescriptions, and Sebastian;
           </li>
           <li>
             <strong className="text-foreground">Resend</strong> — transactional email delivery;

@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { CheckinForm } from "./checkin-form";
-import { PublicFooter } from "@/components/sales/public-footer";
+import { AppShell } from "@/components/app-shell";
 
 export default async function CheckinPage() {
   const supabase = await createClient();
@@ -29,9 +29,8 @@ export default async function CheckinPage() {
   const venue = userVenues[0];
 
   return (
-    <div className="flex min-h-screen flex-col bg-transparent">
+    <AppShell>
       <CheckinForm venueId={venue.id} userId={dbUser.id} venueName={venue.name} />
-      <PublicFooter />
-    </div>
+    </AppShell>
   );
 }

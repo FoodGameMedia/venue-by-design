@@ -8,6 +8,7 @@ import { DomainRadar } from "./domain-radar";
 import { CheckinHistory } from "./checkin-history";
 import { DOMAINS } from "@/lib/checkin-questions";
 import { AppShell } from "@/components/app-shell";
+import { PageContainer } from "@/components/page-container";
 import { CalmThermostat } from "@/components/calm-thermostat";
 import { NextChangeCard } from "@/components/next-change-card";
 import { getActiveChangeIndex } from "@/lib/venue-progress";
@@ -121,9 +122,42 @@ export default async function DashboardPage() {
     latestPrescription?.created_at ?? null
   );
 
+  // Reference, not the loop. The main column carries the number, the trend, the
+  // one change and the re-score; these two sit beside it so they stop competing
+  // with the work of the week.
+  const aside = isEmpty ? undefined : (
+    <>
+      <section className="vbd-prescription-card p-4 sm:p-6">
+        <h3 className="vbd-section-label-accent">Check-in history</h3>
+        <div className="mt-4">
+          <CheckinHistory checkins={historyList.slice(0, 5)} />
+        </div>
+      </section>
+
+      <section className="vbd-prescription-card p-4 sm:p-6">
+        <h3 className="vbd-section-label-accent">Domains at a glance</h3>
+        {/*
+          Gated on domain scores, not on the trend. The trend only holds the last
+          eight weeks, so gating the radar on it hid the seven domains entirely
+          for anyone who had not checked in for two months, which is exactly when
+          they most need to see where they stood.
+        */}
+        {domainScores.length > 0 ? (
+          <div className="mt-4">
+            <DomainRadar data={radarData} />
+          </div>
+        ) : (
+          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+            Your seven domains appear here after your first check-in.
+          </p>
+        )}
+      </section>
+    </>
+  );
+
   return (
     <AppShell>
-      <main className="w-full px-4 py-8 pb-14 sm:px-6 lg:px-8">
+      <PageContainer aside={aside}>
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
           <div className="vbd-section-header">
             <p className="vbd-section-label-accent">Dashboard</p>
@@ -187,10 +221,19 @@ export default async function DashboardPage() {
               <p className="mt-1 text-sm text-muted-foreground">
                 The weekly loop shows whether the system is holding, not whether the week was perfect.
               </p>
-              {trendData.length > 0 && (
+              {/*
+                The trend holds eight weeks. Saying so is better than rendering a
+                card with a heading and nothing under it, which reads as broken.
+              */}
+              {trendData.length > 0 ? (
                 <div className="mt-4">
                   <CalmIndexTrend data={trendData} />
                 </div>
+              ) : (
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                  The trend shows the last eight weeks. There is nothing in that window yet, so
+                  check in and the line starts from there.
+                </p>
               )}
             </section>
 
@@ -216,31 +259,9 @@ export default async function DashboardPage() {
                 </Link>
               </div>
             </section>
-
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-              <section className="vbd-prescription-card p-4 sm:p-6">
-                <h3 className="vbd-section-label-accent">
-                  Domains at a glance
-                </h3>
-                {trendData.length > 0 && (
-                  <div className="mt-4">
-                    <DomainRadar data={radarData} />
-                  </div>
-                )}
-              </section>
-
-              <section className="vbd-prescription-card p-4 sm:p-6">
-                <h3 className="vbd-section-label-accent">
-                  Check-in history
-                </h3>
-                <div className="mt-4">
-                  <CheckinHistory checkins={historyList.slice(0, 5)} />
-                </div>
-              </section>
-            </div>
           </div>
         )}
-      </main>
+      </PageContainer>
     </AppShell>
   );
 }

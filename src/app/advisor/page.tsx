@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
+import { PageContainer } from "@/components/page-container";
 import { getAdvisorByAuthId, getAdvisorClients } from "@/lib/advisor";
 import { AdvisorClients } from "./advisor-clients";
 
@@ -28,7 +29,7 @@ export default async function AdvisorPage() {
         </div>
       </header>
 
-      <main className="w-full px-4 py-6 pb-12 sm:px-6 lg:px-8">
+      <PageContainer>
         <div className="mb-6">
           <h2 className="font-serif text-2xl text-foreground">{account.businessName}</h2>
           <p className="mt-1 text-sm text-muted-foreground">{account.email}</p>
@@ -55,7 +56,7 @@ export default async function AdvisorPage() {
         ) : (
           <AdvisorClientsSection advisorId={account.id} />
         )}
-      </main>
+      </PageContainer>
     </div>
   );
 }

@@ -32,7 +32,7 @@ export default function TermsPage() {
         <p>
           Venue by Design provides software tools for venue operators, including weekly check-ins, a
           Calm Index score, domain-based tracking, AI-generated diagnostic reports, prescription
-          briefs, and an Ask chat assistant (&quot;Ask&quot;). Features vary by plan (Venue Pulse
+          briefs, and an in-app assistant (&quot;Sebastian&quot;). Features vary by plan (Venue Pulse
           subscription tiers and Deep Diagnostic one-time purchases).
         </p>
         <p>

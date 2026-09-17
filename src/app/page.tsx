@@ -102,6 +102,32 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Where this comes from */}
+        <section
+          className="relative vbd-section-divider overflow-hidden px-4 py-20 sm:px-6 lg:px-8"
+          data-testid="sales-method-source-section"
+        >
+          <div className="vbd-prescription-card w-full max-w-3xl p-6 sm:p-8">
+            <SectionLabel>The backbone</SectionLabel>
+            <h2 className="mt-2 font-serif text-3xl tracking-tight text-foreground sm:text-4xl">
+              This is a method before it is an app.
+            </h2>
+            <p className="mt-5 text-sm leading-relaxed text-muted-foreground sm:text-base">
+              It comes from two books by Julian Blok. <em>The Food Game</em> is the diagnosis: why
+              Australian venues can be fully booked and structurally unsound at the same time, and
+              why effort stopped being able to cover for design. <em>The Calm Venue</em> is the
+              method: the Calm Index, fragility mapping, the minimum system set, and the seven
+              domains that run from systems and flow, through people and memory, to operational
+              memory.
+            </p>
+            <p className="mt-4 text-sm leading-relaxed text-muted-foreground sm:text-base">
+              Everything in the app is those books made operational. The score, the prescription,
+              the weekly loop and the procedure audit all come out of the same method, which is why
+              they agree with each other. Nothing here was invented to fill a screen.
+            </p>
+          </div>
+        </section>
+
         {/* How it works */}
         <section id="loop" className="relative vbd-section-divider overflow-hidden px-4 py-20 sm:px-6 lg:px-8">
           <div className="relative z-10 w-full space-y-12">
@@ -134,8 +160,10 @@ export default function Home() {
                 <h3 className="mt-2 font-serif text-xl tracking-tight text-foreground">The weekly loop</h3>
                 <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
                   Once a week the app brings you back. It re-asks the questions, plots your number
-                  over time, and puts the next small change in front of you once the last has held. A
-                  weekly reminder to keep building. Calm is the system absorbing variance before it
+                  over time, and puts the next small change in front of you once the last has held.
+                  When a change holds, Systems writes it down as a default and audits the procedures
+                  you already have against the same three questions, so the ones nobody follows get
+                  retired instead of reprinted. Calm is the system absorbing variance before it
                   reaches a person, like a thermostat holding a setting against a changing day.
                 </p>
               </div>

@@ -102,7 +102,7 @@ export function VenueAdvisorPanel({
         }
 
         if (!data.message?.trim()) {
-          throw new Error("No response from advisor. Please try again.");
+          throw new Error("No response from Sebastian. Please try again.");
         }
 
         const assistantMessage: ChatMessage = {
@@ -138,7 +138,7 @@ export function VenueAdvisorPanel({
         <Button
           type="button"
           onClick={() => setOpen(true)}
-          aria-label="Open venue advisor chat"
+          aria-label="Open Sebastian"
           className="vbd-champagne-ring fixed bottom-5 right-5 z-50 h-12 gap-2 rounded-full border border-[#C9A87C]/40 bg-gradient-to-r from-[#C9A87C] to-[#D696A9] px-5 text-[#211d1a] shadow-[0_4px_24px_rgba(201,168,124,0.35),0_2px_8px_rgba(0,0,0,0.2)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_32px_rgba(201,168,124,0.45),0_4px_12px_rgba(214,150,169,0.25)] sm:bottom-6 sm:right-6"
         >
           <MessageCircle className="size-5" aria-hidden />
@@ -149,7 +149,7 @@ export function VenueAdvisorPanel({
       <div
         role="dialog"
         aria-modal="true"
-        aria-label="Venue advisor chat"
+        aria-label="Sebastian"
         aria-hidden={!open}
         className={cn(
           "fixed inset-y-0 right-0 z-50 flex w-full flex-col border-l border-border/80 bg-card/95 shadow-2xl backdrop-blur-md transition-transform duration-300 ease-out sm:w-[400px]",
@@ -158,7 +158,7 @@ export function VenueAdvisorPanel({
       >
         <header className="vbd-panel-header-accent flex shrink-0 items-center justify-between border-b border-border/70 bg-card/50 px-4 py-3.5 backdrop-blur-sm">
           <div>
-            <p className="vbd-section-label-accent">Venue advisor</p>
+            <p className="vbd-section-label-accent">Sebastian</p>
             <h2 className="font-serif text-lg tracking-tight text-foreground">{venueName}</h2>
           </div>
           <Button
@@ -166,7 +166,7 @@ export function VenueAdvisorPanel({
             variant="ghost"
             size="icon"
             onClick={() => setOpen(false)}
-            aria-label="Close venue advisor chat"
+            aria-label="Close Sebastian"
           >
             <X className="size-4" />
           </Button>
@@ -180,10 +180,10 @@ export function VenueAdvisorPanel({
           {messages.length === 0 && !loading && (
             <div className="space-y-5">
               <div className="vbd-elevated-card border-l-[3px] border-l-[#C9A87C] p-4">
-                <p className="font-serif text-base tracking-tight text-foreground">Ask your venue advisor</p>
+                <p className="font-serif text-base tracking-tight text-foreground">Ask Sebastian</p>
                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                  Get plain-language help with your weekly focus, domain scores, and calm operations.
-                  Answers use your venue scores and the Calm Venue method.
+                  Plain-language help with your weekly focus, domain scores and calm operations.
+                  Sebastian answers from your venue scores and the Calm Venue method.
                 </p>
               </div>
               <div>
@@ -239,7 +239,7 @@ export function VenueAdvisorPanel({
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Ask about your venue…"
+              placeholder="Ask Sebastian about your venue…"
               rows={2}
               disabled={loading}
               aria-label="Chat message"

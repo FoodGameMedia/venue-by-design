@@ -73,7 +73,7 @@ export function AskIntroHint({
         <MessageCircle className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
         <div className="min-w-0 flex-1">
           <p className="text-sm leading-relaxed text-foreground">
-            Got a question about your venue? Ask draws on your scores and the Calm Venue method.
+            Got a question about your venue? Sebastian answers from your scores and the Calm Venue method.
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
             <Button type="button" size="sm" onClick={handleTry} className="h-8 px-3 text-xs">
@@ -93,7 +93,7 @@ export function AskIntroHint({
         <button
           type="button"
           onClick={dismiss}
-          aria-label="Dismiss Ask introduction"
+          aria-label="Dismiss the introduction to Sebastian"
           className="cursor-pointer shrink-0 rounded-sm p-1 text-muted-foreground transition-colors hover:text-foreground"
         >
           <X className="size-3.5" />

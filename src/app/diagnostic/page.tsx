@@ -6,6 +6,7 @@ import { db } from "@/db";
 import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { DiagnosticForm } from "./diagnostic-form";
+import { AppShell } from "@/components/app-shell";
 
 export default async function DiagnosticPage({
   searchParams,
@@ -42,8 +43,8 @@ export default async function DiagnosticPage({
   const venue = userVenues[0];
 
   return (
-    <div className="min-h-screen bg-transparent">
+    <AppShell>
       <DiagnosticForm venueId={venue.id} userId={dbUser.id} venueName={venue.name} />
-    </div>
+    </AppShell>
   );
 }

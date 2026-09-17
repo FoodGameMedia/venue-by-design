@@ -3,6 +3,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { AppShell } from "@/components/app-shell";
+import { PageContainer } from "@/components/page-container";
 import { CalmThermostat } from "@/components/calm-thermostat";
 import { PrescriptionCard } from "@/app/dashboard/prescription-card";
 import {
@@ -125,7 +126,7 @@ export default async function MyPlanPage() {
   if (!diagnostic) {
     return (
       <AppShell>
-        <main className="w-full px-4 py-6 pb-12 sm:px-6 lg:px-8">
+        <PageContainer width="reading">
           <section className="border-l-4 border-primary bg-card p-6 sm:p-8">
             <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
               My Plan
@@ -142,7 +143,7 @@ export default async function MyPlanPage() {
               Open Deep Diagnostic
             </Link>
           </section>
-        </main>
+        </PageContainer>
       </AppShell>
     );
   }
@@ -158,7 +159,7 @@ export default async function MyPlanPage() {
 
   return (
     <AppShell>
-      <main className="w-full px-4 py-6 pb-12 sm:px-6 lg:px-8">
+      <PageContainer>
         <div className="mb-6">
           <h1 className="font-serif text-2xl text-foreground">My Plan</h1>
           <p className="mt-1 text-sm text-muted-foreground">{venue.name}</p>
@@ -308,7 +309,7 @@ export default async function MyPlanPage() {
             </div>
           </section>
         </div>
-      </main>
+      </PageContainer>
     </AppShell>
   );
 }

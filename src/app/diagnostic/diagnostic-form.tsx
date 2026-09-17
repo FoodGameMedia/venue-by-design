@@ -80,7 +80,7 @@ export function DiagnosticForm({
   if (result) {
     const report = result.report;
     return (
-      <div className="flex min-h-screen flex-col items-center px-4 py-8 sm:px-6">
+      <div className="flex flex-1 flex-col items-center px-4 py-8 sm:px-6">
         <div className="w-full max-w-[375px] space-y-4" data-testid="diagnostic-report">
           <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
             <h1 className="text-2xl font-serif text-foreground">90-Day Design Prescription</h1>
@@ -212,7 +212,7 @@ export function DiagnosticForm({
   const progress = ((domainStep * 100) / domains.length + (allAnswered ? 100 / domains.length : 0)) | 0;
 
   return (
-    <div className="flex min-h-screen flex-col px-4 py-8 sm:px-6">
+    <div className="flex flex-1 flex-col px-4 py-8 sm:px-6">
       <header className="mb-6 flex items-center justify-between">
         <Link href="/dashboard" className="cursor-pointer text-sm text-muted-foreground hover:text-foreground">
           ← Back

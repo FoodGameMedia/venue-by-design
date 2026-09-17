@@ -1,3 +1,8 @@
+"use client";
+
+import { useCallback, useState, useSyncExternalStore } from "react";
+import { ChevronDown } from "lucide-react";
+
 export interface PageExplainerContent {
   label: string;
   heading: string;
@@ -16,7 +21,7 @@ export const PAGE_EXPLAINERS = {
     ],
     how: [
       "Start with this week's prescription focus at the top of the page. That is your one intentional move for the week, not a list of everything that needs fixing. Glance at your Calm Index trend and domain scores to see whether last week's change is starting to hold. If you committed to a next change, treat it as a small experiment: try it on real shifts, then come back and re-score.",
-      "You do not need to lift every domain at once. If a score confuses you or you are unsure what to try next, tap Ask before your next check-in. It is there to help you read the signal and choose a sensible next step. The habit that matters most is the weekly loop itself: check in, focus on one change, repeat.",
+      "You do not need to lift every domain at once. If a score confuses you or you are unsure what to try next, ask Sebastian before your next check-in. He is there to help you read the signal and choose a sensible next step. The habit that matters most is the weekly loop itself: check in, focus on one change, repeat.",
     ],
     testId: "this-week-explainer",
   },
@@ -29,7 +34,7 @@ export const PAGE_EXPLAINERS = {
     ],
     how: [
       "Scan the scores that sit lowest and compare them to where you were last week. Movement matters more than the absolute number. Expand a domain card when you want the definition, your mini trend from base, and any prescribed change tied to that area. If a domain is marked as your primary focus, that is where this week's prescription lives.",
-      "Use the reference section at the bottom when you need a plain-language reminder of what each domain covers. When a score puzzles you or you are stuck on what to try, Ask can help you read the signal in plain terms and plan your next step, without adding another layer of admin to your week.",
+      "Use the reference section at the bottom when you need a plain-language reminder of what each domain covers. When a score puzzles you or you are stuck on what to try, Sebastian can help you read the signal in plain terms and plan your next step, without adding another layer of admin to your week.",
     ],
     testId: "domains-explainer",
   },
@@ -55,38 +60,107 @@ export const PAGE_EXPLAINERS = {
     ],
     how: [
       "Read the diagnostic overview and executive summary when you need the big picture: your base band, where to start, and the domain scores from when you first opened the book. Then scroll to your prescription and the per-domain design changes for concrete moves you can try on the floor or in the pass this week.",
-      "After each weekly check-in, come back here to see how your scores have moved from base to current. Use the ninety-day plan as your horizon, but let this week's prescription be your actual workload, one change at a time. If you hit a wall interpreting the plan or choosing your next move, Ask is there to help you read what the numbers are saying and keep momentum without burning out.",
+      "After each weekly check-in, come back here to see how your scores have moved from base to current. Use the ninety-day plan as your horizon, but let this week's prescription be your actual workload, one change at a time. If you hit a wall interpreting the plan or choosing your next move, Sebastian is there to help you read what the numbers are saying and keep momentum without burning out.",
     ],
     testId: "my-plan-explainer",
   },
 } satisfies Record<string, PageExplainerContent>;
 
+/**
+ * The explainer teaches the page once. It used to run four hundred words above
+ * every number, every visit, which is why the fold was gone before an operator
+ * saw a single score. It is open on the first visit, and from the moment it is
+ * collapsed it stays collapsed, with the heading always readable.
+ */
+function seenKey(testId: string) {
+  return `vbd-explainer-seen-${testId}`;
+}
+
+/** Nothing else writes these keys, so there is nothing for a subscriber to hear. */
+function subscribeToSeen() {
+  return () => {};
+}
+
+function readSeen(testId: string): boolean {
+  try {
+    return Boolean(localStorage.getItem(seenKey(testId)));
+  } catch {
+    return true;
+  }
+}
+
+/** Collapsed on the server, so a returning operator never sees it flash open. */
+function readSeenOnServer(): boolean {
+  return true;
+}
+
 export function PageExplainer({ label, heading, why, how, testId }: PageExplainerContent) {
+  const seen = useSyncExternalStore(
+    subscribeToSeen,
+    () => readSeen(testId),
+    readSeenOnServer
+  );
+  const [override, setOverride] = useState<boolean | null>(null);
+  const open = override ?? !seen;
+
+  const toggle = useCallback(() => {
+    const next = !open;
+    setOverride(next);
+    // Closing it is how you tell us you have read it.
+    if (!next) {
+      try {
+        localStorage.setItem(seenKey(testId), "1");
+      } catch {
+        // localStorage may be unavailable
+      }
+    }
+  }, [open, testId]);
+
+  const bodyId = `${testId}-body`;
+
   return (
-    <div
-      className="mb-6 border-l-[3px] border-primary bg-card p-6"
-      data-testid={testId}
-    >
-      <p className="vbd-section-label">{label}</p>
-      <h2 className="mt-2 font-serif text-xl text-foreground">{heading}</h2>
-      {why.map((paragraph, index) => (
-        <p
-          key={`why-${index}`}
-          className={`text-sm leading-relaxed text-muted-foreground ${index === 0 ? "mt-4" : "mt-3"}`}
+    <div className="mb-6 border-l-[3px] border-primary bg-card p-6" data-testid={testId}>
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0">
+          <p className="vbd-section-label">{label}</p>
+          <h2 className="mt-2 font-serif text-xl text-foreground">{heading}</h2>
+        </div>
+        <button
+          type="button"
+          onClick={toggle}
+          aria-expanded={open}
+          aria-controls={bodyId}
+          data-testid={`${testId}-toggle`}
+          className="mt-1 inline-flex shrink-0 cursor-pointer items-center gap-1 rounded-md px-2 py-1 text-xs text-muted-foreground transition-colors duration-200 hover:text-foreground"
         >
-          {paragraph}
-        </p>
-      ))}
-      <div className="mt-4">
-        <p className="text-sm font-medium text-foreground">How to use this page:</p>
-        {how.map((paragraph, index) => (
+          {open ? "Hide" : "Why this page"}
+          <ChevronDown
+            className={`size-3.5 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+            aria-hidden
+          />
+        </button>
+      </div>
+
+      <div id={bodyId} hidden={!open}>
+        {why.map((paragraph, index) => (
           <p
-            key={`how-${index}`}
-            className={`text-sm leading-relaxed text-muted-foreground ${index === 0 ? "mt-2" : "mt-3"}`}
+            key={`why-${index}`}
+            className={`text-sm leading-relaxed text-muted-foreground ${index === 0 ? "mt-4" : "mt-3"}`}
           >
             {paragraph}
           </p>
         ))}
+        <div className="mt-4">
+          <p className="text-sm font-medium text-foreground">How to use this page:</p>
+          {how.map((paragraph, index) => (
+            <p
+              key={`how-${index}`}
+              className={`text-sm leading-relaxed text-muted-foreground ${index === 0 ? "mt-2" : "mt-3"}`}
+            >
+              {paragraph}
+            </p>
+          ))}
+        </div>
       </div>
     </div>
   );

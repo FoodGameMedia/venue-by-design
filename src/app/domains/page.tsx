@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { AppShell } from "@/components/app-shell";
+import { PageContainer } from "@/components/page-container";
 import {
   DOMAIN_DEFINITIONS,
   DOMAIN_GROUPS,
@@ -84,7 +85,7 @@ export default async function DomainsPage() {
 
   return (
     <AppShell>
-      <main className="w-full px-4 py-6 pb-12 sm:px-6 lg:px-8">
+      <PageContainer>
         <div className="mb-6">
           <h1 className="font-serif text-2xl text-foreground">Domains</h1>
           <p className="mt-1 text-sm text-muted-foreground">{venue.name}</p>
@@ -193,7 +194,7 @@ export default async function DomainsPage() {
             ))}
           </div>
         </section>
-      </main>
+      </PageContainer>
     </AppShell>
   );
 }
